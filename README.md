@@ -29,34 +29,55 @@ seven-point stability/local-to-global argument.
 
 Let
 
-\[ H\_{`\rm MT`{=tex}} =
-`\frac32`{=tex}-`\frac1{\sqrt2}`{=tex}`\cot`{=tex}`\frac1{\sqrt2}`{=tex}.
-\]
+$$
+H_{\mathrm{MT}}
+=
+\frac{3}{2}
+-
+\frac{1}{\sqrt{2}}
+\cot\left(\frac{1}{\sqrt{2}}\right).
+$$
 
 The manuscript establishes
 
-\[ `\liminf`{=tex}\_{T`\to`{=tex}`\infty`{=tex}}
-`\frac{N_0^s(T,2T)}{N(T,2T)}`{=tex} `\ge`{=tex}
-`\frac{655000H_{\rm MT}-1305}{652504}`{=tex} =
-0.6730732086087052768351`\ldots `{=tex}. \]
+$$
+\liminf_{T\to\infty}
+\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge
+\frac{655000H_{\mathrm{MT}}-1305}{652504}
+=
+0.6730732086087052768351\ldots .
+$$
 
-The computer-assisted component uses the position-dependent pressure
-vector
+The computer-assisted component uses the position-dependent pressure vector
 
-\[ p= `\frac{1}{10^7}`{=tex} (2714,3733,3553,3553,3733,2714), \]
+$$
+p=
+\frac{1}{10^7}
+(2714,3733,3553,3553,3733,2714),
+$$
 
 which satisfies
 
-\[ `\sum`{=tex}\_{j=1}\^{6}p_j=`\frac1{500}`{=tex}, \]
+$$
+\sum_{j=1}^{6}p_j
+=
+\frac{1}{500},
+$$
 
 together with the certified seven-point inequality
 
-\[ F\_{6,`\mathrm{nonuniform}`{=tex}} `\ge`{=tex}
-`\frac{39}{10000}`{=tex}. \]
+$$
+F_{6,\mathrm{nonuniform}}
+\ge
+\frac{39}{10000}.
+$$
 
 The final local-to-global argument uses block length
 
-\[ m=262. \]
+$$
+m=262.
+$$
 
 ------------------------------------------------------------------------
 
