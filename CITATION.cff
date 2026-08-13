@@ -6,5 +6,5 @@ authors:
   - family-names: "Hurtado"
     given-names: "Michael"
 repository-code: "https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function"
-date-released: "2026-08-12"
-version: "1.0.0"
+date-released: "2026-08-13"
+version: "1.1.0"
