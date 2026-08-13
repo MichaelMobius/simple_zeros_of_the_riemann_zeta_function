@@ -1,3 +1,4 @@
+% Manuscript version v16: immutable reproducibility artifact linked.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -744,8 +745,10 @@ tree.
 
 The frozen 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
 visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
-verifier also succeeds at 128-bit working precision.  Appendix~\ref{app:cert}
-records the hashes and environment.
+verifier also succeeds at 128-bit working precision.  The complete 256-bit
+artifact is publicly archived in the immutable release
+\cite{Hurtado26Artifact}.  Appendix~\ref{app:cert} records the hashes and
+environment.
 \end{proof}
 
 \begin{corollary}\label{cor:energy}
@@ -949,8 +952,9 @@ first/second-moment route used here is reconstructed directly in
 Appendix~\ref{app:inputIII}.
 
 Proposition~\ref{prop:cert} is computer-assisted.  Its trust base includes the
-frozen verifier, \texttt{python-flint}, FLINT/Arb and their dependencies, and
-the correctness of the execution environment.  The 128- and 256-bit runs are
+immutable artifact release~\cite{Hurtado26Artifact}, the frozen verifier,
+\texttt{python-flint}, FLINT/Arb and their dependencies, and the correctness
+of the execution environment.  The 128- and 256-bit runs are
 replications of the same implementation at different working precisions, not
 algorithmically independent verifiers.
 
@@ -2771,6 +2775,17 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 
 \section{Certificate metadata}\label{app:cert}
 
+\paragraph{Code and certificate availability.}
+The complete Arb/FLINT verifier, the archived 256-bit certification run,
+machine-readable parameters, execution logs, environment information,
+SHA-256 hashes, and reproduction instructions are publicly available in the
+reproducibility artifact~\cite{Hurtado26Artifact}.  The immutable snapshot
+used for the present certificate is GitHub release
+\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e}.  The release
+contains the manuscript snapshot and the computational evidence used to
+certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
+default branch are not part of the trust base of this certificate.
+
 The frozen archival verifier is
 \[
  \texttt{certify\_nonuniform\_3900\_v1\_1.py}.
@@ -2929,6 +2944,18 @@ version 0.2.0, 11 August 2026,
 GitHub repository \texttt{learademacher/ai-refines-ai-zeta-bound}.
 The repository records Jo's artifact as upstream provenance and reports use
 of GPT-5.6 Sol in the refinement workflow.
+
+
+\bibitem{Hurtado26Artifact}
+M.~Hurtado,
+\emph{Reproducibility artifact for ``A position-weighted refinement for
+simple zeros of the Riemann zeta function''},
+release \texttt{v1.0.0-paper}, 13 August 2026,
+GitHub repository
+\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function},
+release snapshot
+\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function/releases/tag/v1.0.0-paper},
+commit \texttt{c57f53e}.
 
 \end{thebibliography}
 
