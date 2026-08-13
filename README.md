@@ -29,55 +29,31 @@ seven-point stability/local-to-global argument.
 
 Let
 
-$$
-H_{\mathrm{MT}}
-=
-\frac{3}{2}
--
-\frac{1}{\sqrt{2}}
-\cot\left(\frac{1}{\sqrt{2}}\right).
-$$
+**H_MT = 3/2 − (1/√2) cot(1/√2).**
 
-The manuscript establishes
+The manuscript establishes the unconditional lower bound
 
-$$
-\liminf_{T\to\infty}
-\frac{N_0^s(T,2T)}{N(T,2T)}
-\ge
-\frac{655000H_{\mathrm{MT}}-1305}{652504}
-=
-0.6730732086087052768351\ldots .
-$$
+**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ 0.6730732086087052768351…**
+
+More precisely,
+
+**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ (655000 H_MT − 1305) / 652504.**
 
 The computer-assisted component uses the position-dependent pressure vector
 
-$$
-p=
-\frac{1}{10^7}
-(2714,3733,3553,3553,3733,2714),
-$$
+**p = (2714, 3733, 3553, 3553, 3733, 2714) / 10⁷,**
 
 which satisfies
 
-$$
-\sum_{j=1}^{6}p_j
-=
-\frac{1}{500},
-$$
+**Σ pⱼ = 1/500.**
 
-together with the certified seven-point inequality
+The Arb/FLINT computation certifies the seven-point inequality
 
-$$
-F_{6,\mathrm{nonuniform}}
-\ge
-\frac{39}{10000}.
-$$
+**F₆,nonuniform ≥ 39/10000 = 0.0039.**
 
 The final local-to-global argument uses block length
 
-$$
-m=262.
-$$
+**m = 262.**
 
 ------------------------------------------------------------------------
 
