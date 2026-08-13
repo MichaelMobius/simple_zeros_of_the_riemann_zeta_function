@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this reproducibility artifact, please cite the accompanying paper and this repository."
+title: "Reproducibility artifact for A position-weighted refinement for simple zeros of the Riemann zeta function"
+type: software
+authors:
+  - family-names: "Hurtado"
+    given-names: "Michael"
+repository-code: "https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function"
+date-released: "2026-08-12"
+version: "1.0.0"

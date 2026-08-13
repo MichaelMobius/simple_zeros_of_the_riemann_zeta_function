@@ -1,0 +1,27 @@
+{
+  "certificate": "seven-point",
+  "verified": true,
+  "target": "F6_nonuniform >= 39/10000",
+  "grid": 4000,
+  "precision_bits": 256,
+  "pressure_denominator": 10000000,
+  "pressure_numerators": [
+    2714,
+    3733,
+    3553,
+    3553,
+    3733,
+    2714
+  ],
+  "nodes": 1119372,
+  "pruned": 560334,
+  "splits": 559038,
+  "maximum_depth": 39,
+  "initial_boxes": 1296,
+  "python_version": "3.14.7",
+  "python_flint_version": "0.9.0",
+  "kernel_table_sha256": "f75a3968f6daf7ea74867e430dc69fdca4276c4bb09f8cecc1b9846e8942c3f5",
+  "second_derivative_table_sha256": "f878d03d2eeca7fd34e3064a8dacb70d054fe3b3e9e3890c79a1f8297633cfb3",
+  "verifier_sha256": "8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301",
+  "certificate_log_sha256": "4b0e62dcb5c4014504981f16e431144e3a01184b2aa2aa6b0bf650705d59db83"
+}
