@@ -10,9 +10,12 @@ by **Michael Hurtado**.
 
 The paper proves the unconditional lower bound
 
-\[ `\liminf`{=tex}\_{T`\to`{=tex}`\infty`{=tex}}
-`\frac{N_0^s(T,2T)}{N(T,2T)}`{=tex} `\ge
-0.6730732086087052768351`{=tex}`\ldots`{=tex} \]
+$$
+\liminf_{T\to\infty}
+\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge
+0.6730732086087052768351\ldots
+$$
 
 for the proportion of simple zeros of the Riemann zeta function on the
 critical line.
