@@ -51,13 +51,14 @@ jobs:
           out.write_bytes(data)
           print('paper/main.tex', len(data), actual)
 
-      - name: Install LaTeX toolchain
+      - name: Install minimal LaTeX toolchain
         shell: bash
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            latexmk texlive-latex-base texlive-latex-recommended \
-            texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+            latexmk texlive-latex-recommended lmodern poppler-utils
 
       - name: Compile corrected draft PDF
         shell: bash
