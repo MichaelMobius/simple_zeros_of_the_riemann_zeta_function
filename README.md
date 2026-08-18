@@ -23,6 +23,7 @@ where
 
 $$
 H_{\mathrm{MT}}
+
 =
 \frac{3}{2}-\frac{1}{\sqrt{2}}\cot\!\left(\frac{1}{\sqrt{2}}\right).
 $$
