@@ -1,0 +1,20 @@
+{
+  "all_leaves_verified": true,
+  "arb_imported": false,
+  "certificate_structure_valid": true,
+  "elapsed_seconds": 177.894336651,
+  "interval_pruned": 364112,
+  "leaves": 560334,
+  "maximum_depth": 39,
+  "nodes": 1119372,
+  "prefilter_replayed": true,
+  "pressure_pruned": 5269,
+  "remaining_trust_boundary": [
+    "kernel_table.bin transcendental cell lower bounds",
+    "second_derivative_table.bin transcendental cell lower bounds",
+    "tangent_bounds.bin midpoint value/gradient transcendental bounds"
+  ],
+  "splits": 559038,
+  "tangent_pruned": 190953,
+  "tree_complete": true
+}
