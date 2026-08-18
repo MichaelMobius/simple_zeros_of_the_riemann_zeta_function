@@ -10,38 +10,38 @@ formalization for
 
 The manuscript proves the unconditional lower bound
 
-\[
+$$
 \liminf_{T\to\infty}
 \frac{N_0^s(T,2T)}{N(T,2T)}
 \ge
 \frac{655000H_{\mathrm{MT}}-1305}{652504}
 =
-0.6730732086087052768351\ldots,
-\]
+0.6730732086087052768351\ldots
+$$
 
 where
 
-\[
+$$
 H_{\mathrm{MT}}
 =
-\frac32-\frac1{\sqrt2}\cot\!\left(\frac1{\sqrt2}\right).
-\]
+\frac{3}{2}-\frac{1}{\sqrt{2}}\cot\!\left(\frac{1}{\sqrt{2}}\right).
+$$
 
 The position-dependent pressure vector is
 
-\[
-p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
+$$
+p=\frac{1}{10^7}(2714,3733,3553,3553,3733,2714),
 \qquad
-\sum_{j=1}^6 p_j=\frac1{500},
-\]
+\sum_{j=1}^{6}p_j=\frac{1}{500},
+$$
 
 and the certified seven-point lower bound is
 
-\[
+$$
 \mathcal F_p(g)\ge \frac{39}{10000}.
-\]
+$$
 
-The final block length is \(m=262\).
+The final block length is $m=262$.
 
 ## Verification status
 
@@ -49,11 +49,11 @@ The finite seven-point argument is available in three mutually checking layers.
 
 1. **Arb/FLINT proof-carrying certificate v1.2.**  
    Rigorous interval bounds and the complete branch-and-bound tree are generated
-   with `python-flint`.  A separate standard-library-only checker replays the
+   with `python-flint`. A separate standard-library-only checker replays the
    complete finite certificate without importing Arb.
 
 2. **Fixed-point q60 certificate v1.3.**  
-   All exported bounds are conservatively normalized to scale \(2^{60}\).
+   All exported bounds are conservatively normalized to scale $2^{60}$.
    The checker uses integer arithmetic only and replays the same tree, including
    exact Bareiss/Sylvester Hessian checks.
 
@@ -61,7 +61,7 @@ The finite seven-point argument is available in three mutually checking layers.
    The Lean development proves the analytic/transcendental bridge required by
    the certificate (including rational enclosures for the kernel and its
    derivatives), the q60 second-derivative table soundness, line/path calculus,
-   the fixed \(6\times6\) Sylvester bridge, all tangent records, the complete
+   the fixed $6\times 6$ Sylvester bridge, all tangent records, the complete
    packed tree replay, the seven-point inequality, and the final asymptotic
    theorem.
 
@@ -72,7 +72,7 @@ HurtadoZeta23.article_main_internal
 ```
 
 The audited source tree contains no local `sorry`, `admit`, or locally declared
-mathematical `axiom`.  Several large finite checks use Lean's `native_decide`.
+mathematical `axiom`. Several large finite checks use Lean's `native_decide`.
 Accordingly, the computational trusted base includes Lean's native evaluation
 mechanism; this repository does **not** describe the current implementation as
 a purely kernel-reduction-only certificate.
@@ -94,7 +94,7 @@ The v1.3 fixed-point replay reports:
 Minimum post-quantization margins:
 
 - interval leaves: `5.598149478924466e-10`
-- tangent leaves: `2.9986027445962243e-09`
+- tangent leaves: `2.9986027445962243e-9`
 
 Principal v1.3 file hashes:
 
@@ -106,7 +106,7 @@ Principal v1.3 file hashes:
 | `tree_4bit.bin` | `edc7778018342d35d81b1d98d22e2f4c873dd6bce7bf86f1b4d20837cdf7984a` |
 
 The Lean `sharp` kernel table deliberately weakens cells `0..2800`; every
-modified value is no larger than the archived q60 lower bound.  An independent
+modified value is no larger than the archived q60 lower bound. An independent
 integer-only replay with this weakened table was also audited successfully.
 See `audit/FINAL_ADVERSARIAL_AUDIT.md`.
 
@@ -185,7 +185,7 @@ floating-point arithmetic, or external solver.
 ## Reproducing the Lean formalization
 
 The source snapshot was compile-confirmed with Lean `v4.33.0-rc2` against the
-project's pinned Zeta23 dependency.  Before tagging a release, run
+project's pinned Zeta23 dependency. Before tagging a release, run
 `FINALIZE_FORMAL_RELEASE.ps1`; it copies the exact Lake configuration from the
 working Lean project, records the upstream Zeta23 remote/commit, performs a
 clean build, and archives `#print axioms` output.
@@ -209,8 +209,8 @@ and should not be deleted.
 
 ## AI provenance
 
-AI systems were used during research and formalization workflows.  They are
-treated as research provenance, not mathematical authorship.  The mathematical
+AI systems were used during research and formalization workflows. They are
+treated as research provenance, not mathematical authorship. The mathematical
 claim is supported by the manuscript, reproducible finite certificates, and
 the Lean formalization.
 
@@ -227,5 +227,5 @@ Retain the repository's existing licensing split:
 
 Michael Hurtado
 
-Repository:
+Repository:  
 `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function`
