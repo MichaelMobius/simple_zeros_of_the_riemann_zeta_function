@@ -6,6 +6,13 @@ on:
       - v2.0.0-formal-prep
     paths:
       - staging-paper/READY
+  pull_request:
+    branches:
+      - v2.0.0-formal-prep
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
@@ -50,14 +57,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             latexmk texlive-latex-base texlive-latex-recommended \
-            texlive-latex-extra texlive-fonts-recommended lmodern
+            texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
 
       - name: Compile corrected draft PDF
         shell: bash
         run: |
           latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=paper paper/main.tex
           test -s paper/main.pdf
-          pdfinfo paper/main.pdf | sed -n '1,20p' || true
+          pdfinfo paper/main.pdf | sed -n '1,20p'
 
       - name: Commit corrected TeX and PDF
         shell: bash
