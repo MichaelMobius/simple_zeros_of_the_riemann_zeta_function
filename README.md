@@ -1,7 +1,6 @@
 # A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function
 
-This repository contains the manuscript, finite certificates, and Lean 4
-formalization for
+This repository contains the manuscript, finite certificates, and Lean 4 formalization for
 
 > **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function**  
 > Michael Hurtado
@@ -10,37 +9,36 @@ formalization for
 
 The manuscript proves the unconditional lower bound
 
-$$
+```math
 \liminf_{T\to\infty}
 \frac{N_0^s(T,2T)}{N(T,2T)}
 \ge
 \frac{655000H_{\mathrm{MT}}-1305}{652504}
 =
 0.6730732086087052768351\ldots
-$$
+```
 
 where
 
-$$
+```math
 H_{\mathrm{MT}}
-
 =
 \frac{3}{2}-\frac{1}{\sqrt{2}}\cot\!\left(\frac{1}{\sqrt{2}}\right).
-$$
+```
 
 The position-dependent pressure vector is
 
-$$
+```math
 p=\frac{1}{10^7}(2714,3733,3553,3553,3733,2714),
 \qquad
 \sum_{j=1}^{6}p_j=\frac{1}{500},
-$$
+```
 
 and the certified seven-point lower bound is
 
-$$
+```math
 \mathcal F_p(g)\ge \frac{39}{10000}.
-$$
+```
 
 The final block length is $m=262$.
 
