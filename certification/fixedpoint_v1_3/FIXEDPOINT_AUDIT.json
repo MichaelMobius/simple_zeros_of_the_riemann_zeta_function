@@ -1,0 +1,20 @@
+{
+  "all_leaves_verified": true,
+  "counts": {
+    "interval_pruned": 364112,
+    "maximum_depth": 39,
+    "nodes": 1119372,
+    "pressure_pruned": 5269,
+    "splits": 559038,
+    "tangent_pruned": 190953
+  },
+  "elapsed_seconds": 13.92027147799945,
+  "fixedpoint_certificate_valid": true,
+  "hessian_check": "exact integer Bareiss / Sylvester",
+  "integer_only_replay": true,
+  "minimum_interval_margin_real": 5.598149478924466e-10,
+  "minimum_tangent_margin_real": 2.9986027445962243e-09,
+  "prefilter_identical": true,
+  "scale_bits": 60,
+  "tree_complete": true
+}
