@@ -1,0 +1,51 @@
+{
+  "certificate": {
+    "kernel_table.bin": "f75a3968f6daf7ea74867e430dc69fdca4276c4bb09f8cecc1b9846e8942c3f5",
+    "report.txt": "312a860f5dfad32479b6decf6be0d45599bf8374b203640c312de4d0804604f4",
+    "second_derivative_table.bin": "f878d03d2eeca7fd34e3064a8dacb70d054fe3b3e9e3890c79a1f8297633cfb3",
+    "tangent_bounds.bin": "b0dd7dc78334ba9de6961e150c5e39a0b07c40077f253a06d01f7188a9a37628",
+    "tree.bin": "3ea583db3cd2fde0cb46cc409a0c0df5c01c384cdfccd8720133cfee1aa5d2aa"
+  },
+  "checker_result": {
+    "all_leaves_verified": true,
+    "arb_imported": false,
+    "certificate_structure_valid": true,
+    "elapsed_seconds": 177.894336651,
+    "interval_pruned": 364112,
+    "leaves": 560334,
+    "maximum_depth": 39,
+    "nodes": 1119372,
+    "prefilter_replayed": true,
+    "pressure_pruned": 5269,
+    "remaining_trust_boundary": [
+      "kernel_table.bin transcendental cell lower bounds",
+      "second_derivative_table.bin transcendental cell lower bounds",
+      "tangent_bounds.bin midpoint value/gradient transcendental bounds"
+    ],
+    "splits": 559038,
+    "tangent_pruned": 190953,
+    "tree_complete": true
+  },
+  "checker_sha256": "679486994153a632a1c46a5574804fdf092283bded093305dc447ac3aa760578",
+  "counts": {
+    "initial_boxes": 1296,
+    "interval_pruned": 364112,
+    "leaves": 560334,
+    "maximum_depth": 39,
+    "nodes": 1119372,
+    "pressure_pruned": 5269,
+    "splits": 559038,
+    "tangent_pruned": 190953
+  },
+  "environment": {
+    "gpu": "Tesla T4, 15360 MiB",
+    "machine": "x86_64",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "python_executable": "/usr/bin/python3",
+    "python_flint_version": "0.9.0",
+    "python_version": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]"
+  },
+  "generator_sha256": "5bf8a7b2395126ad61f42c31eb5495897bf13ecbf3466cd6056cb984696a59cb",
+  "manifest_sha256": "c8c45f4ce71f6fedddedb9b6475fe2fa7d494cb6f4f658738e3499eed541a639"
+}
