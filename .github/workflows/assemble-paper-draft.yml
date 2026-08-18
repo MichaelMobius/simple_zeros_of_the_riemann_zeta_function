@@ -1,4 +1,4 @@
-name: Assemble formal paper draft
+name: Assemble corrected formal paper draft
 
 on:
   push:
@@ -20,34 +20,46 @@ jobs:
           ref: v2.0.0-formal-prep
           fetch-depth: 0
 
-      - name: Reassemble exact PDF and TeX
+      - name: Reassemble exact corrected TeX source
         shell: python
         run: |
           from pathlib import Path
-          import base64, hashlib
+          import base64, hashlib, lzma
 
           stage = Path('staging-paper')
+          parts = sorted(stage.glob('main.tex.xz.b64.part*'))
+          if not parts:
+              raise SystemExit('No TeX source parts found')
 
-          expected = {
-              'main.tex.b64': ('paper/main.tex', '1e92e47336042cbf35cb428f009705ec6ceeadbe52370125fe85e65ccc8258bd'),
-              'main.pdf.b64': ('paper/main.pdf', '2f8185bdd3451d7354c6bb37270d463cda436e621f6311802eb7be94aa6be80b'),
-          }
+          encoded = ''.join(p.read_text(encoding='ascii').strip() for p in parts)
+          compressed = base64.b64decode(encoded, validate=True)
+          data = lzma.decompress(compressed)
+          expected = '1e92e47336042cbf35cb428f009705ec6ceeadbe52370125fe85e65ccc8258bd'
+          actual = hashlib.sha256(data).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'TeX SHA-256 mismatch: {actual} != {expected}')
 
-          for prefix, (out_name, expected_sha) in expected.items():
-              parts = sorted(stage.glob(prefix + '.part*'))
-              if not parts:
-                  raise SystemExit(f'No parts found for {prefix}')
-              encoded = ''.join(p.read_text(encoding='ascii').strip() for p in parts)
-              data = base64.b64decode(encoded, validate=True)
-              actual = hashlib.sha256(data).hexdigest()
-              if actual != expected_sha:
-                  raise SystemExit(f'SHA-256 mismatch for {out_name}: {actual} != {expected_sha}')
-              out = Path(out_name)
-              out.parent.mkdir(parents=True, exist_ok=True)
-              out.write_bytes(data)
-              print(out_name, len(data), actual)
+          out = Path('paper/main.tex')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_bytes(data)
+          print('paper/main.tex', len(data), actual)
 
-      - name: Commit exact paper draft
+      - name: Install LaTeX toolchain
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-latex-base texlive-latex-recommended \
+            texlive-latex-extra texlive-fonts-recommended lmodern
+
+      - name: Compile corrected draft PDF
+        shell: bash
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=paper paper/main.tex
+          test -s paper/main.pdf
+          pdfinfo paper/main.pdf | sed -n '1,20p' || true
+
+      - name: Commit corrected TeX and PDF
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
