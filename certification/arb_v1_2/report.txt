@@ -1,0 +1,14 @@
+certificate=seven-point-proof-carrying-v1.2
+verified=true
+nodes=1119372
+leaves=560334
+splits=559038
+maximum_depth=39
+initial_boxes=1296
+pressure_pruned=5269
+interval_pruned=364112
+tangent_pruned=190953
+elapsed_seconds=471.853270
+manifest_sha256=c8c45f4ce71f6fedddedb9b6475fe2fa7d494cb6f4f658738e3499eed541a639
+generator_sha256=5bf8a7b2395126ad61f42c31eb5495897bf13ecbf3466cd6056cb984696a59cb
+python_flint_version=0.9.0
