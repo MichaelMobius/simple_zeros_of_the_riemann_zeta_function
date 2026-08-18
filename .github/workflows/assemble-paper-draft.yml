@@ -1,0 +1,58 @@
+name: Assemble formal paper draft
+
+on:
+  push:
+    branches:
+      - v2.0.0-formal-prep
+    paths:
+      - staging-paper/READY
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out preparation branch
+        uses: actions/checkout@v4
+        with:
+          ref: v2.0.0-formal-prep
+          fetch-depth: 0
+
+      - name: Reassemble exact PDF and TeX
+        shell: python
+        run: |
+          from pathlib import Path
+          import base64, hashlib
+
+          stage = Path('staging-paper')
+
+          expected = {
+              'main.tex.b64': ('paper/main.tex', '1e92e47336042cbf35cb428f009705ec6ceeadbe52370125fe85e65ccc8258bd'),
+              'main.pdf.b64': ('paper/main.pdf', '2f8185bdd3451d7354c6bb37270d463cda436e621f6311802eb7be94aa6be80b'),
+          }
+
+          for prefix, (out_name, expected_sha) in expected.items():
+              parts = sorted(stage.glob(prefix + '.part*'))
+              if not parts:
+                  raise SystemExit(f'No parts found for {prefix}')
+              encoded = ''.join(p.read_text(encoding='ascii').strip() for p in parts)
+              data = base64.b64decode(encoded, validate=True)
+              actual = hashlib.sha256(data).hexdigest()
+              if actual != expected_sha:
+                  raise SystemExit(f'SHA-256 mismatch for {out_name}: {actual} != {expected_sha}')
+              out = Path(out_name)
+              out.parent.mkdir(parents=True, exist_ok=True)
+              out.write_bytes(data)
+              print(out_name, len(data), actual)
+
+      - name: Commit exact paper draft
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/main.tex paper/main.pdf
+          git rm -r staging-paper
+          git commit -m "Add corrected v17 formal paper draft (TeX and PDF)"
+          git push origin HEAD:v2.0.0-formal-prep
