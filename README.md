@@ -1,411 +1,230 @@
 # A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function
 
-This repository contains the manuscript and reproducibility artifacts
-for
+This repository contains the manuscript, finite certificates, and Lean 4 formalization for
 
-> **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta
-> Function**
-
-by **Michael Hurtado**.
-
-The paper proves the unconditional lower bound
-
-$$
-\liminf_{T\to\infty}
-\frac{N_0^s(T,2T)}{N(T,2T)}
-\ge
-0.6730732086087052768351\ldots
-$$
-
-for the proportion of simple zeros of the Riemann zeta function on the
-critical line.
-
-The new ingredient is a **nonuniform position-weighted refinement** of a
-seven-point stability/local-to-global argument.
-
-------------------------------------------------------------------------
+> **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function**  
+> Michael Hurtado
 
 ## Main result
 
-Let
+The manuscript proves the unconditional lower bound
 
-**H_MT = 3/2 − (1/√2) cot(1/√2).**
+```math
+\liminf_{T\to\infty}
+\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge
+\frac{655000H_{\mathrm{MT}}-1305}{652504}
+=
+0.6730732086087052768351\ldots
+```
 
-The manuscript establishes the unconditional lower bound
+where
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ 0.6730732086087052768351…**
+```math
+H_{\mathrm{MT}}
+=
+\frac{3}{2}-\frac{1}{\sqrt{2}}\cot\!\left(\frac{1}{\sqrt{2}}\right).
+```
 
-More precisely,
+The position-dependent pressure vector is
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ (655000 H_MT − 1305) / 652504.**
+```math
+p=\frac{1}{10^7}(2714,3733,3553,3553,3733,2714),
+\qquad
+\sum_{j=1}^{6}p_j=\frac{1}{500},
+```
 
-The computer-assisted component uses the position-dependent pressure vector
+and the certified seven-point lower bound is
 
-**p = (2714, 3733, 3553, 3553, 3733, 2714) / 10⁷,**
+```math
+\mathcal F_p(g)\ge \frac{39}{10000}.
+```
 
-which satisfies
+The final block length is $m=262$.
 
-**Σ pⱼ = 1/500.**
+## Verification status
 
-The Arb/FLINT computation certifies the seven-point inequality
+The finite seven-point argument is available in three mutually checking layers.
 
-**F₆,nonuniform ≥ 39/10000 = 0.0039.**
+1. **Arb/FLINT proof-carrying certificate v1.2.**  
+   Rigorous interval bounds and the complete branch-and-bound tree are generated
+   with `python-flint`. A separate standard-library-only checker replays the
+   complete finite certificate without importing Arb.
 
-The final local-to-global argument uses block length
+2. **Fixed-point q60 certificate v1.3.**  
+   All exported bounds are conservatively normalized to scale $2^{60}$.
+   The checker uses integer arithmetic only and replays the same tree, including
+   exact Bareiss/Sylvester Hessian checks.
 
-**m = 262.**
+3. **Lean 4 end-to-end formalization.**  
+   The Lean development proves the analytic/transcendental bridge required by
+   the certificate (including rational enclosures for the kernel and its
+   derivatives), the q60 second-derivative table soundness, line/path calculus,
+   the fixed $6\times 6$ Sylvester bridge, all tangent records, the complete
+   packed tree replay, the seven-point inequality, and the final asymptotic
+   theorem.
 
-------------------------------------------------------------------------
+The final endpoint is:
 
-## Repository structure
+```lean
+HurtadoZeta23.article_main_internal
+```
 
-``` text
+The audited source tree contains no local `sorry`, `admit`, or locally declared
+mathematical `axiom`. Several large finite checks use Lean's `native_decide`.
+Accordingly, the computational trusted base includes Lean's native evaluation
+mechanism; this repository does **not** describe the current implementation as
+a purely kernel-reduction-only certificate.
+
+## Certificate statistics
+
+The v1.3 fixed-point replay reports:
+
+| item | count |
+|---|---:|
+| initial boxes | 1,296 |
+| nodes | 1,119,372 |
+| splits | 559,038 |
+| pressure leaves | 5,269 |
+| interval leaves | 364,112 |
+| tangent leaves | 190,953 |
+| maximum depth | 39 |
+
+Minimum post-quantization margins:
+
+- interval leaves: `5.598149478924466e-10`
+- tangent leaves: `2.9986027445962243e-9`
+
+Principal v1.3 file hashes:
+
+| file | SHA-256 |
+|---|---|
+| `kernel_q60.i64` | `a16cce93ee3ffeab9c1242f9cee1636d7de5843f20c2c4c894cc04ae1f37740a` |
+| `second_q60.i64` | `5a460c9f44b16d13d9ebee5ebe8f37c0caac6f4f5befb15476a49255d08376f6` |
+| `tangent_q60.i64` | `6d7c646217dc27a6ebfed3c9eaeb00dee3446032ed6825abff215888ebbb60df` |
+| `tree_4bit.bin` | `edc7778018342d35d81b1d98d22e2f4c873dd6bce7bf86f1b4d20837cdf7984a` |
+
+The Lean `sharp` kernel table deliberately weakens cells `0..2800`; every
+modified value is no larger than the archived q60 lower bound. An independent
+integer-only replay with this weakened table was also audited successfully.
+See `audit/FINAL_ADVERSARIAL_AUDIT.md`.
+
+## Repository layout
+
+```text
 .
 ├── README.md
 ├── CITATION.cff
-├── LICENSE-CODE
-├── LICENSE-CONTENT
-│
+├── RELEASE_NOTES_v2.0.0-formal.md
 ├── paper/
 │   ├── main.tex
 │   └── main.pdf
-│
+├── formalization/
+│   ├── README.md
+│   ├── lean-toolchain
+│   └── HurtadoZeta23/
 ├── certification/
-│   └── arb_256/
-│       ├── README.md
-│       ├── certify_nonuniform_3900_v1_1.py
-│       ├── run_certificate_256.ps1
-│       ├── run_certificate_256.sh
-│       ├── arb-certificate-256.log
-│       ├── certificate-summary.json
-│       ├── environment-256.txt
-│       ├── requirements-lock-256.txt
-│       ├── verifier-sha256-256.txt
-│       ├── certificate-log-sha256-256.txt
-│       └── SHA256SUMS.txt
-│
+│   ├── arb_v1_2/
+│   └── fixedpoint_v1_3/
+├── audit/
+│   ├── FINAL_ADVERSARIAL_AUDIT.md
+│   └── README.md
 └── docs/
+    ├── FORMALIZATION.md
+    ├── TRUST_MODEL.md
+    ├── REPRODUCIBILITY.md
+    └── RELEASE_CHECKLIST.md
 ```
 
-### `paper/`
+The historical `certification/arb_256/` directory already present in the
+repository may be retained as an earlier reproducibility snapshot.
 
-Contains the submission-ready LaTeX source and compiled manuscript.
+## Reproducing the finite certificates
 
-### `certification/arb_256/`
+### Arb/FLINT v1.2
 
-Contains the complete computer-assisted proof artifact for the
-nonuniform seven-point certificate.
-
-See [`certification/arb_256/README.md`](certification/arb_256/README.md)
-for exact reproduction instructions.
-
-------------------------------------------------------------------------
-
-## Reproducibility releases
-
-Two releases play distinct roles.
-
-### Manuscript
-
-**`v1.1.0-paper`**
-
-This release freezes the submission-ready manuscript.
-
-### Computational artifact
-
-**`v1.0.0-paper`**
-
-Commit:
-
-``` text
-c57f53e
+```powershell
+cd certification\arb_v1_2
+python .\check_seven_point_certificate.py .\seven-point-cert
 ```
 
-This earlier immutable release freezes the computational artifact used
-by the manuscript.
+The archived check must end with all of the following true:
 
-The separation is intentional:
-
-``` text
-v1.1.0-paper
-    │
-    └── submission-ready manuscript
-             │
-             ▼
-v1.0.0-paper @ c57f53e
-    │
-    └── frozen Arb/FLINT certificate
-             │
-             ▼
-      256-bit verification
-             │
-             ▼
- F6_nonuniform >= 39/10000
+```text
+certificate_structure_valid
+prefilter_replayed
+all_leaves_verified
+tree_complete
 ```
 
-Subsequent changes to the repository's default branch are not part of
-the trust base of the frozen computational certificate.
+and `arb_imported=false`.
 
-------------------------------------------------------------------------
+To regenerate v1.2 from rigorous Arb arithmetic:
 
-## 256-bit certificate
-
-The archived certification run uses:
-
-  Parameter                       Value
-  ------------------- -----------------
-  Grid denominator               `4000`
-  Working precision          `256 bits`
-  Initial boxes                  `1296`
-  Visited nodes             `1,119,372`
-  Splits                      `559,038`
-  Pruned nodes                `560,334`
-  Maximum depth                    `39`
-  Status                `verified=true`
-
-The certified pressure vector is
-
-``` text
-(2714, 3733, 3553, 3553, 3733, 2714) / 10^7
+```powershell
+python .\certify_nonuniform_3900_v1_2.py 
+  --precision 256 
+  --progress-every 100000 
+  --emit-certificate .\seven-point-cert
 ```
 
-and the certified target is
+The archived v1.2 generation environment records CPython 3.12.13 and
+`python-flint==0.9.0`.
 
-``` text
-F6_nonuniform >= 39/10000
+### Fixed-point v1.3
+
+```powershell
+cd certification\fixedpoint_v1_3
+python .\check_fixedpoint_certificate.py .\seven-point-fixed
 ```
 
-------------------------------------------------------------------------
+The checker is integer-only and requires no Arb, `python-flint`, NumPy,
+floating-point arithmetic, or external solver.
 
-## Verification hashes
+## Reproducing the Lean formalization
 
-The frozen verifier has SHA-256
+The source snapshot was compile-confirmed with Lean `v4.33.0-rc2` against the
+project's pinned Zeta23 dependency. Before tagging a release, run
+`FINALIZE_FORMAL_RELEASE.ps1`; it copies the exact Lake configuration from the
+working Lean project, records the upstream Zeta23 remote/commit, performs a
+clean build, and archives `#print axioms` output.
 
-``` text
-8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301
+See:
+
+- `formalization/README.md`
+- `docs/REPRODUCIBILITY.md`
+- `docs/TRUST_MODEL.md`
+
+## Release
+
+The intended consolidated release tag is:
+
+```text
+v2.0.0-formal
 ```
 
-and the archived 256-bit certification log has SHA-256
-
-``` text
-4b0e62dcb5c4014504981f16e431144e3a01184b2aa2aa6b0bf650705d59db83
-```
-
-The complete hash manifest is available at
-
-``` text
-certification/arb_256/SHA256SUMS.txt
-```
-
-These hashes allow the verifier and archived execution log used by the
-paper to be checked independently.
-
-------------------------------------------------------------------------
-
-## Reproducing the certificate
-
-The archived computation uses Python and `python-flint`/FLINT-Arb
-directed interval arithmetic.
-
-The recorded reference environment uses:
-
-``` text
-Python 3.14.7
-python-flint 0.9.0
-```
-
-For the complete procedure, see:
-
-``` text
-certification/arb_256/README.md
-```
-
-Linux/macOS users may use:
-
-``` bash
-cd certification/arb_256
-bash run_certificate_256.sh
-```
-
-Windows PowerShell users may use:
-
-``` powershell
-cd certification/arb_256
-.\run_certificate_256.ps1
-```
-
-A successful execution must terminate with
-
-``` text
-verified=true
-```
-
-The verifier should not be modified between hash verification and
-execution.
-
-------------------------------------------------------------------------
-
-## Trust model
-
-The computer-assisted proposition is not claimed to be formally verified
-in a proof assistant.
-
-Its computational trust base includes:
-
--   the frozen verifier;
--   `python-flint`;
--   FLINT/Arb and its dependencies;
--   the execution environment;
--   the correctness of directed interval arithmetic implemented by those
-    libraries.
-
-The archived 128-bit and 256-bit executions are replications of the same
-verification algorithm at different working precisions. They should not
-be interpreted as algorithmically independent proof implementations.
-
-The analytic and finite-dimensional arguments connecting the certified
-seven-point inequality to the main theorem are given in the manuscript.
-
-------------------------------------------------------------------------
-
-## Relation to previous work
-
-The manuscript distinguishes the present contribution from the
-immediately preceding reproducible artifacts.
-
-The upstream work of **Sunghyeon Jo** introduced the relevant
-reproducible seven-point stability framework with a uniform pressure and
-certified
-
-\[ `\frac{19}{5000}`{=tex}=0.0038, \]
-
-leading to the bound
-
-\[ 0.6730085279277797`\ldots `{=tex}. \]
-
-A subsequent reproducible refinement by **Lea Rademacher** strengthened
-the uniform seven-point certificate to
-
-\[ `\frac{191}{50000}`{=tex}=0.00382, \]
-
-leading to
-
-\[ 0.6730213619501665`\ldots `{=tex}. \]
-
-The present work keeps the same total pressure
-
-\[ `\sum `{=tex}p_j=`\frac1{500}`{=tex}, \]
-
-but allows its distribution among the six gap positions to vary. The
-certified nonuniform vector raises the local value to
-
-\[ `\frac{39}{10000}`{=tex}=0.0039. \]
-
-The precise mathematical and bibliographic comparison is given in the
-manuscript.
-
-------------------------------------------------------------------------
+Earlier manuscript/computational releases remain useful historical snapshots
+and should not be deleted.
 
 ## AI provenance
 
-Recent upstream computational artifacts relevant to this project report
-the use of AI systems during their development.
-
-The present repository treats AI use as **research provenance rather
-than mathematical authorship**.
-
-All mathematical claims in the manuscript are intended to be supported
-by explicit arguments, cited external results, or reproducible
-computational certificates. The computer-assisted component is
-accompanied by source code, execution logs, cryptographic hashes,
-machine-readable parameters, and reproduction instructions so that it
-can be independently inspected.
-
-------------------------------------------------------------------------
-
-## Citation
-
-If you use the mathematical result, please cite the accompanying
-manuscript.
-
-If you use or reproduce the computational artifact, please also cite the
-repository/release.
-
-Citation metadata is provided in:
-
-``` text
-CITATION.cff
-```
-
-The submission-ready manuscript is frozen in:
-
-``` text
-v1.1.0-paper
-```
-
-and the computational artifact used by the manuscript is frozen in:
-
-``` text
-v1.0.0-paper @ c57f53e
-```
-
-------------------------------------------------------------------------
+AI systems were used during research and formalization workflows. They are
+treated as research provenance, not mathematical authorship. The mathematical
+claim is supported by the manuscript, reproducible finite certificates, and
+the Lean formalization.
 
 ## License
 
-Different parts of this repository are released under licenses
-appropriate to their content.
+Retain the repository's existing licensing split:
 
-### Source code
-
-Unless otherwise stated, source code in this repository, including the
-Arb/FLINT certificate verifier and reproduction scripts, is released
-under the **MIT License**.
-
-See:
-
-``` text
-LICENSE-CODE
-```
-
-### Manuscript, documentation, and reproducibility data
-
-The manuscript, documentation, certificate metadata, execution logs, and
-other non-software material are released under the **Creative Commons
-Attribution 4.0 International License (CC BY 4.0)**.
-
-See:
-
-``` text
-LICENSE-CONTENT
-```
-
-Third-party software and dependencies retain their respective licenses.
-
-------------------------------------------------------------------------
+- source code: `LICENSE-CODE`;
+- manuscript, documentation, certificate metadata, and reproducibility data:
+  `LICENSE-CONTENT`;
+- third-party dependencies retain their own licenses.
 
 ## Author
 
-**Michael Hurtado**
+Michael Hurtado
 
-Repository:
-
+Repository:  
 `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function`
-
-------------------------------------------------------------------------
-
-## Status
-
-**Current manuscript release:** `v1.1.0-paper`
-
-**Frozen computational artifact:** `v1.0.0-paper @ c57f53e`
-
-**Certificate status:** `verified=true`
-
-**Working precision:** `256 bits`
-
-**Certified local bound:** `39/10000`
-
-**Resulting unconditional bound:**
-
-\[ 0.6730732086087052768351`\ldots`{=tex} \]

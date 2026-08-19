@@ -1,0 +1,31 @@
+replay: nodes=100000 pending=908 depth=33
+replay: nodes=200000 pending=636 depth=33
+replay: nodes=300000 pending=586 depth=33
+replay: nodes=400000 pending=484 depth=39
+replay: nodes=500000 pending=458 depth=39
+replay: nodes=600000 pending=308 depth=39
+replay: nodes=700000 pending=198 depth=39
+replay: nodes=800000 pending=174 depth=39
+replay: nodes=900000 pending=154 depth=39
+replay: nodes=1000000 pending=46 depth=39
+replay: nodes=1100000 pending=18 depth=39
+{
+  "all_leaves_verified": true,
+  "arb_imported": false,
+  "certificate_structure_valid": true,
+  "elapsed_seconds": 177.894336651,
+  "interval_pruned": 364112,
+  "leaves": 560334,
+  "maximum_depth": 39,
+  "nodes": 1119372,
+  "prefilter_replayed": true,
+  "pressure_pruned": 5269,
+  "remaining_trust_boundary": [
+    "kernel_table.bin transcendental cell lower bounds",
+    "second_derivative_table.bin transcendental cell lower bounds",
+    "tangent_bounds.bin midpoint value/gradient transcendental bounds"
+  ],
+  "splits": 559038,
+  "tangent_pruned": 190953,
+  "tree_complete": true
+}

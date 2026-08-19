@@ -1,4 +1,4 @@
-% Manuscript version v16: immutable reproducibility artifact linked.
+% Manuscript version v17: end-to-end Lean formalization and q60 fixed-point verification.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -29,7 +29,7 @@
 
 \title{A position-weighted refinement for simple zeros of the Riemann zeta function}
 \author{Michael Hurtado}
-\date{August 12, 2026}
+\date{August 17, 2026}
 
 \begin{document}
 \maketitle
@@ -51,23 +51,34 @@ Gram-stability argument appearing in recent reproducible work. Earlier
 certificates use a uniform pressure on the six consecutive gaps. We observe
 that the global double-counting argument depends only on the total pressure,
 whereas the local extremal problem depends on its distribution. We exploit
-this freedom using the certified vector
+this freedom using
 \[
- \frac1{10^7}(2714,3733,3553,3553,3733,2714),
+ p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
  \qquad \sum_{j=1}^6p_j=\frac1{500},
 \]
-and an Arb/FLINT interval certificate proving the corresponding seven-point
-lower bound \(39/10000\). Combined with block length \(m=262\), this yields
-the constant above.
+and prove the corresponding seven-point lower bound $39/10000$. Combined
+with block length $m=262$, this yields the constant above.
+
+The finite seven-point argument is accompanied by three mutually checking
+verification layers.  First, an Arb/FLINT proof-carrying certificate produces
+rigorous transcendental bounds and the complete branch-and-bound tree.
+Second, a conservative q60 normalization admits an exact integer-only replay
+of the same $1{,}119{,}372$-node certificate.  Third, a Lean~4 formalization
+connects rational bounds for $\pi$, $\sqrt2$, sine and sinc to the normalized
+kernel, its derivatives, the Hessian/Sylvester step, all tangent leaves, the
+complete tree replay, the seven-point inequality, and the final asymptotic
+theorem.  Thus Arb/FLINT is retained as independent reproducible provenance
+and numerical cross-checking rather than as an assumed premise of the Lean
+end-to-end theorem.  The large finite Lean checks use \texttt{native\_decide};
+this computational trust boundary is stated explicitly below.
 
 For logical independence we also reconstruct the analytic/Gabor input package
-from classical ingredients rather than invoking the recent Theorem D as a
-black box. The external analytic trust base consists of the Guinand--Weil
+from classical ingredients rather than invoking the recent Theorem~D as a
+black box.  The external analytic trust base consists of the Guinand--Weil
 explicit formula, Stirling's formula, the Prime Number Theorem, the
 Riemann--von Mangoldt formula and standard local zero counting, standard
 prime-power estimates, the weighted Montgomery--Vaughan Hilbert inequality,
-and Poisson summation. The finite certificate is verified by directed interval
-arithmetic.
+and Poisson summation.
 \end{abstract}
 
 \section{Introduction and statement of novelty}
@@ -704,9 +715,12 @@ then every ordered configuration $y_1<\cdots<y_m$, $m\ge7$, satisfies
 
 \begin{proof}
 Sum the local inequality over the $m-6$ consecutive seven-point windows.
-A fixed pair separated by $r$ gaps can appear in at most $7-r$ windows and
-has coefficient $2/(7-r)$ in each appearance; hence its total coefficient is
-at most $2$.  A fixed global gap can occupy each of the six relative gap
+For a fixed pair separated by $r$ gaps with $1\le r\le6$, the pair can
+appear in at most $7-r$ seven-point windows and has coefficient $2/(7-r)$ in
+each appearance; hence its total coefficient is at most $2$.  A pair
+separated by more than six gaps occurs in no seven-point window and therefore
+contributes zero to the window sum.  A fixed global gap can occupy each of the
+six relative gap
 positions at most once, so its accumulated pressure is at most
 $\sum_jp_j=\beta$.  Therefore
 \[
@@ -717,7 +731,7 @@ $\sum_jp_j=\beta$.  Therefore
 which is \eqref{eq:block-energy-general}.
 \end{proof}
 
-\begin{proposition}[Computer-assisted seven-point inequality]\label{prop:cert}
+\begin{proposition}[Formally verified seven-point inequality]\label{prop:cert}
 For the pressure vector \eqref{eq:p}, every $g_1,\ldots,g_6\ge0$ satisfies
 \begin{align}
  &\frac{2714(g_1+g_6)+3733(g_2+g_5)+3553(g_3+g_4)}{10^7}\nonumber\\
@@ -729,26 +743,51 @@ For the pressure vector \eqref{eq:p}, every $g_1,\ldots,g_6\ge0$ satisfies
 \end{align}
 \end{proposition}
 
-\begin{proof}[Computer-assisted proof]
-The archived verifier performs exhaustive interval branch-and-bound with
-Arb/FLINT through \texttt{python-flint}.  The pressure coefficients, target,
-and grid endpoints are represented by exact rationals.  The verifier
-reconstructs rigorous Arb enclosures for $w$ and its required derivatives from
-\eqref{eq:K}--\eqref{eq:kw}.  The grid mesh is $1/4000$.
+\begin{proof}[Certified and formally checked proof]
+The inequality is certified in three layers, all archived with the manuscript.
 
-Boxes are discarded only after one of three rigorous lower bounds proves the
-target: direct interval evaluation, the positive pressure bound, or a tangent
-bound after positive definiteness of the interval Hessian has been certified.
-Otherwise the widest coordinate is bisected.  Reaching an uncertified terminal
-grid cell raises an exception; thus a successful run closes the entire search
-tree.
+\smallskip
+\noindent\emph{Arb/FLINT proof-carrying certificate (v1.2).}
+The generator uses directed Arb/FLINT interval arithmetic through
+\texttt{python-flint}.  Pressure coefficients, target, and grid endpoints are
+exact rationals, and rigorous enclosures for $w$ and the required derivatives
+are reconstructed from \eqref{eq:K}--\eqref{eq:kw}.  The grid mesh is
+$1/4000$.  The generated artifact contains the complete branch-and-bound
+stream together with kernel, second-derivative, and tangent data.  A separate
+standard-library-only Python checker imports neither Arb nor
+\texttt{python-flint}; it replays the prefilter, every split, every pressure
+leaf, every interval leaf, exact rational Hessian positivity for every tangent
+leaf, and the complete tree.
 
-The frozen 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
-visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
-verifier also succeeds at 128-bit working precision.  The complete 256-bit
-artifact is publicly archived in the immutable release
-\cite{Hurtado26Artifact}.  Appendix~\ref{app:cert} records the hashes and
-environment.
+\smallskip
+\noindent\emph{Exact q60 replay (v1.3).}
+Every exported lower bound is weakened by flooring after multiplication by
+$2^{60}$, and every absolute-gradient upper bound is weakened by ceiling.
+The resulting fixed-point checker uses no floating-point arithmetic, Arb,
+\texttt{python-flint}, NumPy, external solver, or rational-number package.
+Tangent Hessians are checked by exact integer Bareiss elimination together
+with Sylvester's criterion.  It reproduces exactly $1{,}119{,}372$ nodes,
+$559{,}038$ splits, $5{,}269$ pressure leaves, $364{,}112$ interval leaves,
+$190{,}953$ tangent leaves, and maximum depth $39$.  The minimum post-
+quantization margins are approximately $5.5981\times10^{-10}$ for interval
+leaves and $2.9986\times10^{-9}$ for tangent leaves.
+
+\smallskip
+\noindent\emph{Lean 4 verification.}
+The Lean development does not take the Arb-generated transcendental bounds as
+hypotheses.  It proves rational enclosures for the transcendental primitives,
+the removable sinc representation and normalized kernel, the closed formulas
+for $w'$ and $w''$, the q60 second-derivative cells, the line/path calculus,
+the fixed $6\times6$ Sylvester/Bareiss implication, and the analytic pairing
+of every serialized tangent record with its current replay box.  The complete
+packed tree then yields soundness of all $1296$ surviving prefilter boxes.
+Finally the internal theorem
+\nolinkurl{articleSevenPointInequality_internal} has exactly the proposition
+stated here.  The top-level theorem
+\nolinkurl{article_main_internal} connects this result to
+Theorem~\ref{thm:main}.  The source tree was successfully checked with the
+pinned project toolchain; Appendix~\ref{app:cert} gives theorem names,
+hashes, and reproduction details.
 \end{proof}
 
 \begin{corollary}\label{cor:energy}
@@ -930,6 +969,41 @@ A larger optimization could also redistribute pair-energy coefficients
 $c_{r,i}$ subject to the double-counting budgets
 $\sum_{i=1}^{7-r}c_{r,i}\le2$.  We leave that problem open.
 
+\section{Formal verification and reproducibility}\label{sec:formal}
+
+The formal development is written in Lean~4~\cite{Lean4} using
+Mathlib~\cite{Mathlib20} and the pinned \texttt{Zeta23} dependency used by the
+project.  Its purpose is not merely to replay a Boolean certificate: the
+formal chain connects the analytic kernel to the final asymptotic statement.
+At the seven-point level the principal endpoints are
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Mathematical role & Lean declaration\\
+\midrule
+closed derivative formulas & \texttt{articleWeightDerivativeClosedFormValid\_proved}\\
+second-derivative q60 cells & \texttt{articleConcreteSecondCellsValid\_proved}\\
+line/path calculus & \texttt{articleSixGapPathCalculusValid\_proved}\\
+$6\times6$ Sylvester/Bareiss bridge & \texttt{articleSylvester6Bridge\_proved}\\
+tangent/tree replay & \texttt{articleConcreteTreeReplayCertificate\_proved}\\
+all surviving boxes sound & \texttt{articleQ60InitialBoxesSound\_proved}\\
+seven-point inequality & \nolinkurl{articleSevenPointInequality_internal}\\
+published epsilon-form & \nolinkurl{article_main_internal}\\
+\bottomrule
+\end{tabular}
+\end{center}
+The source tree also contains \nolinkurl{FinalAxiomAudit.lean}, which prints the
+axiom dependencies of the principal declarations and is intended to be run
+and archived with the release build log.
+
+The formalization uses exact \texttt{Nat}, \texttt{Int}, and rational
+arithmetic for the large finite certificate.  Several large decidable checks
+are discharged with Lean's \texttt{native\_decide}.  Accordingly, the claim
+made here is an end-to-end Lean-accepted formal proof without local
+mathematical axioms or an externally assumed Arb certificate; we do not claim
+that every finite computation is reduced solely by the small kernel without
+native evaluation.
+
 \section{Scope and trust base}\label{sec:trust}
 
 \noindent\textbf{Logical status of the theorem.}
@@ -951,18 +1025,51 @@ papers cited in the introduction provide context; the particular
 first/second-moment route used here is reconstructed directly in
 Appendix~\ref{app:inputIII}.
 
-Proposition~\ref{prop:cert} is computer-assisted.  Its trust base includes the
-immutable artifact release~\cite{Hurtado26Artifact}, the frozen verifier,
-\texttt{python-flint}, FLINT/Arb and their dependencies, and the correctness
-of the execution environment.  The 128- and 256-bit runs are
-replications of the same implementation at different working precisions, not
-algorithmically independent verifiers.
+Proposition~\ref{prop:cert} is computer-assisted and formally checked.
+The Arb/FLINT v1.2 generator and its independent checker are retained as an
+independent proof-carrying implementation and as provenance for the serialized
+bounds.  The q60 v1.3 checker independently removes floating-point arithmetic
+from the finite replay.  Neither artifact is an assumed proposition in the
+Lean endgame: the Lean development reconstructs the transcendental enclosure
+logic and reaches \nolinkurl{article_main_internal} directly.
+
+The formal/computational trust base therefore consists of the pinned Lean~4
+compiler and kernel, Mathlib and the pinned \texttt{Zeta23} dependency, and
+Lean's native evaluation mechanism for the finite theorems discharged by
+\texttt{native\_decide}.  Arb/FLINT and \texttt{python-flint} remain valuable
+independent implementations for reproduction and cross-checking but are not
+logical hypotheses of the end-to-end Lean theorem.  The 128- and 256-bit Arb
+runs are replications of the same interval implementation rather than
+algorithmically independent verifiers; by contrast, the standard-library
+v1.2 replay, integer-only v1.3 replay, and Lean proof expose progressively
+smaller trust boundaries.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
 optimality theorem.  Thus the paper is self-contained relative to the
-classical analytic results just listed and to the stated Arb/FLINT
-certificate; it does not claim to reprove those classical theorems from first
-principles.
+classical analytic results listed above and to the stated formal/computational
+base; it does not claim to reprove those classical theorems or Lean's
+foundations from first principles.
+
+\section{Conclusion}\label{sec:conclusion}
+
+The position-weighted refinement raises the certified seven-point value from
+the previously reproduced uniform-pressure values to $39/10000$ while keeping
+the total pressure fixed at $1/500$.  With $m=262$, this gives the
+unconditional constant in Theorem~\ref{thm:main}.  The mathematical novelty
+claimed here remains the redistribution of pressure and the resulting
+explicit certified vector; the surrounding stability architecture is credited
+to the cited upstream work.
+
+The verification package now separates discovery, numerical certification,
+exact replay, and formal proof.  Arb/FLINT supplies independently reproducible
+interval provenance, the q60 artifact reduces the finite tree to exact integer
+arithmetic, and Lean connects the transcendental kernel, differential
+estimates, finite certificate, and asymptotic endgame in one checked chain.
+This separation makes the numerical certificate auditable without making it a
+black-box premise of the theorem, and it leaves a clear further hardening
+route: replacing the remaining \texttt{native\_decide} calls by purely
+kernel-reducible reflection certificates if an even smaller computational
+trusted base is desired.
 
 \appendix
 
@@ -2773,72 +2880,105 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 
 
 
-\section{Certificate metadata}\label{app:cert}
+\section{Formal verification and certificate metadata}\label{app:cert}
 
-\paragraph{Code and certificate availability.}
-The complete Arb/FLINT verifier, the archived 256-bit certification run,
-machine-readable parameters, execution logs, environment information,
-SHA-256 hashes, and reproduction instructions are publicly available in the
-reproducibility artifact~\cite{Hurtado26Artifact}.  The immutable snapshot
-used for the present certificate is GitHub release
-\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e}.  The release
-contains the manuscript snapshot and the computational evidence used to
-certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
-default branch are not part of the trust base of this certificate.
+\paragraph{Public artifact.}
+The manuscript, Lean source, Arb/FLINT v1.2 proof-carrying certificate, q60
+v1.3 fixed-point certificate, audit files, and reproduction instructions are
+collected in the repository~\cite{Hurtado26Artifact}.  The formal release is
+intended to be tagged \texttt{v2.0.0-formal}; the release manifest should be
+used to bind the paper, formal source, certificates, and build/audit logs to a
+single immutable snapshot.
 
-The frozen archival verifier is
-\[
- \texttt{certify\_nonuniform\_3900\_v1\_1.py}.
-\]
-Its SHA-256 is
-\begin{sloppypar}
-\small\ttfamily
-8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301.
-\end{sloppypar}
-The 256-bit log SHA-256 is
-\begin{sloppypar}
-\small\ttfamily
-4b0e62dcb5c4014504981f16e431144e3a01184b2aa2aa6b0bf650705d59db83.
-\end{sloppypar}
-
+\paragraph{Arb/FLINT proof-carrying certificate v1.2.}
+The v1.2 package contains the generator
 \begin{center}
-\begin{tabular}{@{}ll@{}}
-\toprule
-Field & Archived 256-bit run\\
-\midrule
-verified & \texttt{true}\\
-target & $F_{6,\mathrm{nonuniform}}\ge39/10000$\\
-grid & 4000\\
-precision & 256 bits\\
-nodes & 1,119,372\\
-pruned & 560,334\\
-splits & 559,038\\
-maximum depth & 39\\
-initial boxes & 1296\\
-interval prunes & 364,112\\
-tangent prunes & 190,953\\
-pressure prunes & 5,269\\
-elapsed time & 201.487482 s\\
-\bottomrule
+\texttt{certify\_nonuniform\_3900\_v1\_2.py}
+\end{center}
+and the independent checker
+\begin{center}
+\texttt{check\_seven\_point\_certificate.py}.
+\end{center}
+The checker uses only the Python standard library and does not import Arb or
+\texttt{python-flint}.  The archived audit records
+\[
+1{,}119{,}372\text{ nodes},\quad
+559{,}038\text{ splits},\quad
+560{,}334\text{ leaves},\quad
+\text{maximum depth }39,
+\]
+with $1296$ initial boxes, split into $5{,}269$ pressure, $364{,}112$ interval,
+and $190{,}953$ tangent leaves.  The recorded generation environment is
+CPython~3.12.13 with \texttt{python-flint==0.9.0} on Linux x86-64.
+The principal v1.2 hashes are as follows:
+
+\smallskip
+\noindent\texttt{kernel\_table.bin}\par
+{\small\ttfamily
+f75a3968f6daf7ea74867e430dc69fdca4276c4bb09f8cecc1b9846e8942c3f5\par}
+\smallskip
+\noindent\texttt{second\_derivative\_table.bin}\par
+{\small\ttfamily
+f878d03d2eeca7fd34e3064a8dacb70d054fe3b3e9e3890c79a1f8297633cfb3\par}
+\smallskip
+\noindent\texttt{tangent\_bounds.bin}\par
+{\small\ttfamily
+b0dd7dc78334ba9de6961e150c5e39a0b07c40077f253a06d01f7188a9a37628\par}
+\smallskip
+\noindent\texttt{tree.bin}\par
+{\small\ttfamily
+3ea583db3cd2fde0cb46cc409a0c0df5c01c384cdfccd8720133cfee1aa5d2aa\par}
+
+The v1.2 checker reports all five terminal conditions
+\begin{center}
+\begin{tabular}{@{}l@{}}
+\texttt{certificate\_structure\_valid=true},\\
+\texttt{prefilter\_replayed=true},\\
+\texttt{all\_leaves\_verified=true},\\
+\texttt{tree\_complete=true},\\
+\texttt{arb\_imported=false}.
 \end{tabular}
 \end{center}
 
-The pressure vector recorded by the verifier is
-\[
- (2714,3733,3553,3553,3733,2714)/10^7.
-\]
-The kernel-table SHA-256 is
-\begin{sloppypar}
-\small\ttfamily
-f75a3968f6daf7ea74867e430dc69fdca4276c4bb09f8cecc1b9846e8942c3f5.
-\end{sloppypar}
-The second-derivative-table SHA-256 is
-\begin{sloppypar}
-\small\ttfamily
-f878d03d2eeca7fd34e3064a8dacb70d054fe3b3e9e3890c79a1f8297633cfb3.
-\end{sloppypar}
-The archived environment reports CPython 3.14.7 and
-\texttt{python-flint==0.9.0}.
+\paragraph{Fixed-point certificate v1.3.}
+Every binary64 bound from v1.2 is conservatively normalized to common scale
+$2^{60}$: lower bounds are floored and absolute-gradient upper bounds are
+ceiled.  The checker performs an integer-only replay and exact integer
+Bareiss/Sylvester Hessian checks.  Its audit reports
+\texttt{fixedpoint\_certificate\_valid=true},
+\texttt{integer\_only\_replay=true}, and \texttt{tree\_complete=true}.
+The principal q60 files and hashes are:
+
+\smallskip
+\noindent\texttt{kernel\_q60.i64} (57,488 entries)\par
+{\small\ttfamily
+a16cce93ee3ffeab9c1242f9cee1636d7de5843f20c2c4c894cc04ae1f37740a\par}
+\smallskip
+\noindent\texttt{second\_q60.i64} (57,488 entries)\par
+{\small\ttfamily
+5a460c9f44b16d13d9ebee5ebe8f37c0caac6f4f5befb15476a49255d08376f6\par}
+\smallskip
+\noindent\texttt{tangent\_q60.i64} (190,953 records)\par
+{\small\ttfamily
+6d7c646217dc27a6ebfed3c9eaeb00dee3446032ed6825abff215888ebbb60df\par}
+\smallskip
+\noindent\texttt{tree\_4bit.bin} (1,119,372 nodes)\par
+{\small\ttfamily
+edc7778018342d35d81b1d98d22e2f4c873dd6bce7bf86f1b4d20837cdf7984a\par}
+
+The minimum reported post-quantization margins are
+$5.598149478924466\times10^{-10}$ for interval leaves and
+$2.9986027445962243\times10^{-9}$ for tangent leaves.
+
+\paragraph{Lean endpoint.}
+The formal source contains no local \texttt{sorry} or \texttt{admit} in the
+release tree.  The endpoint
+\nolinkurl{articleSevenPointInequality_internal} proves
+Proposition~\ref{prop:cert}, and \nolinkurl{article_main_internal} proves the
+published epsilon-form of Theorem~\ref{thm:main}.  The release also includes
+\nolinkurl{FinalAxiomAudit.lean}; its \texttt{\#print axioms} output and a clean
+\texttt{lake build} log should be archived alongside the tagged release.
+
 
 \section{Exact arithmetic}
 
@@ -2856,6 +2996,8 @@ Thus
 \]
 
 \begin{thebibliography}{99}
+\small
+\sloppy
 
 \bibitem{Weil52}
 A.~Weil,
@@ -2946,16 +3088,29 @@ The repository records Jo's artifact as upstream provenance and reports use
 of GPT-5.6 Sol in the refinement workflow.
 
 
+
+\bibitem{Lean4}
+L.~de Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in \emph{Automated Deduction -- CADE 28}, Lecture Notes in Computer Science
+\textbf{12699}, Springer, 2021, 625--635.
+
+\bibitem{Mathlib20}
+The mathlib Community,
+\emph{The Lean mathematical library},
+Proceedings of the 9th ACM SIGPLAN International Conference on Certified
+Programs and Proofs (CPP 2020), ACM, 2020.
+
 \bibitem{Hurtado26Artifact}
 M.~Hurtado,
-\emph{Reproducibility artifact for ``A position-weighted refinement for
-simple zeros of the Riemann zeta function''},
-release \texttt{v1.0.0-paper}, 13 August 2026,
-GitHub repository
-\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function},
-release snapshot
-\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function/releases/tag/v1.0.0-paper},
-commit \texttt{c57f53e}.
+\emph{Reproducibility and formal verification artifact for ``A
+position-weighted refinement for simple zeros of the Riemann zeta
+function''},
+GitHub repository, 2026,
+\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function}.
+The formal-verification snapshot accompanying this manuscript contains the
+Arb/FLINT v1.2 certificate, q60 fixed-point v1.3 certificate, and Lean~4
+end-to-end formalization.
 
 \end{thebibliography}
 

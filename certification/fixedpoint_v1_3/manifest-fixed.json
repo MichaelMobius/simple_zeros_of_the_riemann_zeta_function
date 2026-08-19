@@ -1,0 +1,98 @@
+{
+  "audit": {
+    "file": "FIXEDPOINT_AUDIT.json",
+    "sha256": "d312c14ed7b2a6b386419b4c08ea90beb61f5946ba5d0e94a6a25cc4b2c8be28"
+  },
+  "cell_count": 57488,
+  "coefficient_rationals": {
+    "1": [1, 3],
+    "2": [2, 5],
+    "3": [1, 2],
+    "4": [2, 3],
+    "5": [1, 1],
+    "6": [2, 1]
+  },
+  "components_by_coordinate": [
+    [[3800, 4795], [7190, 9466], [10450, 56852]],
+    [[3805, 4783], [7217, 9365], [10574, 40875]],
+    [[3804, 4785], [7212, 9382], [10553, 41678], [43361, 43879]],
+    [[3804, 4785], [7212, 9382], [10553, 41678], [43361, 43879]],
+    [[3805, 4783], [7217, 9365], [10574, 40875]],
+    [[3800, 4795], [7190, 9466], [10450, 56852]]
+  ],
+  "counts": {
+    "initial_boxes": 1296,
+    "interval_pruned": 364112,
+    "leaves": 560334,
+    "maximum_depth": 39,
+    "nodes": 1119372,
+    "pressure_pruned": 5269,
+    "splits": 559038,
+    "tangent_pruned": 190953
+  },
+  "files": {
+    "kernel_q60.i64": {
+      "bytes": 459904,
+      "entries": 57488,
+      "sha256": "a16cce93ee3ffeab9c1242f9cee1636d7de5843f20c2c4c894cc04ae1f37740a"
+    },
+    "second_q60.i64": {
+      "bytes": 459904,
+      "entries": 57488,
+      "sha256": "5a460c9f44b16d13d9ebee5ebe8f37c0caac6f4f5befb15476a49255d08376f6"
+    },
+    "tangent_q60.i64": {
+      "bytes": 10693368,
+      "entries": 190953,
+      "sha256": "6d7c646217dc27a6ebfed3c9eaeb00dee3446032ed6825abff215888ebbb60df"
+    },
+    "tree_4bit.bin": {
+      "bytes": 559686,
+      "entries": 1119372,
+      "sha256": "edc7778018342d35d81b1d98d22e2f4c873dd6bce7bf86f1b4d20837cdf7984a"
+    }
+  },
+  "format": "HurtadoZeta23-seven-point-fixedpoint-certificate",
+  "format_version": 1,
+  "grid": 4000,
+  "int_encoding": "big-endian signed int64",
+  "pressure_cutoff_cells": 57480,
+  "pressure_denominator": 10000000,
+  "pressure_numerators": [2714, 3733, 3553, 3553, 3733, 2714],
+  "rounding": {
+    "kernel_q60": "floor(binary64 * 2^60), lower bound",
+    "second_q60": "floor(binary64 * 2^60), lower bound",
+    "tangent_base_q60": "floor(binary64 * 2^60), lower bound",
+    "tangent_gradient_q60": "ceil(binary64 * 2^60), absolute upper bound"
+  },
+  "scale": "1152921504606846976",
+  "scale_bits": 60,
+  "second_derivative_sentinel": -9223372036854775808,
+  "second_derivative_start_index": 3800,
+  "source": {
+    "files": {
+      "kernel_table.bin": "f75a3968f6daf7ea74867e430dc69fdca4276c4bb09f8cecc1b9846e8942c3f5",
+      "second_derivative_table.bin": "f878d03d2eeca7fd34e3064a8dacb70d054fe3b3e9e3890c79a1f8297633cfb3",
+      "tangent_bounds.bin": "b0dd7dc78334ba9de6961e150c5e39a0b07c40077f253a06d01f7188a9a37628",
+      "tree.bin": "3ea583db3cd2fde0cb46cc409a0c0df5c01c384cdfccd8720133cfee1aa5d2aa"
+    },
+    "manifest_sha256": "c8c45f4ce71f6fedddedb9b6475fe2fa7d494cb6f4f658738e3499eed541a639"
+  },
+  "target": [39, 10000],
+  "tree_encoding": {
+    "kind": "4-bit node token packing, low nibble first",
+    "nodes": 1119372,
+    "token_meaning": {
+      "0": "pressure leaf",
+      "1": "interval leaf",
+      "2": "tangent leaf",
+      "3": "split coordinate 0",
+      "4": "split coordinate 1",
+      "5": "split coordinate 2",
+      "6": "split coordinate 3",
+      "7": "split coordinate 4",
+      "8": "split coordinate 5"
+    },
+    "tokens_per_byte": 2
+  }
+}
