@@ -162,9 +162,9 @@ and `arb_imported=false`.
 To regenerate v1.2 from rigorous Arb arithmetic:
 
 ```powershell
-python .\certify_nonuniform_3900_v1_2.py `
-  --precision 256 `
-  --progress-every 100000 `
+python .\certify_nonuniform_3900_v1_2.py 
+  --precision 256 
+  --progress-every 100000 
   --emit-certificate .\seven-point-cert
 ```
 
