@@ -108,7 +108,7 @@ Two releases play distinct roles.
 
 **`v1.1.0-paper`**
 
-This release freezes the preceding submission-ready manuscript. The v17 revision is the current branch state pending its next frozen release.
+This release freezes the preceding submission-ready manuscript. The v17 revision is now the current manuscript on the default `main` branch, pending its next frozen release.
 
 ### Computational artifact
 
@@ -128,7 +128,7 @@ The separation is intentional:
 ``` text
 v1.1.0-paper
     │
-    └── submission-ready manuscript
+    └── preceding frozen manuscript
              │
              ▼
 v1.0.0-paper @ c57f53e
@@ -142,8 +142,8 @@ v1.0.0-paper @ c57f53e
  F6_nonuniform >= 39/10000
 ```
 
-Subsequent changes to the repository's default branch are not part of
-the trust base of the frozen computational certificate.
+The v17 manuscript on `main` reuses the frozen computational certificate
+without altering its trust base.
 
 ------------------------------------------------------------------------
 
@@ -342,9 +342,9 @@ The preceding submission-ready manuscript is frozen in:
 v1.1.0-paper
 ```
 
-The current v17 revision is on branch `v17-pressure-preserving` pending its next frozen release.
+The current v17 revision is on the default `main` branch, pending its next frozen release.
 
-and the computational artifact used by the manuscript is frozen in:
+The computational artifact used by the manuscript is frozen in:
 
 ``` text
 v1.0.0-paper @ c57f53e
@@ -397,7 +397,7 @@ Repository:
 
 ## Status
 
-**Current manuscript branch:** `v17-pressure-preserving`
+**Current manuscript version:** `v17` on `main`
 
 **Frozen computational artifact:** `v1.0.0-paper @ c57f53e`
 
