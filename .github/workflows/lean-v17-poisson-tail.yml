@@ -5,6 +5,8 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_energy/V17PoissonTail.lean"
+      - "lean_harness/v17_energy/V17CrossTail.lean"
+      - "lean_harness/v17_energy/V17SquareLoss.lean"
       - ".github/workflows/lean-v17-poisson-tail.yml"
 
 permissions:
@@ -24,17 +26,21 @@ jobs:
           repository: anthropics/formal-math
           ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
           path: upstream
-      - name: Overlay Poisson tail module
+      - name: Overlay Poisson tail modules
         shell: bash
         run: |
           set -euxo pipefail
           mkdir -p upstream/zeta23/HurtadoZeta23
           cp harness/lean_harness/v17_energy/V17PoissonTail.lean upstream/zeta23/HurtadoZeta23/V17PoissonTail.lean
+          cp harness/lean_harness/v17_energy/V17CrossTail.lean upstream/zeta23/HurtadoZeta23/V17CrossTail.lean
+          cp harness/lean_harness/v17_energy/V17SquareLoss.lean upstream/zeta23/HurtadoZeta23/V17SquareLoss.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
           name = "HurtadoZeta23V17PoissonTail"
-          roots = ["HurtadoZeta23.V17PoissonTail"]
+          roots = ["HurtadoZeta23.V17PoissonTail",
+            "HurtadoZeta23.V17CrossTail",
+            "HurtadoZeta23.V17SquareLoss"]
           EOF
       - name: Install exact Lean toolchain
         shell: bash
