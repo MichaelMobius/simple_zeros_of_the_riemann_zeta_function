@@ -40,6 +40,7 @@ jobs:
           cp harness/lean_harness/v17_matching/V17AdjacentMatching.lean upstream/zeta23/HurtadoZeta23/V17AdjacentMatching.lean
           cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
+          cp harness/lean_harness/v17_adj/V17TraceError.lean upstream/zeta23/HurtadoZeta23/V17TraceError.lean
           cp harness/lean_harness/v17_adj/V17MatrixThreshold.lean upstream/zeta23/HurtadoZeta23/V17MatrixThreshold.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
@@ -83,6 +84,7 @@ jobs:
             "HurtadoZeta23.V17AdjacentMatching",
             "HurtadoZeta23.V17SpectralThreshold",
             "HurtadoZeta23.V17FiniteSpectralThreshold",
+            "HurtadoZeta23.V17TraceError",
             "HurtadoZeta23.V17MatrixThreshold"]
           EOF
 
