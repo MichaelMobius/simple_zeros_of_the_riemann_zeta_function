@@ -9,7 +9,7 @@ by Michael Hurtado.
 - `main.tex` — complete LaTeX source
 - `main.pdf` — compiled manuscript
 
-The v17 pressure-preserving revision is maintained on branch `v17-pressure-preserving` pending its next frozen release.
+The v17 pressure-preserving revision is the current manuscript on the default `main` branch, pending its next frozen release.
 
 The computer-assisted artifact used by the manuscript is independently
 frozen in release `v1.0.0-paper` at commit `c57f53e`.
