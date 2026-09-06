@@ -120,7 +120,6 @@ theorem v17_weighted_adjacent_pressure
         + v17t * beta * v17LiteralBlockPressure m y := by
     unfold v17LiteralBlockPressure localPressure windowGap
     simp_rw [mul_add, Finset.sum_add_distrib]
-    rw [Finset.sum_add_distrib]
     congr 1
     · apply Finset.sum_congr rfl
       intro j hj
