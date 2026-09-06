@@ -14,6 +14,7 @@ EXPECTED_V16_BLOB = "6bbaf51eeab527ec5f1c35bd4bdb1bb2cfb6476e"
 V17_HEADER = "% Manuscript version v17: pressure-preserving averaging and adjacent-pair refinement."
 NEW_DECIMAL = "0.6731175265883904388096"
 NEW_DECIMAL_LONG = "0.6731175265883904388095857434"
+OLD_DECIMAL = "0.6730732086087052768351"
 
 
 def git_blob_sha1(data: bytes) -> str:
@@ -45,27 +46,13 @@ def assert_v17(text: str) -> None:
 
 
 def clean_v17_text(text: str) -> str:
-    # Editorial cleanup: this compound phrase produced the only inherited
-    # overfull hbox in the validated v17 build.
     text = text.replace("functional-equation/conjugation", "functional-equation and conjugation")
     return text
 
 
 def transform_v16(text: str) -> str:
-    text = repl(
-        text,
-        r"% Manuscript version v16:[^\n]*",
-        V17_HEADER,
-        "version",
-        flags=0,
-    )
-    text = repl(
-        text,
-        r"\\title\{[^{}]*\}",
-        r"\title{Pressure-preserving refinements for simple zeros of the Riemann zeta function}",
-        "title",
-        flags=0,
-    )
+    text = repl(text, r"% Manuscript version v16:[^\n]*", V17_HEADER, "version", flags=0)
+    text = repl(text, r"\\title\{[^{}]*\}", r"\title{Pressure-preserving refinements for simple zeros of the Riemann zeta function}", "title", flags=0)
     text = repl(text, r"\\date\{[^{}]*\}", r"\date{September 6, 2026}", "date", flags=0)
     text = repl(text, r"\\begin\{abstract\}.*?\\end\{abstract\}", frag("abstract.tex"), "abstract")
     text = repl(
@@ -76,36 +63,11 @@ def transform_v16(text: str) -> str:
         frag("intro.tex"),
         "intro",
     )
-    text = repl(
-        text,
-        r"\\begin\{theorem\}\[Main theorem\]\\label\{thm:main\}.*?\\end\{theorem\}",
-        frag("theorem.tex"),
-        "theorem",
-    )
-    text = repl(
-        text,
-        r"\\paragraph\{Priority convention\.\}.*?(?=\\section\{The common finite compression)",
-        frag("priority.tex") + "\n\n",
-        "priority",
-    )
-    text = repl(
-        text,
-        r"\\begin\{proposition\}\[Pressure redistribution\]\\label\{prop:redist\}.*?\\end\{proof\}",
-        frag("redist.tex"),
-        "redistribution",
-    )
-    text = repl(
-        text,
-        r"\\begin\{corollary\}\\label\{cor:energy\}.*?(?=\\section\{Comparison and structural interpretation\})",
-        frag("core.tex") + "\n\n",
-        "block core",
-    )
-    text = repl(
-        text,
-        r"\\section\{Comparison and structural interpretation\}.*?(?=\\section\{Scope and trust base\})",
-        frag("comparison.tex") + "\n\n",
-        "comparison",
-    )
+    text = repl(text, r"\\begin\{theorem\}\[Main theorem\]\\label\{thm:main\}.*?\\end\{theorem\}", frag("theorem.tex"), "theorem")
+    text = repl(text, r"\\paragraph\{Priority convention\.\}.*?(?=\\section\{The common finite compression)", frag("priority.tex") + "\n\n", "priority")
+    text = repl(text, r"\\begin\{proposition\}\[Pressure redistribution\]\\label\{prop:redist\}.*?\\end\{proof\}", frag("redist.tex"), "redistribution")
+    text = repl(text, r"\\begin\{corollary\}\\label\{cor:energy\}.*?(?=\\section\{Comparison and structural interpretation\})", frag("core.tex") + "\n\n", "block core")
+    text = repl(text, r"\\section\{Comparison and structural interpretation\}.*?(?=\\section\{Scope and trust base\})", frag("comparison.tex") + "\n\n", "comparison")
     anchor = "Proposition~\\ref{prop:cert} is computer-assisted.  Its trust base includes the"
     i = text.find(anchor)
     if i < 0:
@@ -114,12 +76,7 @@ def transform_v16(text: str) -> str:
     if j < 0:
         raise RuntimeError("trust paragraph end not found")
     text = text[: j + 2] + frag("trust.tex") + "\n\n" + text[j + 2 :]
-    text = repl(
-        text,
-        r"\\section\{Exact arithmetic\}.*?(?=\\begin\{thebibliography\})",
-        frag("exact.tex") + "\n\n",
-        "exact arithmetic",
-    )
+    text = repl(text, r"\\section\{Exact arithmetic\}.*?(?=\\begin\{thebibliography\})", frag("exact.tex") + "\n\n", "exact arithmetic")
     return clean_v17_text(text)
 
 
@@ -128,7 +85,6 @@ def patch_main() -> None:
     data = src.read_bytes()
     blob = git_blob_sha1(data)
     text = data.decode("utf-8")
-
     if blob == EXPECTED_V16_BLOB:
         text = transform_v16(text)
         mode = "v16_to_v17"
@@ -141,7 +97,6 @@ def patch_main() -> None:
             "paper/main.tex is neither the audited v16 source nor a validated v17 source\n"
             f"observed git blob SHA1: {blob}"
         )
-
     assert_v17(text)
     out = ROOT / "paper/main_v17.tex"
     out.write_text(text, encoding="utf-8")
@@ -151,34 +106,16 @@ def patch_main() -> None:
 
 
 def normalize_readme(text: str) -> str:
-    text = text.replace(
-        "# A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function",
-        "# Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function",
-        1,
-    )
-    text = text.replace(
-        "> **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta\n> Function**",
-        "> **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta\n> Function**",
-        1,
-    )
-    text = text.replace("0.6730732086087052768351\\ldots", NEW_DECIMAL + r"\ldots")
-    text = text.replace("0.6730732086087052768351…", NEW_DECIMAL + "…")
-    text = text.replace(
-        "(655000 H_MT − 1305) / 652504",
-        "(1125000 H_MT − 2220) / 1120671",
-    )
-    text = text.replace(
-        "The final local-to-global argument uses block length\n\n**m = 262.**",
-        "The refined global argument preserves the exact positional pressure and uses adjacent-pair pinching with block length\n\n**m = 450.**",
-    )
-    text = text.replace(
-        "The new ingredient is a **nonuniform position-weighted refinement** of a\nseven-point stability/local-to-global argument.",
-        "The new ingredients are **exact pressure-preserving shifted-block accounting** and an **adjacent-pair pinching refinement**, built on the existing nonuniform seven-point certificate.",
-    )
-    text = text.replace(
-        "**Current manuscript release:** `v1.1.0-paper`",
-        "**Current manuscript branch:** `v17-pressure-preserving`",
-    )
+    text = text.replace("# A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function", "# Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function", 1)
+    text = text.replace("> **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta\n> Function**", "> **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta\n> Function**", 1)
+    # Normalize every display of the former manuscript bound. This intentionally
+    # leaves the exact-arithmetic JSON baseline untouched because it is a
+    # separate file documenting the previous result.
+    text = text.replace(OLD_DECIMAL, NEW_DECIMAL)
+    text = text.replace("(655000 H_MT − 1305) / 652504", "(1125000 H_MT − 2220) / 1120671")
+    text = text.replace("The final local-to-global argument uses block length\n\n**m = 262.**", "The refined global argument preserves the exact positional pressure and uses adjacent-pair pinching with block length\n\n**m = 450.**")
+    text = text.replace("The new ingredient is a **nonuniform position-weighted refinement** of a\nseven-point stability/local-to-global argument.", "The new ingredients are **exact pressure-preserving shifted-block accounting** and an **adjacent-pair pinching refinement**, built on the existing nonuniform seven-point certificate.")
+    text = text.replace("**Current manuscript release:** `v1.1.0-paper`", "**Current manuscript branch:** `v17-pressure-preserving`")
     text = text.replace(
         "### Manuscript\n\n**`v1.1.0-paper`**\n\nThis release freezes the submission-ready manuscript.",
         "### Previous frozen manuscript\n\n**`v1.1.0-paper`**\n\nThis release freezes the preceding submission-ready manuscript. The v17 revision is the current branch state pending its next frozen release.",
@@ -187,9 +124,6 @@ def normalize_readme(text: str) -> str:
         "The submission-ready manuscript is frozen in:\n\n``` text\nv1.1.0-paper\n```",
         "The preceding submission-ready manuscript is frozen in:\n\n``` text\nv1.1.0-paper\n```\n\nThe current v17 revision is on branch `v17-pressure-preserving` pending its next frozen release.",
     )
-
-    # Remove any old/duplicated v17 analytic-refinement appendix and append one
-    # canonical block at the end.
     text = re.sub(r"\n+## v17 analytic refinement\n.*\Z", "", text, flags=re.S)
     text = text.rstrip() + f"""
 
@@ -206,6 +140,8 @@ $$
 \\ge {NEW_DECIMAL_LONG}\\ldots
 $$
 """
+    if OLD_DECIMAL in text:
+        raise RuntimeError("stale v16 bound remains in normalized README")
     return text
 
 
@@ -217,10 +153,7 @@ def patch_readme() -> None:
 def patch_citation() -> None:
     p = ROOT / "CITATION.cff"
     text = p.read_text(encoding="utf-8")
-    text = text.replace(
-        "Reproducibility artifact for A position-weighted refinement for simple zeros of the Riemann zeta function",
-        "Reproducibility artifact for Pressure-preserving refinements for simple zeros of the Riemann zeta function",
-    )
+    text = text.replace("Reproducibility artifact for A position-weighted refinement for simple zeros of the Riemann zeta function", "Reproducibility artifact for Pressure-preserving refinements for simple zeros of the Riemann zeta function")
     text = re.sub(r'date-released: "[0-9-]+"', 'date-released: "2026-09-06"', text)
     text = re.sub(r'version: "[0-9.]+"', 'version: "1.2.0"', text)
     (ROOT / "CITATION_v17.cff").write_text(text, encoding="utf-8")
@@ -229,14 +162,8 @@ def patch_citation() -> None:
 def patch_paper_readme() -> None:
     p = ROOT / "paper/README.md"
     text = p.read_text(encoding="utf-8")
-    text = text.replace(
-        "**A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function**",
-        "**Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function**",
-    )
-    text = text.replace(
-        "The submission-ready manuscript is frozen in release `v1.1.0-paper`.",
-        "The v17 pressure-preserving revision is maintained on branch `v17-pressure-preserving` pending its next frozen release.",
-    )
+    text = text.replace("**A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function**", "**Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function**")
+    text = text.replace("The submission-ready manuscript is frozen in release `v1.1.0-paper`.", "The v17 pressure-preserving revision is maintained on branch `v17-pressure-preserving` pending its next frozen release.")
     canonical = "The v17 refinement adds exact pressure-preserving averaging and adjacent-pair pinching; see `../certification/v17/` for the new exact-arithmetic verifier."
     text = re.sub(r"\n*The v17 refinement adds exact pressure-preserving averaging and adjacent-pair pinching; see `\.\./certification/v17/` for the new exact-arithmetic verifier\.\s*", "\n", text)
     text = text.rstrip() + "\n\n" + canonical + "\n"
