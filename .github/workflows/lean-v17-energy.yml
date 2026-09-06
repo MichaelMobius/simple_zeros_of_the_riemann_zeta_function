@@ -37,7 +37,11 @@ jobs:
 
           [[lean_lib]]
           name = "HurtadoZeta23V17Energy"
-          roots = ["HurtadoZeta23.DirectRedistribution",
+          roots = ["HurtadoZeta23.Constants",
+            "HurtadoZeta23.PositionWeights",
+            "HurtadoZeta23.WindowCombinatorics",
+            "HurtadoZeta23.LocalFunctional",
+            "HurtadoZeta23.DirectRedistribution",
             "HurtadoZeta23.V17KernelBridge450"]
           EOF
 
