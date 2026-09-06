@@ -71,17 +71,6 @@ theorem v17_pairBandEnergy_450_even_odd
   unfold pairBandEnergy
   norm_num
   have h := v17_sum_range_449_even_odd (fun q => w q (q + 1))
-  calc
-    (∑ q ∈ Finset.range 449, w q (q + 1))
-        = (∑ b ∈ Finset.range 225, w (2 * b) (2 * b + 1)) +
-          (∑ b ∈ Finset.range 224, w (2 * b + 1) ((2 * b + 1) + 1)) := by
-            simpa using h
-    _ = (∑ b ∈ Finset.range 225, w (2 * b) (2 * b + 1)) +
-          (∑ b ∈ Finset.range 224, w (2 * b + 1) (2 * b + 2)) := by
-            congr 1
-            apply Finset.sum_congr rfl
-            intro b hb
-            congr 1
-            omega
+  simpa using h
 
 end HurtadoZeta23
