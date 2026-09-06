@@ -45,18 +45,26 @@ theorem v17_tsum_inv_pow_four_after_L_sq_steps
       ≤ (1 / 64 : ℝ) * (L ^ 2)⁻¹ := by
   have hD : 1 ≤ 2 * Real.pi * L := by
     have hpi : 2 ≤ Real.pi := Real.two_le_pi
+    have hL0 : 0 ≤ L := by linarith
+    have hfour : (4 : ℝ) ≤ 2 * Real.pi := by linarith
+    have hmul := mul_le_mul_of_nonneg_right hfour hL0
     nlinarith
   have h0 := v17_tsum_inv_pow_four_sampling_grid_le hD hL
   have hL0 : 0 < L := by linarith
   have hpi : 2 ≤ Real.pi := Real.two_le_pi
+  have hfour : (4 : ℝ) ≤ 2 * Real.pi := by linarith
+  have hbase : 4 * L ≤ (2 * Real.pi) * L :=
+    mul_le_mul_of_nonneg_right hfour (le_of_lt hL0)
+  have hpow : (4 * L) ^ 3 ≤ ((2 * Real.pi) * L) ^ 3 := by
+    exact pow_le_pow_left₀ (by positivity) hbase 3
+  have hinv : (((2 * Real.pi) * L) ^ 3)⁻¹ ≤ ((4 * L) ^ 3)⁻¹ := by
+    exact inv_anti₀ (by positivity) hpow
   calc
     (∑' n : ℕ,
       (((2 * Real.pi * L) + n * (2 * Real.pi / L)) ^ 4)⁻¹)
         ≤ L * (((2 * Real.pi * L) ^ 3)⁻¹) := h0
     _ ≤ L * (((4 * L) ^ 3)⁻¹) := by
-          gcongr
-          apply inv_anti₀ <;> positivity
-          exact pow_le_pow_left₀ (by positivity) (by nlinarith) 3
+          exact mul_le_mul_of_nonneg_left hinv (le_of_lt hL0)
     _ = (1 / 64 : ℝ) * (L ^ 2)⁻¹ := by
           field_simp [hL0.ne']
           ring
