@@ -39,6 +39,8 @@ jobs:
              upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean \
              upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
+          cp harness/lean_harness/v17_threshold/V17TraceLeSpectralThreshold.lean \
+             upstream/zeta23/HurtadoZeta23/V17TraceLeSpectralThreshold.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -53,7 +55,8 @@ jobs:
             "HurtadoZeta23.BlockDefect",
             "HurtadoZeta23.V17StrongBlockScalar",
             "HurtadoZeta23.V17SpectralThreshold",
-            "HurtadoZeta23.V17FiniteSpectralThreshold"]
+            "HurtadoZeta23.V17FiniteSpectralThreshold",
+            "HurtadoZeta23.V17TraceLeSpectralThreshold"]
           EOF
 
       - name: Install exact Lean toolchain
