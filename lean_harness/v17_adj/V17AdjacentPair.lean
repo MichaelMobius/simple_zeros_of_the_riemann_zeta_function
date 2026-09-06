@@ -54,12 +54,19 @@ theorem v17_fin2_eigenvalue_le_two
   have htrace : RHLinalg.rtrace M = 2 := by
     unfold RHLinalg.rtrace Matrix.trace
     simp [Fin.sum_univ_two, h00, h11]
+    norm_num
   have hsum : ∑ i : Fin 2, hM.isHermitian.eigenvalues i = 2 := by
     rw [← RHLinalg.rtrace_eq_sum_eigenvalues hM.isHermitian, htrace]
   have h0 := hM.eigenvalues_nonneg (0 : Fin 2)
   have h1 := hM.eigenvalues_nonneg (1 : Fin 2)
   intro i
-  fin_cases i <;> simp only [Fin.sum_univ_two] at hsum <;> linarith
+  have hi : i = 0 ∨ i = 1 := by
+    fin_cases i <;> simp
+  rcases hi with rfl | rfl
+  · simp only [Fin.sum_univ_two] at hsum
+    linarith
+  · simp only [Fin.sum_univ_two] at hsum
+    linarith
 
 /-- Exact defect of a 2-by-2 Gram block. -/
 theorem v17_fin2_gram_defect_eq_two_offdiag
