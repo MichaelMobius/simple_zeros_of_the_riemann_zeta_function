@@ -38,7 +38,6 @@ theorem v17_cross_tail_of_quadratic_decay
                         exact mul_le_mul (hf n) (hg n) (abs_nonneg _) (by positivity)
                 _ = C ^ 2 * ((D + n * h) ^ 4)⁻¹ := by
                       field_simp [hx.ne']
-                      ring
       _ = C ^ 2 * (∑ n ∈ range N, ((D + n * h) ^ 4)⁻¹) := by
             rw [Finset.mul_sum]
       _ ≤ C ^ 2 * ((D ^ 4)⁻¹ + (D ^ 3)⁻¹ / (3 * h)) := by
