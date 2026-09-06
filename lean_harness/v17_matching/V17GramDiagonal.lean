@@ -19,7 +19,11 @@ column. -/
 theorem v17_gram_diag_re_eq_column_norm_sq
     (V : Matrix row col ℂ) (z : col) :
     ((V.conjTranspose * V) z z).re = ∑ k, ‖V k z‖ ^ 2 := by
-  simp [Matrix.mul_apply, Matrix.conjTranspose_apply, RCLike.conj_mul]
+  rw [Matrix.mul_apply, map_sum]
+  apply Finset.sum_congr rfl
+  intro k hk
+  simp only [Matrix.conjTranspose_apply, RCLike.star_def, RCLike.conj_mul]
+  exact RCLike.re_ofReal_pow (K := ℂ) (‖V k z‖) 2
 
 /-- Column norm at most one implies the real Gram diagonal is at most one. -/
 theorem v17_gram_diag_re_le_one_of_column_norm_sq_le_one
@@ -47,23 +51,37 @@ theorem v17_simpleOnLineSynthesis_column_norm_sq_le_one
       (∑ k, ‖simpleOnLineSynthesis D c k z‖ ^ 2) ≤ 1 := by
   intro z
   have hm : D.m z.1 = 1 := mult_eq_one_of_mem_S₁ D z.2
-  have hz := hPois z.1 z.2
-  have hsqrt := sq_sqrt_mult_div (m := D.m z.1) hc
-  have hcoeff : (Real.sqrt ((D.m z.1 : ℝ) / c)) ^ 2 = c⁻¹ := by
-    rw [hsqrt, hm]
-    norm_num
-    rw [div_eq_mul_inv]
+  have hz : (∑ k, ‖D.v z.1 k‖ ^ 2) ≤ c := hPois z.1 z.2
+  have hsqrt :
+      (Real.sqrt ((D.m z.1 : ℝ) / c)) ^ 2 =
+        (D.m z.1 : ℝ) / c := by
+    exact sq_sqrt_mult_div hc
+  change
+    (∑ k,
+      ‖(((Real.sqrt ((D.m z.1 : ℝ) / c) : ℝ) : ℂ) *
+          D.v z.1 k)‖ ^ 2) ≤ 1
   calc
-    (∑ k, ‖simpleOnLineSynthesis D c k z‖ ^ 2)
-        = c⁻¹ * ∑ k, ‖D.v z.1 k‖ ^ 2 := by
-            simp_rw [simpleOnLineSynthesis, norm_mul, RCLike.norm_ofReal,
-              Real.norm_eq_abs, abs_of_nonneg (Real.sqrt_nonneg _), mul_pow]
-            rw [← Finset.mul_sum]
-            congr 1
-            exact hcoeff
-    _ ≤ c⁻¹ * c :=
-      mul_le_mul_of_nonneg_left hz (inv_nonneg.mpr hc.le)
-    _ = 1 := inv_mul_cancel₀ hc.ne'
+    (∑ k,
+      ‖(((Real.sqrt ((D.m z.1 : ℝ) / c) : ℝ) : ℂ) *
+          D.v z.1 k)‖ ^ 2)
+        = ∑ k,
+            ((D.m z.1 : ℝ) / c) * ‖D.v z.1 k‖ ^ 2 := by
+              apply Finset.sum_congr rfl
+              intro k hk
+              rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+              rw [abs_of_nonneg (Real.sqrt_nonneg _)]
+              rw [mul_pow]
+              rw [hsqrt]
+    _ = ((D.m z.1 : ℝ) / c) *
+          (∑ k, ‖D.v z.1 k‖ ^ 2) := by
+            rw [Finset.mul_sum]
+    _ = (1 / c) * (∑ k, ‖D.v z.1 k‖ ^ 2) := by
+          rw [hm]
+          norm_num
+    _ ≤ (1 / c) * c := by
+          exact mul_le_mul_of_nonneg_left hz (by positivity)
+    _ = 1 := by
+          field_simp
 
 /-- Pointwise diagonal bound for the normalized simple-zero Gram matrix. -/
 theorem v17_simpleOnLineGram_diag_re_le_one
