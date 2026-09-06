@@ -6,6 +6,7 @@ on:
     paths:
       - "lean_harness/v17_adj/**"
       - "lean_harness/v17_matching/**"
+      - "lean_harness/v17_threshold/**"
       - ".github/workflows/lean-v17-adj.yml"
 
 permissions:
@@ -35,6 +36,8 @@ jobs:
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
           cp harness/lean_harness/v17_adj/V17AdjacentPair.lean upstream/zeta23/HurtadoZeta23/V17AdjacentPair.lean
           cp harness/lean_harness/v17_matching/V17AdjacentMatching.lean upstream/zeta23/HurtadoZeta23/V17AdjacentMatching.lean
+          cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
+          cp harness/lean_harness/v17_adj/V17MatrixThreshold.lean upstream/zeta23/HurtadoZeta23/V17MatrixThreshold.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -63,6 +66,8 @@ jobs:
             "HurtadoZeta23.RootMultisetGramBridge",
             "HurtadoZeta23.ShiftedAveraging",
             "HurtadoZeta23.ShiftedPinching",
+            "HurtadoZeta23.SpectralFrobenius",
+            "HurtadoZeta23.ConcreteBlockDefect",
             "HurtadoZeta23.StableAssemblySeam",
             "HurtadoZeta23.StableRankTraceMatrix",
             "HurtadoZeta23.StableRankTraceScalar",
@@ -71,7 +76,9 @@ jobs:
             "HurtadoZeta23.WindowCombinatorics",
             "HurtadoZeta23.ZetaRvMBridge",
             "HurtadoZeta23.V17AdjacentPair",
-            "HurtadoZeta23.V17AdjacentMatching"]
+            "HurtadoZeta23.V17AdjacentMatching",
+            "HurtadoZeta23.V17SpectralThreshold",
+            "HurtadoZeta23.V17MatrixThreshold"]
           EOF
 
       - name: Install exact Lean toolchain
@@ -85,11 +92,9 @@ jobs:
       - name: Fetch mathlib cache
         working-directory: upstream/zeta23
         shell: bash
-        run: |
-          lake exe cache get
+        run: lake exe cache get
 
       - name: Build adjacent-pair modules
         working-directory: upstream/zeta23
         shell: bash
-        run: |
-          lake build HurtadoZeta23
+        run: lake build HurtadoZeta23
