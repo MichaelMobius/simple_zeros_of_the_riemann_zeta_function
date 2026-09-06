@@ -70,4 +70,39 @@ theorem v17_aggregate_kernel_lower_450_of_pointwise_raw_loss
   rw [hcoeff] at hs
   exact hs
 
+/-- Subtracting a uniform error `eta` from each of the 449 adjacent entries
+costs exactly `449*eta` in the first pair band. -/
+lemma v17_pairBandEnergy_zero_sub_uniform_450
+    (w : ℕ → ℕ → ℝ)
+    (eta : ℝ) :
+    pairBandEnergy 450 0 (fun a b => w a b - eta)
+      = pairBandEnergy 450 0 w - 449 * eta := by
+  unfold pairBandEnergy
+  norm_num
+  simp_rw [Finset.sum_sub_distrib]
+  simp
+  ring
+
+/-- The adjacent 449-entry analogue of the global energy bridge.  A pointwise
+loss of `2*eps` on adjacent squared entries aggregates to exactly
+`898*eps`. -/
+theorem v17_adjacent_kernel_lower_450_of_pointwise_raw_loss
+    (w gramSq : ℕ → ℕ → ℝ)
+    (eps : ℝ)
+    (hpoint : ∀ a < 449, w a (a + 1) - 2 * eps ≤ gramSq a (a + 1)) :
+    pairBandEnergy 450 0 w - 898 * eps
+      ≤ pairBandEnergy 450 0 gramSq := by
+  have hmono :
+      pairBandEnergy 450 0 (fun a b => w a b - 2 * eps)
+        ≤ pairBandEnergy 450 0 gramSq := by
+    unfold pairBandEnergy
+    norm_num
+    apply Finset.sum_le_sum
+    intro a ha
+    exact hpoint a (Finset.mem_range.mp ha)
+  rw [v17_pairBandEnergy_zero_sub_uniform_450 w (2 * eps)] at hmono
+  have hcoeff : (449 : ℝ) * (2 * eps) = 898 * eps := by ring
+  rw [hcoeff] at hmono
+  exact hmono
+
 end HurtadoZeta23
