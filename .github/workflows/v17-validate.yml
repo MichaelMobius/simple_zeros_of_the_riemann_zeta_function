@@ -29,8 +29,14 @@ jobs:
         run: |
           python certification/v17/verify_improved_bound.py \
             --output certification/v17/verification.generated.json
-          diff -u certification/v17/verification.json \
-            certification/v17/verification.generated.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          expected=json.loads(Path('certification/v17/verification.json').read_text())
+          generated=json.loads(Path('certification/v17/verification.generated.json').read_text())
+          assert expected == generated, 'generated verification JSON differs semantically from frozen expected JSON'
+          print('VERIFICATION_JSON_SEMANTIC_MATCH')
+          PY
 
       - name: Compile manuscript
         uses: xu-cheng/latex-action@v3
