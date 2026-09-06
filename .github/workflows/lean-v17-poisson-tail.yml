@@ -28,6 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          mkdir -p upstream/zeta23/HurtadoZeta23
           cp harness/lean_harness/v17_energy/V17PoissonTail.lean upstream/zeta23/HurtadoZeta23/V17PoissonTail.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
