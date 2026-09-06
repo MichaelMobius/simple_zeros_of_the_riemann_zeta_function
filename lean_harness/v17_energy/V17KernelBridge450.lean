@@ -51,7 +51,15 @@ theorem v17_aggregate_kernel_lower_450
     globalPairEnergyNat 450 w - 202050 * eta
       ≤ globalPairEnergyNat 450 gramSq := by
   rw [← v17_globalPairEnergyNat_sub_uniform_450 w eta]
-  exact globalPairEnergyNat_mono hpoint
+  unfold globalPairEnergyNat
+  apply mul_le_mul_of_nonneg_left
+  · apply Finset.sum_le_sum
+    intro r0 hr0
+    unfold pairBandEnergy
+    apply Finset.sum_le_sum
+    intro a ha
+    exact hpoint a (a + r0 + 1)
+  · norm_num
 
 /-- Clean 450-point interface for the analytic overlap bridge.
 
@@ -81,7 +89,6 @@ lemma v17_pairBandEnergy_zero_sub_uniform_450
   norm_num
   simp_rw [Finset.sum_sub_distrib]
   simp
-  ring
 
 /-- The adjacent 449-entry analogue of the global energy bridge.  A pointwise
 loss of `2*eps` on adjacent squared entries aggregates to exactly
@@ -95,8 +102,8 @@ theorem v17_adjacent_kernel_lower_450_of_pointwise_raw_loss
   have hmono :
       pairBandEnergy 450 0 (fun a b => w a b - 2 * eps)
         ≤ pairBandEnergy 450 0 gramSq := by
-    unfold pairBandEnergy
-    norm_num
+    change (∑ a ∈ Finset.range 449, (w a (a + 1) - 2 * eps))
+      ≤ ∑ a ∈ Finset.range 449, gramSq a (a + 1)
     apply Finset.sum_le_sum
     intro a ha
     exact hpoint a (Finset.mem_range.mp ha)
