@@ -1,0 +1,60 @@
+name: Lean v17 450-point energy bridge
+
+on:
+  push:
+    branches: [lean-v17-adaptation]
+    paths:
+      - "lean_harness/v17_energy/**"
+      - ".github/workflows/lean-v17-energy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@v4
+        with:
+          path: harness
+
+      - name: Checkout exact Zeta23 upstream
+        uses: actions/checkout@v4
+        with:
+          repository: anthropics/formal-math
+          ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+          path: upstream
+
+      - name: Overlay Hurtado sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
+          tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
+          cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
+          cat >> upstream/zeta23/lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23V17Energy"
+          roots = ["HurtadoZeta23.PoissonGaborBridge",
+            "HurtadoZeta23.V17KernelBridge450"]
+          EOF
+
+      - name: Install exact Lean toolchain
+        shell: bash
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          cd upstream/zeta23
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+
+      - name: Fetch mathlib cache
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake exe cache get
+
+      - name: Build 450-point energy bridge
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake build HurtadoZeta23V17Energy
