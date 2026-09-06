@@ -1,4 +1,4 @@
-import HurtadoZeta23.PoissonGaborBridge
+import HurtadoZeta23.DirectRedistribution
 import Mathlib.Tactic
 
 noncomputable section
@@ -53,24 +53,20 @@ theorem v17_aggregate_kernel_lower_450
   rw [← v17_globalPairEnergyNat_sub_uniform_450 w eta]
   exact globalPairEnergyNat_mono hpoint
 
-/-- A raw overlap error `eps` costs at most `404100 * eps` in the 450-point
-directed pair energy.  The factor two comes from squaring overlaps. -/
-theorem v17_aggregate_kernel_lower_450_of_raw
-    (y : ℕ → ℝ)
-    (overlap : ℕ → ℕ → ℝ)
+/-- Clean 450-point interface for the analytic overlap bridge.
+
+The analytic input required downstream is exactly a pointwise lower bound on
+squared Gram entries with loss `2*eps`.  No 262-point hypothesis is reused
+here.  Once this pointwise statement is supplied for the actual finite Gram
+block, the total directed pair-energy loss is exactly `404100*eps`. -/
+theorem v17_aggregate_kernel_lower_450_of_pointwise_raw_loss
+    (w gramSq : ℕ → ℕ → ℝ)
     (eps : ℝ)
-    (h : RawPointwiseOverlapApproximation262 y overlap eps) :
-    globalPairEnergyNat 450 (limitingWeightOnPoints y)
-        - 404100 * eps
-      ≤ globalPairEnergyNat 450 (fun a b => overlap a b ^ 2) := by
-  have hp := pointwiseKernelApproximation262_of_raw y overlap eps h
-  have hs := v17_aggregate_kernel_lower_450
-    (limitingWeightOnPoints y)
-    (fun a b => overlap a b ^ 2)
-    (2 * eps)
-    hp.2
-  have hcoeff : (202050 : ℝ) * (2 * eps) = 404100 * eps := by
-    ring
+    (hpoint : ∀ a b, w a b - 2 * eps ≤ gramSq a b) :
+    globalPairEnergyNat 450 w - 404100 * eps
+      ≤ globalPairEnergyNat 450 gramSq := by
+  have hs := v17_aggregate_kernel_lower_450 w gramSq (2 * eps) hpoint
+  have hcoeff : (202050 : ℝ) * (2 * eps) = 404100 * eps := by ring
   rw [hcoeff] at hs
   exact hs
 
