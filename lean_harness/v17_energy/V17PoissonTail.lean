@@ -42,7 +42,7 @@ theorem v17_tsum_inv_pow_four_after_L_sq_steps
     {L : ℝ} (hL : 2 ≤ L) :
     (∑' n : ℕ,
       (((2 * Real.pi * L) + n * (2 * Real.pi / L)) ^ 4)⁻¹)
-      ≤ (1 / 64 : ℝ) * L⁻² := by
+      ≤ (1 / 64 : ℝ) * (L ^ 2)⁻¹ := by
   have hD : 1 ≤ 2 * Real.pi * L := by
     have hpi : 2 ≤ Real.pi := Real.two_le_pi
     nlinarith
@@ -57,9 +57,8 @@ theorem v17_tsum_inv_pow_four_after_L_sq_steps
           gcongr
           apply inv_anti₀ <;> positivity
           exact pow_le_pow_left₀ (by positivity) (by nlinarith) 3
-    _ = (1 / 64 : ℝ) * L⁻² := by
-          rw [Real.zpow_negSucc]
-          field_simp
+    _ = (1 / 64 : ℝ) * (L ^ 2)⁻¹ := by
+          field_simp [hL0.ne']
           ring
 
 end HurtadoZeta23
