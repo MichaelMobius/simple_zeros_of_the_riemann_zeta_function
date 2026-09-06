@@ -39,6 +39,17 @@ theorem v17_contradiction_margin_exact :
       = 88071 / 3086875000 := by
   norm_num [v17g0, v17Q, v17t, v17Threshold, v17A]
 
+/-- Once the spectral argument supplies the standard lower bound
+`2*a - 1 + a^2/449` with `a>1`, the `450/449` threshold is automatic. -/
+theorem v17_threshold_from_quadratic
+    {D a : ℝ}
+    (ha : 1 < a)
+    (hD : 2 * a - 1 + a ^ 2 / 449 ≤ D) :
+    v17Threshold < D := by
+  have hs : 0 ≤ (a - 1) ^ 2 := sq_nonneg (a - 1)
+  norm_num [v17Threshold] at hD ⊢
+  nlinarith
+
 /-- Scalar finishing lemma for the strong `m=450` block estimate. -/
 theorem v17_strong_block_scalar
     {D E P : ℝ}
