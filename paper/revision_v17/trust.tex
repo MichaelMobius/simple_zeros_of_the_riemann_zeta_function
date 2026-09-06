@@ -1,0 +1,16 @@
+The refinement from the previous constant to Theorem~\ref{thm:main} introduces
+no new seven-point branch-and-bound certificate.  Its additional numerical
+trust base is the small exact-arithmetic verifier
+\texttt{verify\_improved\_bound.py}.  It uses Python integer arithmetic and
+\texttt{Fraction} for all decisive comparisons, rigorous rational enclosures
+for the elementary transcendental quantities, and checks in particular
+\[
+ w(89/100)>\frac{2937}{100000},
+ \qquad
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =\frac{6363}{30868750}>0,
+\]
+as well as the final constant.  Decimal arithmetic is used only for outward
+display of certified intervals.  This verifier does not replay the existing
+seven-point certificate, the analytic/Gabor package, or the Lean
+formalization; those remain inputs from the preceding version.

@@ -1,9 +1,9 @@
-# A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta Function
+# Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function
 
 This repository contains the manuscript and reproducibility artifacts
 for
 
-> **A Position-Weighted Refinement for Simple Zeros of the Riemann Zeta
+> **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta
 > Function**
 
 by **Michael Hurtado**.
@@ -14,14 +14,13 @@ $$
 \liminf_{T\to\infty}
 \frac{N_0^s(T,2T)}{N(T,2T)}
 \ge
-0.6730732086087052768351\ldots
+0.6731175265883904388096\ldots
 $$
 
 for the proportion of simple zeros of the Riemann zeta function on the
 critical line.
 
-The new ingredient is a **nonuniform position-weighted refinement** of a
-seven-point stability/local-to-global argument.
+The new ingredients are **exact pressure-preserving shifted-block accounting** and an **adjacent-pair pinching refinement**, built on the existing nonuniform seven-point certificate.
 
 ------------------------------------------------------------------------
 
@@ -33,11 +32,11 @@ Let
 
 The manuscript establishes the unconditional lower bound
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ 0.6730732086087052768351…**
+**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ 0.6731175265883904388096…**
 
 More precisely,
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ (655000 H_MT − 1305) / 652504.**
+**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ (1125000 H_MT − 2220) / 1120671.**
 
 The computer-assisted component uses the position-dependent pressure vector
 
@@ -51,9 +50,9 @@ The Arb/FLINT computation certifies the seven-point inequality
 
 **F₆,nonuniform ≥ 39/10000 = 0.0039.**
 
-The final local-to-global argument uses block length
+The refined global argument preserves the exact positional pressure and uses adjacent-pair pinching with block length
 
-**m = 262.**
+**m = 450.**
 
 ------------------------------------------------------------------------
 
@@ -105,11 +104,11 @@ for exact reproduction instructions.
 
 Two releases play distinct roles.
 
-### Manuscript
+### Previous frozen manuscript
 
 **`v1.1.0-paper`**
 
-This release freezes the submission-ready manuscript.
+This release freezes the preceding submission-ready manuscript. The v17 revision is the current branch state pending its next frozen release.
 
 ### Computational artifact
 
@@ -337,11 +336,13 @@ Citation metadata is provided in:
 CITATION.cff
 ```
 
-The submission-ready manuscript is frozen in:
+The preceding submission-ready manuscript is frozen in:
 
 ``` text
 v1.1.0-paper
 ```
+
+The current v17 revision is on branch `v17-pressure-preserving` pending its next frozen release.
 
 and the computational artifact used by the manuscript is frozen in:
 
@@ -396,7 +397,7 @@ Repository:
 
 ## Status
 
-**Current manuscript release:** `v1.1.0-paper`
+**Current manuscript branch:** `v17-pressure-preserving`
 
 **Frozen computational artifact:** `v1.0.0-paper @ c57f53e`
 
@@ -408,4 +409,17 @@ Repository:
 
 **Resulting unconditional bound:**
 
-\[ 0.6730732086087052768351`\ldots`{=tex} \]
+\[ 0.6731175265883904388096`\ldots`{=tex} \]
+
+
+## v17 analytic refinement
+
+The v17 manuscript reuses the frozen seven-point certificate unchanged. A new
+exact-arithmetic verifier in `certification/v17/verify_improved_bound.py`
+checks the additional scalar kernel enclosure, pressure mass, contradiction
+margin, and final constant. The v17 result is
+
+$$
+\liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge 0.6731175265883904388095857434\ldots
+$$

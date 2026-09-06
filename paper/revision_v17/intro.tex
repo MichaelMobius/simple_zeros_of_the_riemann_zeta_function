@@ -1,0 +1,30 @@
+The contribution of the present paper is explicit and layered.  We do not
+claim the stability-enhanced rank--trace inequality or the seven-point
+architecture as new.  We use the already certified nonuniform pressure vector
+\begin{equation}\label{eq:p}
+ p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
+ \qquad
+ \beta:=\sum_{j=1}^6p_j=\frac1{500},
+\end{equation}
+for which the seven-point functional satisfies
+\begin{equation}\label{eq:local-cert-intro}
+ \mathcal F_p(g_1,\ldots,g_6)\ge\frac{39}{10000}
+ \qquad(g_j\ge0).
+\end{equation}
+
+The new argument has two stages.  First, rather than replacing the accumulated
+position-dependent pressure inside a block by
+\(\beta\,\operatorname{span}(B)\), we retain its exact coefficients until the
+final average over shifted blocks.  This reduces the global pressure mass from
+the coarse \(\beta(m-1)\) to the exact \(\beta(m-6)\).  Already at \(m=262\)
+this gives
+\[
+ \frac{655000H_{\rm MT}-1280}{652504}
+ =
+ 0.6731115225500757511923586\ldots .
+\]
+Second, an adjacent-pair pinching argument supplies an independent lower bound
+for the Gram defect in terms of the consecutive-gap kernel energies.  Together
+with one rigorously enclosed scalar value of the Montgomery--Taylor kernel,
+this permits \(m=450\) and yields Theorem~\ref{thm:main}.  No new
+seven-point local certificate is required.

@@ -1,0 +1,56 @@
+\begin{proposition}[Exact pressure redistribution]\label{prop:redist}
+Assume
+\[
+ \mathcal F_p(g)\ge\delta
+ \qquad(g\in\R_{\ge0}^6),
+ \qquad
+ \beta:=\sum_{j=1}^6p_j.
+\]
+Let \(y_1<\cdots<y_m\), \(m\ge7\), and put
+\[
+ g_r:=y_{r+1}-y_r
+ \qquad(1\le r\le m-1).
+\]
+Define
+\begin{equation}\label{eq:qr}
+ q_r
+ :=
+ \sum_{a=1}^{m-6}\sum_{j=1}^6
+ p_j\,\mathbf 1_{\{r=a+j-1\}},
+ \qquad
+ P_B:=\sum_{r=1}^{m-1}q_rg_r .
+\end{equation}
+Then
+\begin{equation}\label{eq:block-energy-exact-pressure}
+ E_m+P_B\ge\delta(m-6),
+ \qquad
+ E_m:=2\sum_{1\le i<j\le m}w(y_j-y_i).
+\end{equation}
+Moreover,
+\begin{equation}\label{eq:pressure-mass}
+ \boxed{\sum_{r=1}^{m-1}q_r=\beta(m-6)},
+ \qquad
+ \min_jp_j\le q_r\le\beta .
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Sum the local inequality over the \(m-6\) consecutive seven-point windows.
+A fixed pair separated by \(s\le6\) consecutive gaps appears in at most
+\(7-s\) such windows and has coefficient \(2/(7-s)\) in each appearance.
+Its accumulated coefficient is therefore at most \(2\), which is the
+coefficient available in \(E_m\).  The pressure terms add exactly to
+\(P_B\), proving \eqref{eq:block-energy-exact-pressure}.
+
+For the mass identity, sum first over windows:
+\[
+ \sum_{r=1}^{m-1}q_r
+ =
+ \sum_{a=1}^{m-6}\sum_{j=1}^6p_j
+ =
+ \beta(m-6).
+\]
+For a fixed global gap, the relative position \(j\) can occur at most once,
+so \(q_r\le\sum_jp_j=\beta\).  Every global gap belongs to at least one of
+the consecutive seven-point windows, hence \(q_r\ge\min_jp_j\).
+\end{proof}

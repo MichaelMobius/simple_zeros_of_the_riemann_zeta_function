@@ -1,4 +1,4 @@
-% Manuscript version v16: immutable reproducibility artifact linked.
+% Manuscript version v17: pressure-preserving averaging and adjacent-pair refinement.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -27,9 +27,9 @@
 \newcommand{\cD}{\mathcal D}
 \newcommand{\cE}{\mathcal E}
 
-\title{A position-weighted refinement for simple zeros of the Riemann zeta function}
+\title{Pressure-preserving refinements for simple zeros of the Riemann zeta function}
 \author{Michael Hurtado}
-\date{August 12, 2026}
+\date{September 6, 2026}
 
 \begin{document}
 \maketitle
@@ -38,36 +38,47 @@
 We prove the unconditional lower bound
 \[
  \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
- \ge \frac{655000H_{\rm MT}-1305}{652504}
- =0.6730732086087052768351\ldots,
+ \ge
+ \frac{1125000H_{\rm MT}-2220}{1120671}
+ =
+ 0.6731175265883904388095857434106058666\ldots,
 \]
 where
 \[
- H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}
- =0.6725007036794116\ldots .
+ H_{\rm MT}
+ =
+ \frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}.
 \]
-The new ingredient is a position-weighted refinement of the seven-point
-Gram-stability argument appearing in recent reproducible work. Earlier
-certificates use a uniform pressure on the six consecutive gaps. We observe
-that the global double-counting argument depends only on the total pressure,
-whereas the local extremal problem depends on its distribution. We exploit
-this freedom using the certified vector
+The proof reuses the position-weighted seven-point certificate
 \[
- \frac1{10^7}(2714,3733,3553,3553,3733,2714),
- \qquad \sum_{j=1}^6p_j=\frac1{500},
+ \delta=\frac{39}{10000},
+ \qquad
+ p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
+ \qquad
+ \beta:=\sum_{j=1}^6p_j=\frac1{500},
 \]
-and an Arb/FLINT interval certificate proving the corresponding seven-point
-lower bound \(39/10000\). Combined with block length \(m=262\), this yields
-the constant above.
+without requiring a new seven-point branch-and-bound computation.
 
-For logical independence we also reconstruct the analytic/Gabor input package
-from classical ingredients rather than invoking the recent Theorem D as a
-black box. The external analytic trust base consists of the Guinand--Weil
-explicit formula, Stirling's formula, the Prime Number Theorem, the
-Riemann--von Mangoldt formula and standard local zero counting, standard
-prime-power estimates, the weighted Montgomery--Vaughan Hilbert inequality,
-and Poisson summation. The finite certificate is verified by directed interval
-arithmetic.
+Two refinements are introduced.  First, the pressure carried by each relative
+gap position is retained through the block summation and the shifted-block
+average.  This replaces the coarse global pressure cost
+\(\beta(m-1)\) by the exact mass \(\beta(m-6)\).  Second, pinching a limiting
+Gram matrix into the two alternating families of adjacent pairs gives
+\[
+ \mathcal D(K)\ge\sum_{j=1}^{m-1}w(g_j).
+\]
+Combined with a scalar kernel inequality at
+\(g_0=89/100\) and \(t=33/2\), this yields
+\[
+ \mathcal D(G_B)+P_B
+ \ge \frac{39}{10000}(m-6)-o(1)
+\]
+for \(m=450\).  Shifted-block averaging then gives the stated constant.
+The only new numerical input is a rigorous scalar enclosure for
+\(w(89/100)\); an exact-rational verifier checks this enclosure, the pressure
+mass, the contradiction margin, and the final constant.  The analytic/Gabor
+package and the seven-point certificate are the same inputs as in the previous
+version.
 \end{abstract}
 
 \section{Introduction and statement of novelty}
@@ -108,41 +119,52 @@ presents the subsequent refinement as AI-generated.  We cite the
 human-maintained artifacts and treat model use as provenance rather than
 mathematical authorship.
 
-The contribution of the present paper is narrower and explicit. We do not
-claim the stability-enhanced rank--trace inequality, the seven-point
-architecture, or the uniform-pressure local-to-global argument as new.
-Instead we optimize a degree of freedom left fixed in those works. If
-\(g_1,\ldots,g_6\) are six consecutive normalized gaps, the global
-double-counting cost depends only on
-\[
- \beta:=\sum_{j=1}^6p_j,
-\]
-whereas the local extremal problem depends on the individual \(p_j\).
-Consequently the uniform choice can be replaced by a nonuniform
-position-dependent pressure without increasing the global cost. The
-certified choice used here is
+The contribution of the present paper is explicit and layered.  We do not
+claim the stability-enhanced rank--trace inequality or the seven-point
+architecture as new.  We use the already certified nonuniform pressure vector
 \begin{equation}\label{eq:p}
  p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
- \qquad \sum_{j=1}^6p_j=\frac1{500}.
+ \qquad
+ \beta:=\sum_{j=1}^6p_j=\frac1{500},
 \end{equation}
-For this vector we certify
+for which the seven-point functional satisfies
 \begin{equation}\label{eq:local-cert-intro}
  \mathcal F_p(g_1,\ldots,g_6)\ge\frac{39}{10000}
  \qquad(g_j\ge0).
 \end{equation}
-After global redistribution and shifted-block averaging, the block length
-\(m=262\) yields the theorem below.
+
+The new argument has two stages.  First, rather than replacing the accumulated
+position-dependent pressure inside a block by
+\(\beta\,\operatorname{span}(B)\), we retain its exact coefficients until the
+final average over shifted blocks.  This reduces the global pressure mass from
+the coarse \(\beta(m-1)\) to the exact \(\beta(m-6)\).  Already at \(m=262\)
+this gives
+\[
+ \frac{655000H_{\rm MT}-1280}{652504}
+ =
+ 0.6731115225500757511923586\ldots .
+\]
+Second, an adjacent-pair pinching argument supplies an independent lower bound
+for the Gram defect in terms of the consecutive-gap kernel energies.  Together
+with one rigorously enclosed scalar value of the Montgomery--Taylor kernel,
+this permits \(m=450\) and yields Theorem~\ref{thm:main}.  No new
+seven-point local certificate is required.
 
 \begin{theorem}[Main theorem]\label{thm:main}
 With
 \[
- H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2},
+ H_{\rm MT}
+ =
+ \frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2},
 \]
 one has unconditionally
 \[
- \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
- \ge\frac{655000H_{\rm MT}-1305}{652504}
- =0.6730732086087052768351\ldots .
+ \liminf_{T\to\infty}
+ \frac{N_0^s(T,2T)}{N(T,2T)}
+ \ge
+ \frac{1125000H_{\rm MT}-2220}{1120671}
+ =
+ 0.6731175265883904388095857434106058666\ldots .
 \]
 \end{theorem}
 
@@ -156,9 +178,11 @@ recent Theorem D as an imported black box.
 The priority statements above concern the public artifacts inspected while
 preparing this version. Jo's repository is the public upstream artifact for
 the stability/seven-point draft used here; Rademacher's repository records
-that provenance and strengthens its finite certificate. The present novelty
-claim is restricted to the nonuniform position-weighted refinement, its
-certified pressure vector, and the resulting constant.
+that provenance and strengthens its finite certificate.  The new claims of
+the present version are restricted to the exact pressure-preserving global
+accounting, the adjacent-pair defect lemma, the scalar kernel enclosure used
+with that lemma, and the resulting constant.  The seven-point certificate
+itself is inherited unchanged from the frozen artifact.
 
 \section{The common finite compression and its two representations}
 \label{sec:common-compression}
@@ -688,33 +712,61 @@ For $p_j\ge0$ put
  \mathcal F_p(g):=\sum_{j=1}^6p_jg_j+\cE_7(g).
 \end{equation}
 
-\begin{proposition}[Pressure redistribution]\label{prop:redist}
-Let $\beta=\sum_{j=1}^6p_j$.  If
+\begin{proposition}[Exact pressure redistribution]\label{prop:redist}
+Assume
 \[
  \mathcal F_p(g)\ge\delta
  \qquad(g\in\R_{\ge0}^6),
+ \qquad
+ \beta:=\sum_{j=1}^6p_j.
 \]
-then every ordered configuration $y_1<\cdots<y_m$, $m\ge7$, satisfies
-\begin{equation}\label{eq:block-energy-general}
- E_m+\beta(y_m-y_1)\ge\delta(m-6),
+Let \(y_1<\cdots<y_m\), \(m\ge7\), and put
+\[
+ g_r:=y_{r+1}-y_r
+ \qquad(1\le r\le m-1).
+\]
+Define
+\begin{equation}\label{eq:qr}
+ q_r
+ :=
+ \sum_{a=1}^{m-6}\sum_{j=1}^6
+ p_j\,\mathbf 1_{\{r=a+j-1\}},
+ \qquad
+ P_B:=\sum_{r=1}^{m-1}q_rg_r .
+\end{equation}
+Then
+\begin{equation}\label{eq:block-energy-exact-pressure}
+ E_m+P_B\ge\delta(m-6),
  \qquad
  E_m:=2\sum_{1\le i<j\le m}w(y_j-y_i).
+\end{equation}
+Moreover,
+\begin{equation}\label{eq:pressure-mass}
+ \boxed{\sum_{r=1}^{m-1}q_r=\beta(m-6)},
+ \qquad
+ \min_jp_j\le q_r\le\beta .
 \end{equation}
 \end{proposition}
 
 \begin{proof}
-Sum the local inequality over the $m-6$ consecutive seven-point windows.
-A fixed pair separated by $r$ gaps can appear in at most $7-r$ windows and
-has coefficient $2/(7-r)$ in each appearance; hence its total coefficient is
-at most $2$.  A fixed global gap can occupy each of the six relative gap
-positions at most once, so its accumulated pressure is at most
-$\sum_jp_j=\beta$.  Therefore
+Sum the local inequality over the \(m-6\) consecutive seven-point windows.
+A fixed pair separated by \(s\le6\) consecutive gaps appears in at most
+\(7-s\) such windows and has coefficient \(2/(7-s)\) in each appearance.
+Its accumulated coefficient is therefore at most \(2\), which is the
+coefficient available in \(E_m\).  The pressure terms add exactly to
+\(P_B\), proving \eqref{eq:block-energy-exact-pressure}.
+
+For the mass identity, sum first over windows:
 \[
- (m-6)\delta
- \le\sum_{\text{windows}}\mathcal F_p
- \le E_m+\beta\sum_{j=1}^{m-1}(y_{j+1}-y_j),
+ \sum_{r=1}^{m-1}q_r
+ =
+ \sum_{a=1}^{m-6}\sum_{j=1}^6p_j
+ =
+ \beta(m-6).
 \]
-which is \eqref{eq:block-energy-general}.
+For a fixed global gap, the relative position \(j\) can occur at most once,
+so \(q_r\le\sum_jp_j=\beta\).  Every global gap belongs to at least one of
+the consecutive seven-point windows, hence \(q_r\ge\min_jp_j\).
 \end{proof}
 
 \begin{proposition}[Computer-assisted seven-point inequality]\label{prop:cert}
@@ -751,184 +803,455 @@ artifact is publicly archived in the immutable release
 environment.
 \end{proof}
 
-\begin{corollary}\label{cor:energy}
-For every $m\ge7$ and $y_1<\cdots<y_m$,
-\begin{equation}\label{eq:energy}
+\begin{corollary}[Coarse span consequence]\label{cor:energy}
+For every \(m\ge7\) and \(y_1<\cdots<y_m\),
+\[
+ E_m+\beta(y_m-y_1)\ge\delta(m-6).
+\]
+For the certified vector \eqref{eq:p},
+\[
  E_m+\frac1{500}(y_m-y_1)
  \ge\frac{39}{10000}(m-6).
-\end{equation}
+\]
 \end{corollary}
 
 \begin{proof}
-Apply Proposition~\ref{prop:redist} to Proposition~\ref{prop:cert} and use
-$\sum_jp_j=1/500$ from \eqref{eq:p}.
+Since \(q_r\le\beta\),
+\[
+ P_B=\sum_rq_rg_r
+ \le\beta\sum_rg_r
+ =\beta(y_m-y_1).
+\]
+Apply Proposition~\ref{prop:redist}.
 \end{proof}
 
-\section{Block stability}\label{sec:blockstability}
 
-Take
-\begin{equation}\label{eq:mA}
- m=262,\qquad
- A_0:=\frac{39}{10000}(m-6)=\frac{624}{625}<1.
+\section{Pressure-preserving block stability}\label{sec:blockstability}
+
+Put
+\[
+ \delta:=\frac{39}{10000},
+ \qquad
+ \beta:=\frac1{500},
+ \qquad
+ A_m:=\delta(m-6),
+ \qquad
+ Q_m:=\beta(m-6).
+\]
+For a block \(B=(y_1,\ldots,y_m)\), let \(P_B\) be the exact pressure
+\eqref{eq:qr}.  Proposition~\ref{prop:redist} gives
+\begin{equation}\label{eq:EplusP}
+ E_m+P_B\ge A_m,
+ \qquad
+ \sum_{r=1}^{m-1}q_r=Q_m.
 \end{equation}
-This is the largest integer $m$ for which $(39/10000)(m-6)<1$.
 
-Let $B$ be a block of $m$ consecutive retained simple zeros, let
-$\operatorname{span}(B)$ denote the difference between its extreme normalized
-ordinates, and let $G_B$ be its Gram matrix.
+\begin{remark}[Immediate accounting gain]\label{rem:accounting-gain}
+Take \(m=262\).  Then
+\[
+ A_{262}=\frac{624}{625}<1,
+ \qquad
+ Q_{262}=\frac{64}{125}.
+\]
+The proof of the old block-stability lemma applies verbatim with \(P_B\) in
+place of \(\beta\operatorname{span}(B)\): if \(P_B\ge A_{262}\) the claim is
+trivial, while if \(P_B<A_{262}\), the positive lower bound
+\(q_r\ge\min_jp_j\) confines the block span to a fixed compact interval and
+Lemma~\ref{lem:block} together with \eqref{eq:EplusP} gives
+\[
+ \mathcal D(G_B)+P_B\ge A_{262}-o(1).
+\]
+Averaging the exact pressure as in Section~\ref{sec:pinching} then yields
+\[
+ \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+ \ge
+ \frac{655000H_{\rm MT}-1280}{652504}
+ =
+ 0.6731115225500757511923586\ldots .
+\]
+Thus pressure preservation alone already improves the previous theorem.
+\end{remark}
 
-\begin{lemma}[Uniform block stability]\label{lem:blockstab}
-Uniformly over such blocks,
-\begin{equation}\label{eq:blockstab}
- \cD(G_B)+\frac1{500}\operatorname{span}(B)\ge A_0-o(1).
+
+\subsection{Adjacent-pair pinching}
+
+Let \(K=(k(y_i-y_j))_{1\le i,j\le m}\) be a limiting Gram matrix.  Then
+\(K\succeq0\), \(K_{ii}=1\), and
+\begin{equation}\label{eq:Em-trace}
+ E_m
+ =
+ \operatorname{tr}(K-I)^2
+ =
+ 2\sum_{1\le i<j\le m}w(y_j-y_i).
+\end{equation}
+
+\begin{lemma}[Adjacent-pair defect]\label{lem:adjacent-pairs}
+For consecutive gaps \(g_j=y_{j+1}-y_j\),
+\begin{equation}\label{eq:adjacent-pair-defect}
+ \boxed{\mathcal D(K)\ge\sum_{j=1}^{m-1}w(g_j)}.
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-If $\operatorname{span}(B)/500\ge A_0$, the claim is immediate because
-$\cD(G_B)\ge0$.  Otherwise
-$\operatorname{span}(B)<500A_0<500$.  Since $m$ is fixed, all
-$\binom{m}{2}$ pair separations lie in one fixed compact interval.  By
-Lemma~\ref{lem:kernel},
+Pinch \(K\) first into the principal \(2\times2\) blocks
 \[
- 2\sum_{i<j}|(G_B)_{ij}|^2=E_m+o(1)
+ (1,2),(3,4),\ldots
 \]
-uniformly over the blocks in this branch.  Lemma~\ref{lem:block} gives
+and then into
 \[
- \cD(G_B)\ge\min\{1,E_m+o(1)\}.
+ (2,3),(4,5),\ldots .
 \]
-Corollary~\ref{cor:energy} gives
+The spectral trace functional \(X\mapsto\operatorname{tr}\Psi(X)\) cannot
+increase under either pinching, since pinching is a random-unitary average
+and this trace functional is convex and unitarily invariant.
+
+The block associated with a consecutive gap \(g\) is
 \[
- E_m\ge A_0-\frac1{500}\operatorname{span}(B).
+ \begin{pmatrix}1&k(g)\\ \overline{k(g)}&1\end{pmatrix},
 \]
-The right-hand side lies in $(0,A_0]$ and $A_0<1$.  Hence
+whose eigenvalues are \(1\pm|k(g)|\in[0,2]\).  Its defect is therefore
+exactly \(2|k(g)|^2=2w(g)\).  The first pinching gives
 \[
- \cD(G_B)
- \ge A_0-\frac1{500}\operatorname{span}(B)-o(1),
+ \mathcal D(K)\ge2\sum_{j\ {\rm odd}}w(g_j),
 \]
-which proves \eqref{eq:blockstab}.  Uniformity of the error follows from the
-fixed block size and the compact separation range.
+and the second gives the corresponding inequality over even \(j\).  Averaging
+the two inequalities proves \eqref{eq:adjacent-pair-defect}.
 \end{proof}
 
-\section{Shifted block pinching}\label{sec:pinching}
+
+\subsection{A scalar kernel inequality}
+
+Set
+\begin{equation}\label{eq:g0t}
+ g_0:=\frac{89}{100},
+ \qquad
+ t:=\frac{33}{2}.
+\end{equation}
+
+\begin{lemma}[Scalar pressure bound]\label{lem:scalar-pressure}
+For every \(g\ge0\) and every \(q\in[0,\beta]\),
+\begin{equation}\label{eq:scalar-pressure}
+ w(g)+tqg\ge tqg_0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The normalized kernel has the integral representation
+\[
+ k(g)
+ =
+ \int_{-1/2}^{1/2}
+ \frac{\cos(\sqrt2\,u)}
+      {\sqrt2\sin(1/\sqrt2)}
+ \cos(2\pi gu)\,du .
+\]
+For \(0<g\le1\), differentiation under the integral sign gives
+\(k'(g)<0\): on \(0<u<1/2\), the density is positive and
+\(\sin(2\pi gu)>0\).  Moreover
+\[
+ k(1)=\frac1{2\pi^2-1}>0.
+\]
+Hence \(w(g)=k(g)^2\) is decreasing on \([0,1]\).
+
+The exact-arithmetic verifier accompanying this version proves
+\begin{equation}\label{eq:w089}
+ w\!\left(\frac{89}{100}\right)
+ >
+ \frac{2937}{100000}
+ =
+ t\beta g_0.
+\end{equation}
+If \(0\le g\le g_0\), then
+\[
+ w(g)\ge w(g_0)>t\beta g_0\ge tqg_0.
+\]
+If \(g\ge g_0\), then \(tqg\ge tqg_0\).  This proves
+\eqref{eq:scalar-pressure}.
+\end{proof}
+
+
+\begin{lemma}[Spectral threshold]\label{lem:spectral-threshold}
+Let \(K\succeq0\) be \(m\times m\) with diagonal \(1\), and set
+\[
+ E:=\operatorname{tr}(K-I)^2.
+\]
+If \(\mathcal D(K)<E\), then
+\begin{equation}\label{eq:spectral-threshold}
+ \mathcal D(K)>\frac{m}{m-1}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+If all eigenvalues of \(K\) belonged to \([0,2]\), then
+\(\Psi(\lambda)=(\lambda-1)^2\) for every eigenvalue and
+\(\mathcal D(K)=E\).  Hence \(\mathcal D(K)<E\) implies the existence of
+an eigenvalue \(1+a>2\), with \(a>1\).
+
+The remaining \(m-1\) eigenvalues have sum \(m-1-a\), hence average
+\(1-a/(m-1)\).  Since \(\Psi\) is convex,
+\[
+ \mathcal D(K)
+ \ge
+ 2a-1
+ +(m-1)\Psi\!\left(1-\frac{a}{m-1}\right)
+ =
+ 2a-1+\frac{a^2}{m-1}.
+\]
+At \(a=1\) the last expression equals \(m/(m-1)\), and it is strictly
+increasing for \(a>1\), proving \eqref{eq:spectral-threshold}.
+\end{proof}
+
+
+\begin{proposition}[Strong block stability at \(m=450\)]
+\label{prop:blockstab450}
+Let \(B\) be a block of
+\[
+ m=450
+\]
+consecutive retained simple zeros, with exact pressure \(P_B\) from
+\eqref{eq:qr}.  Put
+\begin{equation}\label{eq:AQ450}
+ A:=A_{450}=\frac{4329}{2500},
+ \qquad
+ Q:=Q_{450}=\frac{111}{125}.
+\end{equation}
+Uniformly over such blocks,
+\begin{equation}\label{eq:blockstab450}
+ \boxed{\mathcal D(G_B)+P_B\ge A-o(1)}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+If \(P_B\ge A\), the assertion follows from \(\mathcal D(G_B)\ge0\).
+Assume \(P_B<A\).  Since \(q_r\ge\min_jp_j=2714/10^7\),
+\[
+ \operatorname{span}(B)
+ =
+ \sum_rg_r
+ \le
+ \frac{P_B}{\min_jp_j}
+ <
+ \frac{A}{\min_jp_j}.
+\]
+Thus all pair separations remain in a fixed compact interval.  Since \(m\) is
+fixed, Lemma~\ref{lem:kernel} gives, uniformly in this branch,
+\[
+ G_B=K_B+o(1)
+\]
+in matrix norm, where
+\[
+ K_B=(k(y_i-y_j))_{i,j=1}^m.
+\]
+By continuity of the spectral trace functional,
+\[
+ \mathcal D(G_B)=\mathcal D(K_B)+o(1).
+\]
+It remains to prove
+\[
+ \mathcal D(K_B)+P_B\ge A.
+\]
+
+Write \(K=K_B\) and \(D=\mathcal D(K)\).  By
+Proposition~\ref{prop:redist} and \eqref{eq:Em-trace},
+\[
+ E+P_B\ge A,
+ \qquad
+ E=\operatorname{tr}(K-I)^2.
+\]
+Lemma~\ref{lem:adjacent-pairs} and
+Lemma~\ref{lem:scalar-pressure} give
+\begin{equation}\label{eq:Dplus-tP-lower}
+ D+tP_B
+ \ge
+ \sum_{j=1}^{m-1}\bigl(w(g_j)+tq_jg_j\bigr)
+ \ge
+ tg_0\sum_{j=1}^{m-1}q_j
+ =
+ tg_0Q.
+\end{equation}
+
+Suppose for contradiction that \(D+P_B<A\).  Since \(E+P_B\ge A\),
+we have \(D<E\); Lemma~\ref{lem:spectral-threshold} therefore yields
+\[
+ D>\frac{m}{m-1}.
+\]
+Consequently
+\begin{align}
+ D+tP_B
+ &=
+ t(D+P_B)-(t-1)D \nonumber\\
+ &<
+ tA-(t-1)\frac{m}{m-1}.
+ \label{eq:Dplus-tP-upper}
+\end{align}
+For \(m=450\), the lower bound
+\eqref{eq:Dplus-tP-lower} contradicts
+\eqref{eq:Dplus-tP-upper}, because the exact rational margin is
+\begin{equation}\label{eq:contradiction-margin}
+ g_0Q
+ +
+ \left(1-\frac1t\right)\frac{450}{449}
+ -A
+ =
+ \frac{6363}{30868750}
+ >0.
+\end{equation}
+Hence \(D+P_B\ge A\), and the uniform finite-\(T\) statement
+\eqref{eq:blockstab450} follows.
+\end{proof}
+
+
+\section{Shifted block pinching with exact pressure}\label{sec:pinching}
 
 Let
 \[
  x_1<\cdots<x_{S^\circ}
 \]
-be the normalized ordinates of the set $\cS^\circ$ defined in
-\eqref{eq:Scentral}.  By the boundary estimate in Lemma~\ref{lem:kernel},
-\begin{equation}\label{eq:S}
+be the normalized ordinates of the retained central set
+\(\mathcal S^\circ\).  As before,
+\[
  S^\circ=N_0^s(T,2T)-o(N(T,2T)).
+\]
+
+For each of the \(m=450\) offsets modulo \(m\), partition the ordered points
+into full consecutive blocks of size \(m\), with only \(O(m)\) endpoint
+points left over.  Pinching \(M^\circ\) to the full principal blocks and the
+remainder gives
+\[
+ \mathcal D(M^\circ)\ge\sum_B\mathcal D(G_B).
+\]
+Summing over all offsets and applying Proposition~\ref{prop:blockstab450},
+\begin{equation}\label{eq:shifted-exact}
+ m\mathcal D(M^\circ)
+ \ge
+ (S^\circ-m+1)A
+ -\sum_BP_B
+ -o(N).
 \end{equation}
 
-For each of the $m$ offsets modulo $m$, partition the ordered points into full
-consecutive blocks of size $m$, leaving only $O(m)$ endpoint points.  Pinching
-$M^\circ$ to the full principal blocks and the remainder yields
-\begin{equation}\label{eq:pinch}
- \cD(M^\circ)\ge\sum_B\cD(G_B).
+The pressure term retains its exact positional mass.  For each fixed relative
+position \(r\), a given global gap can occupy that position in at most one
+sliding \(m\)-point block.  Therefore its coefficient in the sum over all
+sliding blocks is at most
+\[
+ \sum_{r=1}^{m-1}q_r=Q.
+\]
+Hence
+\begin{equation}\label{eq:pressure-global}
+ \sum_BP_B
+ \le
+ Q(x_{S^\circ}-x_1)
+ \le
+ QN(T,2T)+o(N(T,2T)),
 \end{equation}
-Indeed, if $\mathcal P$ denotes this pinching, then for the finite group
-$\mathcal U$ of blockwise sign unitaries one has the random-unitary
-representation
-\[
- \mathcal P(X)=\frac1{|\mathcal U|}
- \sum_{U\in\mathcal U}UXU^*.
-\]
-Since the spectral trace functional
-$F(X):=\tr\Psi(X)$ is convex and unitarily invariant,
-\[
- F(\mathcal P(X))
- \le\frac1{|\mathcal U|}\sum_{U\in\mathcal U}F(UXU^*)
- =F(X).
-\]
-The pinched matrix is the direct sum of the full block Gram matrices and a
-remainder block.  Since $\Psi\ge0$, the latter has nonnegative defect and may
-be discarded, proving \eqref{eq:pinch}.  No operator convexity of $\Psi$ is
-used.
+where the last inequality is the same normalized-span consequence of the
+Riemann--von Mangoldt formula used previously.
 
-For a fixed offset, sum \eqref{eq:blockstab} over its full blocks; then average
-over all $m$ offsets.  The average number of full blocks is
-$S^\circ/m+O(1)$.  Each consecutive gap $x_{j+1}-x_j$ belongs to a block span
-for at most $m-1$ offsets.  Moreover,
-\begin{equation}\label{eq:span}
- x_{S^\circ}-x_1
- \le\frac{T}{h}
- =\frac{LT}{2\pi}
- =N(T,2T)+o(N(T,2T))
-\end{equation}
-by the Riemann--von Mangoldt formula.  Since the error in
-Lemma~\ref{lem:blockstab} is uniform and $m$ is fixed,
-\begin{equation}\label{eq:defectglobal}
- \cD(M^\circ)
+Combining \eqref{eq:shifted-exact} and \eqref{eq:pressure-global},
+and absorbing \(O(1)\) endpoint terms,
+\begin{equation}\label{eq:defectglobal-new}
+ \mathcal D(M^\circ)
  \ge
- \frac{A_0}{m}N_0^s(T,2T)
- -\frac{m-1}{500m}N(T,2T)
+ \frac{A}{m}N_0^s(T,2T)
+ -\frac{Q}{m}N(T,2T)
  -o(N(T,2T)).
 \end{equation}
-For \eqref{eq:mA},
-\begin{equation}\label{eq:defectnumbers}
- \cD(M^\circ)
+For \(m=450\),
+\begin{equation}\label{eq:defectnumbers-new}
+ \mathcal D(M^\circ)
  \ge
- \frac{312}{81875}N_0^s(T,2T)
- -\frac{261}{131000}N(T,2T)
+ \frac{481}{125000}N_0^s(T,2T)
+ -\frac{37}{18750}N(T,2T)
  -o(N(T,2T)).
 \end{equation}
+
 
 \begin{proof}[Proof of Theorem~\ref{thm:main}]
-Insert \eqref{eq:defectnumbers} into Corollary~\ref{cor:global}:
+Write
 \[
- N_0^s
- \ge H_{\rm MT}N
- +\frac{312}{81875}N_0^s
- -\frac{261}{131000}N-o(N).
+ S=N_0^s(T,2T),
+ \qquad
+ N=N(T,2T).
 \]
-Therefore
+Insert \eqref{eq:defectnumbers-new} into
+Corollary~\ref{cor:global}:
 \[
- \frac{81563}{81875}N_0^s
+ S
  \ge
- \left(H_{\rm MT}-\frac{261}{131000}\right)N-o(N).
+ H_{\rm MT}N
+ +\frac{481}{125000}S
+ -\frac{37}{18750}N
+ -o(N).
 \]
-Divide by $N=N(T,2T)$ and pass to the lower limit:
+Thus
+\[
+ \frac{124519}{125000}S
+ \ge
+ \left(H_{\rm MT}-\frac{37}{18750}\right)N-o(N).
+\]
+Dividing by \(N\) and passing to the lower limit gives
 \begin{align*}
- \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+ \liminf_{T\to\infty}\frac{S}{N}
  &\ge
- \frac{H_{\rm MT}-261/131000}{81563/81875}\\
- &=\frac{655000H_{\rm MT}-1305}{652504}\\
- &=0.6730732086087052768351\ldots .
+ \frac{450H_{\rm MT}-111/125}
+      {450-4329/2500}\\
+ &=
+ \frac{1125000H_{\rm MT}-2220}{1120671}\\
+ &=
+ 0.6731175265883904388095857434106058666\ldots .
 \end{align*}
 \end{proof}
 
 \section{Comparison and structural interpretation}
 
 Jo's upstream reproducible draft~\cite{Jo26} uses
-$p_j=1/3000$ and certifies $19/5000=0.0038$, leading to
-$0.6730085279277797\ldots$.  Rademacher's subsequent reproducible
+\(p_j=1/3000\) and certifies \(19/5000=0.0038\), leading to
+\(0.6730085279277797\ldots\).  Rademacher's subsequent reproducible
 refinement~\cite{Rademacher26} keeps the same uniform pressure and strengthens
-the certified local value to $191/50000=0.00382$, leading to
-$0.6730213619501665\ldots$.  Our vector has the same total pressure
-$1/500$ but certifies $39/10000=0.0039$.
+the certified local value to \(191/50000=0.00382\), leading to
+\(0.6730213619501665\ldots\).  The position-weighted vector \eqref{eq:p}
+has the same total pressure \(1/500\) and the existing computer-assisted
+certificate proves the stronger local value \(39/10000=0.0039\).
 
-The natural finite-dimensional optimization exposed by
-Proposition~\ref{prop:redist} is
+The previous version of the present paper used the coarse replacement
+\[
+ P_B\le\beta\,\operatorname{span}(B)
+\]
+inside each block and obtained
+\[
+ 0.6730732086087052768\ldots .
+\]
+The present version keeps the exact pressure coefficients \(q_r\) until the
+final shifted-block average.  With no additional local computation this alone
+improves the bound to
+\[
+ 0.6731115225500757512\ldots .
+\]
+The adjacent-pair refinement then gives
+\[
+ \boxed{0.6731175265883904388\ldots}.
+\]
+
+The distinction between the two improvements is structural.  Pressure
+preservation removes an avoidable global accounting loss:
+\[
+ \beta(m-1)\quad\longrightarrow\quad\beta(m-6).
+\]
+Adjacent-pair pinching supplies new information about the same block Gram
+matrix without changing the local seven-point certificate.  It is precisely
+this extra defect lower bound that allows the argument to pass beyond the
+\(A_m<1\) regime and use \(m=450\).
+
+The natural finite-dimensional local optimization remains
 \begin{equation}\label{eq:minimax}
  \sup_{\substack{p_j\ge0\\\sum p_j=1/500}}
  \inf_{g\in\R_{\ge0}^6}
- \left(\sum_{j=1}^6p_jg_j+\cE_7(g)\right).
+ \left(\sum_{j=1}^6p_jg_j+\mathcal E_7(g)\right).
 \end{equation}
-The uniform vector is one feasible point of this problem.  The strongest reproduced \emph{certificate} for that uniform vector among
-the two artifacts just cited is Rademacher's
-$191/50000=0.00382$, whereas Proposition~\ref{prop:cert} gives a certified
-value $39/10000=0.0039$ for the position-weighted vector \eqref{eq:p}.
-This comparison proves that the new \emph{certified lower bound} is stronger;
-by itself it does not prove that the exact local infimum for the uniform
-vector is below $0.0039$.  Accordingly, we make no claim here that uniform
-pressure is globally suboptimal, nor that \eqref{eq:p} solves
-\eqref{eq:minimax}.
-
-A larger optimization could also redistribute pair-energy coefficients
-$c_{r,i}$ subject to the double-counting budgets
-$\sum_{i=1}^{7-r}c_{r,i}\le2$.  We leave that problem open.
+We do not claim that \eqref{eq:p} solves this minimax problem, nor that
+\(m=450\) is optimal for all refinements of the present method.  The theorem
+uses the already certified vector and a new analytic exploitation of the
+pressure it carries.
 
 \section{Scope and trust base}\label{sec:trust}
 
@@ -957,6 +1280,23 @@ immutable artifact release~\cite{Hurtado26Artifact}, the frozen verifier,
 of the execution environment.  The 128- and 256-bit runs are
 replications of the same implementation at different working precisions, not
 algorithmically independent verifiers.
+
+The refinement from the previous constant to Theorem~\ref{thm:main} introduces
+no new seven-point branch-and-bound certificate.  Its additional numerical
+trust base is the small exact-arithmetic verifier
+\texttt{verify\_improved\_bound.py}.  It uses Python integer arithmetic and
+\texttt{Fraction} for all decisive comparisons, rigorous rational enclosures
+for the elementary transcendental quantities, and checks in particular
+\[
+ w(89/100)>\frac{2937}{100000},
+ \qquad
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =\frac{6363}{30868750}>0,
+\]
+as well as the final constant.  Decimal arithmetic is used only for outward
+display of certified intervals.  This verifier does not replay the existing
+seven-point certificate, the analytic/Gabor package, or the Lean
+formalization; those remain inputs from the preceding version.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
 optimality theorem.  Thus the paper is self-contained relative to the
@@ -995,7 +1335,7 @@ Write
 \]
 
 The only zeta-specific fact used in the inertia calculation is the combined
-functional-equation/conjugation symmetry, which preserves multiplicity:
+functional-equation and conjugation symmetry, which preserves multiplicity:
 \[
  m_{\rho^\sharp}=m_\rho.
 \]
@@ -1208,7 +1548,7 @@ gives
 \]
 \end{proof}
 
-\subsection{Why the functional-equation/conjugation pairing produces the block}
+\subsection{Why the functional-equation and conjugation pairing produces the block}
 
 For completeness we isolate the algebra behind \eqref{ai:eq:Q}.  Weil's
 Hermitian zero-side form pairs the evaluation at $\rho$ with the evaluation
@@ -2842,18 +3182,41 @@ The archived environment reports CPython 3.14.7 and
 
 \section{Exact arithmetic}
 
-From $m=262$ and $A_0=624/625$,
+For the main refinement,
 \[
- \frac{A_0}{m}=\frac{312}{81875},\qquad
- \frac{m-1}{500m}=\frac{261}{131000},\qquad
- 1-\frac{312}{81875}=\frac{81563}{81875}.
+ m=450,\qquad
+ A=\frac{39}{10000}(m-6)=\frac{4329}{2500},\qquad
+ Q=\frac1{500}(m-6)=\frac{111}{125}.
 \]
-Thus
+Hence
 \[
- \frac{H_{\rm MT}-261/131000}{81563/81875}
+ \frac{A}{m}=\frac{481}{125000},\qquad
+ \frac{Q}{m}=\frac{37}{18750},\qquad
+ 1-\frac{A}{m}=\frac{124519}{125000}.
+\]
+Therefore
+\[
+ \frac{H_{\rm MT}-Q/m}{1-A/m}
  =
- \frac{655000H_{\rm MT}-1305}{652504}.
+ \frac{450H_{\rm MT}-111/125}{450-4329/2500}
+ =
+ \frac{1125000H_{\rm MT}-2220}{1120671}.
 \]
+The scalar adjacent-pair input is
+\[
+ g_0=\frac{89}{100},\qquad t=\frac{33}{2},
+ \qquad
+ w(g_0)>\frac{2937}{100000}=t\beta g_0.
+\]
+The contradiction margin is the positive rational
+\[
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =
+ \frac{6363}{30868750}>0.
+\]
+The accompanying script \texttt{verify\_improved\_bound.py} verifies these
+identities and rigorously encloses the transcendental quantities entering the
+final decimal bound.
 
 \begin{thebibliography}{99}
 

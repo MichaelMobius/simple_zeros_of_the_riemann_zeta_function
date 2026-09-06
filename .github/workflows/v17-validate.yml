@@ -1,0 +1,72 @@
+name: Validate v17 manuscript
+
+on:
+  push:
+    branches: [v17-pressure-preserving]
+    paths:
+      - ".github/workflows/v17-validate.yml"
+      - "paper/revision_v17/**"
+      - "certification/v17/**"
+      - "paper/main.tex"
+      - "README.md"
+      - "CITATION.cff"
+      - "paper/README.md"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate v17 sources
+        run: python paper/revision_v17/apply.py
+
+      - name: Verify exact arithmetic
+        run: |
+          python certification/v17/verify_improved_bound.py \
+            --output certification/v17/verification.generated.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          expected=json.loads(Path('certification/v17/verification.json').read_text())
+          generated=json.loads(Path('certification/v17/verification.generated.json').read_text())
+          assert expected == generated, 'generated verification JSON differs semantically from frozen expected JSON'
+          print('VERIFICATION_JSON_SEMANTIC_MATCH')
+          PY
+
+      - name: Compile manuscript
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main_v17.tex
+          working_directory: paper
+
+      - name: Fail on unresolved LaTeX references
+        run: |
+          if grep -E "LaTeX Warning: (Reference|Citation).*undefined|There were undefined references" paper/main_v17.log; then
+            echo "Unresolved references/citations found"
+            exit 1
+          fi
+          if grep -E "Label .* multiply defined|multiply-defined labels" paper/main_v17.log; then
+            echo "Duplicate labels found"
+            exit 1
+          fi
+
+      - name: Promote validated v17 files on branch
+        run: |
+          cp paper/main_v17.tex paper/main.tex
+          cp paper/main_v17.pdf paper/main.pdf
+          cp README_v17.md README.md
+          cp CITATION_v17.cff CITATION.cff
+          cp paper/README_v17.md paper/README.md
+          rm -f README_v17.md CITATION_v17.cff paper/README_v17.md
+          rm -f paper/main_v17.tex paper/main_v17.pdf paper/main_v17.aux paper/main_v17.log paper/main_v17.out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/main.tex paper/main.pdf README.md CITATION.cff paper/README.md \
+                  certification/v17/verification.generated.json
+          git commit -m "Promote validated v17 manuscript [skip ci]"
+          git push

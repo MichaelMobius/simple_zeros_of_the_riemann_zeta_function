@@ -1,0 +1,37 @@
+\section{Exact arithmetic}
+
+For the main refinement,
+\[
+ m=450,\qquad
+ A=\frac{39}{10000}(m-6)=\frac{4329}{2500},\qquad
+ Q=\frac1{500}(m-6)=\frac{111}{125}.
+\]
+Hence
+\[
+ \frac{A}{m}=\frac{481}{125000},\qquad
+ \frac{Q}{m}=\frac{37}{18750},\qquad
+ 1-\frac{A}{m}=\frac{124519}{125000}.
+\]
+Therefore
+\[
+ \frac{H_{\rm MT}-Q/m}{1-A/m}
+ =
+ \frac{450H_{\rm MT}-111/125}{450-4329/2500}
+ =
+ \frac{1125000H_{\rm MT}-2220}{1120671}.
+\]
+The scalar adjacent-pair input is
+\[
+ g_0=\frac{89}{100},\qquad t=\frac{33}{2},
+ \qquad
+ w(g_0)>\frac{2937}{100000}=t\beta g_0.
+\]
+The contradiction margin is the positive rational
+\[
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =
+ \frac{6363}{30868750}>0.
+\]
+The accompanying script \texttt{verify\_improved\_bound.py} verifies these
+identities and rigorously encloses the transcendental quantities entering the
+final decimal bound.
