@@ -37,6 +37,8 @@ jobs:
              upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean \
              upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
+          cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean \
+             upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -50,7 +52,8 @@ jobs:
             "HurtadoZeta23.MatrixEnergy",
             "HurtadoZeta23.BlockDefect",
             "HurtadoZeta23.V17StrongBlockScalar",
-            "HurtadoZeta23.V17SpectralThreshold"]
+            "HurtadoZeta23.V17SpectralThreshold",
+            "HurtadoZeta23.V17FiniteSpectralThreshold"]
           EOF
 
       - name: Install exact Lean toolchain
@@ -66,7 +69,7 @@ jobs:
         shell: bash
         run: lake exe cache get
 
-      - name: Build spectral threshold
+      - name: Build spectral thresholds
         working-directory: upstream/zeta23
         shell: bash
         run: lake build HurtadoZeta23V17Threshold
