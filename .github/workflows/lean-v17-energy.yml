@@ -33,6 +33,7 @@ jobs:
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
           cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
+          cp harness/lean_harness/v17_energy/V17OffDiagonalSplit.lean upstream/zeta23/HurtadoZeta23/V17OffDiagonalSplit.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -42,7 +43,9 @@ jobs:
             "HurtadoZeta23.WindowCombinatorics",
             "HurtadoZeta23.LocalFunctional",
             "HurtadoZeta23.DirectRedistribution",
-            "HurtadoZeta23.V17KernelBridge450"]
+            "HurtadoZeta23.MatrixEnergy",
+            "HurtadoZeta23.V17KernelBridge450",
+            "HurtadoZeta23.V17OffDiagonalSplit"]
           EOF
 
       - name: Install exact Lean toolchain
