@@ -104,11 +104,11 @@ for exact reproduction instructions.
 
 Two releases play distinct roles.
 
-### Manuscript
+### Previous frozen manuscript
 
 **`v1.1.0-paper`**
 
-This release freezes the submission-ready manuscript.
+This release freezes the preceding submission-ready manuscript. The v17 revision is the current branch state pending its next frozen release.
 
 ### Computational artifact
 
@@ -336,11 +336,13 @@ Citation metadata is provided in:
 CITATION.cff
 ```
 
-The submission-ready manuscript is frozen in:
+The preceding submission-ready manuscript is frozen in:
 
 ``` text
 v1.1.0-paper
 ```
+
+The current v17 revision is on branch `v17-pressure-preserving` pending its next frozen release.
 
 and the computational artifact used by the manuscript is frozen in:
 
@@ -412,8 +414,12 @@ Repository:
 
 ## v17 analytic refinement
 
-The v17 manuscript reuses the frozen seven-point certificate unchanged.  A new exact-arithmetic verifier in `certification/v17/verify_improved_bound.py` checks the additional scalar kernel enclosure, pressure mass, contradiction margin, and final constant.  The v17 result is
+The v17 manuscript reuses the frozen seven-point certificate unchanged. A new
+exact-arithmetic verifier in `certification/v17/verify_improved_bound.py`
+checks the additional scalar kernel enclosure, pressure mass, contradiction
+margin, and final constant. The v17 result is
 
 $$
-\liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}\ge 0.6731175265883904388095857434\ldots
+\liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge 0.6731175265883904388095857434\ldots
 $$
