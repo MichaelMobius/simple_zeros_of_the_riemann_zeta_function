@@ -23,13 +23,11 @@ jobs:
           mkdir -p /tmp/zeta
           cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
-      - name: Show exact v17-450 interfaces
+      - name: Show energy interfaces
         shell: bash
         run: |
           set -euo pipefail
-          echo '===== HPOIS / COLUMN BOUNDS ====='
-          grep -R -n -C 24 -E 'hPois|simpleOnLineSynthesis.*apply|simpleOnLineSynthesis|sq_sqrt_mult_div|rtrace_simpleBlockP_le' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean | head -n 1000 || true
-          echo '===== EXISTING GRAM DIAGONAL FACTS ====='
-          grep -R -n -C 20 -E 'Gram.*apply|gram.*apply|conjTranspose_mul_self|mul_apply|diagonal|diag' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean /tmp/zeta/HurtadoZeta23/PrincipalGramBlocks.lean /tmp/zeta/HurtadoZeta23/ConcreteBlockDefect.lean | head -n 1000 || true
-          echo '===== POISSON INPUT ORIGIN ====='
-          grep -R -n -C 20 -E '∀ z ∈ .*S₁.*∑ k|sum.*norm.*≤|evalVec.*norm|Poisson|Pois' /tmp/zeta/HurtadoZeta23 | head -n 1000 || true
+          echo '===== MATRIX ENERGY ====='
+          cat /tmp/zeta/HurtadoZeta23/MatrixEnergy.lean
+          echo '===== OFFDIAGONAL OCCURRENCES ====='
+          grep -R -n -C 18 -E 'offDiagonalEnergy|upper.*tri|pair.*energy|frob.*diag|frobeniusDeviation' /tmp/zeta/HurtadoZeta23 | head -n 1600 || true
