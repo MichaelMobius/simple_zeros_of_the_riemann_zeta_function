@@ -409,7 +409,7 @@ Repository:
 
 **Resulting unconditional bound:**
 
-\[ 0.6730732086087052768351`\ldots`{=tex} \]
+\[ 0.6731175265883904388096`\ldots`{=tex} \]
 
 
 ## v17 analytic refinement
