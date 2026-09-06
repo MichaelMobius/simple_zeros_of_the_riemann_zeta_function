@@ -17,13 +17,14 @@ theorem v17_sq_lower_of_abs_sub_le
   · have hsq : b ^ 2 ≤ a ^ 2 := by nlinarith
     linarith
   · have habpos : 0 ≤ b - a := by linarith
-    have hdiff : b - a ≤ eps := by
-      have h := le_trans (le_abs_self (b - a)) ?_
-      · simpa [abs_sub_comm] using hab
-      · exact h
+    have hab' : |b - a| ≤ eps := by
+      simpa [abs_sub_comm] using hab
+    have hdiff : b - a ≤ eps :=
+      (le_abs_self (b - a)).trans hab'
     have hsum : a + b ≤ 2 := by linarith
+    have hsum0 : 0 ≤ a + b := by linarith
     have hprod : (b - a) * (a + b) ≤ eps * 2 := by
-      exact mul_le_mul hdiff hsum (by positivity) habpos
+      exact mul_le_mul hdiff hsum hsum0 heps
     nlinarith
 
 /-- A convenient complex-valued corollary.  If the modulus of a complex
