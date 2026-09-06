@@ -27,13 +27,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo '===== PACKED FILES ====='
-          find /tmp/zeta/HurtadoZeta23 -maxdepth 1 -type f -printf '%f\n' | sort
-          echo '===== RAW OVERLAP APPROXIMATION ====='
-          grep -R -n -C 18 -E 'RawPointwiseOverlapApproximation262|pointwiseKernelApproximation262_of_raw|pointwiseKernelApproximation262' /tmp/zeta/HurtadoZeta23 || true
-          echo '===== OVERLAP / KERNEL BRIDGE DEFINITIONS ====='
-          grep -R -n -C 12 -E 'limitingWeightOnPoints|RawPointwise|KernelApproximation|overlapApprox|overlap' /tmp/zeta/HurtadoZeta23 | head -n 600 || true
-          echo '===== POINTWISE DIAGONAL / SYNTHESIS COLUMNS ====='
-          grep -R -n -C 16 -E 'simpleSynthesis|SimpleOnLineColumn|restrictSynthesis|column.*norm|norm.*column|diag.*one|diag.*le|diagonal|conjTranspose.*mul' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean /tmp/zeta/HurtadoZeta23/PrincipalGramBlocks.lean /tmp/zeta/HurtadoZeta23/ConcreteBlockDefect.lean 2>/dev/null | head -n 800 || true
-          echo '===== SHIFTED PAIR INJECTION ====='
-          grep -R -n -C 18 -E 'shifted_pair_sum_le_band|summed_localPairEnergy_le_global|sum_shifted_range_le_range' /tmp/zeta/HurtadoZeta23/DirectRedistribution.lean || true
+          echo '===== HPOIS / COLUMN BOUNDS ====='
+          grep -R -n -C 24 -E 'hPois|simpleOnLineSynthesis.*apply|simpleOnLineSynthesis|sq_sqrt_mult_div|rtrace_simpleBlockP_le' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean | head -n 1000 || true
+          echo '===== EXISTING GRAM DIAGONAL FACTS ====='
+          grep -R -n -C 20 -E 'Gram.*apply|gram.*apply|conjTranspose_mul_self|mul_apply|diagonal|diag' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean /tmp/zeta/HurtadoZeta23/PrincipalGramBlocks.lean /tmp/zeta/HurtadoZeta23/ConcreteBlockDefect.lean | head -n 1000 || true
+          echo '===== POISSON INPUT ORIGIN ====='
+          grep -R -n -C 20 -E '∀ z ∈ .*S₁.*∑ k|sum.*norm.*≤|evalVec.*norm|Poisson|Pois' /tmp/zeta/HurtadoZeta23 | head -n 1000 || true
