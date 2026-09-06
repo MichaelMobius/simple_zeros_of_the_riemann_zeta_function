@@ -1,0 +1,46 @@
+\begin{abstract}
+We prove the unconditional lower bound
+\[
+ \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+ \ge
+ \frac{1125000H_{\rm MT}-2220}{1120671}
+ =
+ 0.6731175265883904388095857434106058666\ldots,
+\]
+where
+\[
+ H_{\rm MT}
+ =
+ \frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}.
+\]
+The proof reuses the position-weighted seven-point certificate
+\[
+ \delta=\frac{39}{10000},
+ \qquad
+ p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
+ \qquad
+ \beta:=\sum_{j=1}^6p_j=\frac1{500},
+\]
+without requiring a new seven-point branch-and-bound computation.
+
+Two refinements are introduced.  First, the pressure carried by each relative
+gap position is retained through the block summation and the shifted-block
+average.  This replaces the coarse global pressure cost
+\(\beta(m-1)\) by the exact mass \(\beta(m-6)\).  Second, pinching a limiting
+Gram matrix into the two alternating families of adjacent pairs gives
+\[
+ \mathcal D(K)\ge\sum_{j=1}^{m-1}w(g_j).
+\]
+Combined with a scalar kernel inequality at
+\(g_0=89/100\) and \(t=33/2\), this yields
+\[
+ \mathcal D(G_B)+P_B
+ \ge \frac{39}{10000}(m-6)-o(1)
+\]
+for \(m=450\).  Shifted-block averaging then gives the stated constant.
+The only new numerical input is a rigorous scalar enclosure for
+\(w(89/100)\); an exact-rational verifier checks this enclosure, the pressure
+mass, the contradiction margin, and the final constant.  The analytic/Gabor
+package and the seven-point certificate are the same inputs as in the previous
+version.
+\end{abstract}

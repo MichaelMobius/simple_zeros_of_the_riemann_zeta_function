@@ -1,0 +1,50 @@
+\section{Comparison and structural interpretation}
+
+Jo's upstream reproducible draft~\cite{Jo26} uses
+\(p_j=1/3000\) and certifies \(19/5000=0.0038\), leading to
+\(0.6730085279277797\ldots\).  Rademacher's subsequent reproducible
+refinement~\cite{Rademacher26} keeps the same uniform pressure and strengthens
+the certified local value to \(191/50000=0.00382\), leading to
+\(0.6730213619501665\ldots\).  The position-weighted vector \eqref{eq:p}
+has the same total pressure \(1/500\) and the existing computer-assisted
+certificate proves the stronger local value \(39/10000=0.0039\).
+
+The previous version of the present paper used the coarse replacement
+\[
+ P_B\le\beta\,\operatorname{span}(B)
+\]
+inside each block and obtained
+\[
+ 0.6730732086087052768\ldots .
+\]
+The present version keeps the exact pressure coefficients \(q_r\) until the
+final shifted-block average.  With no additional local computation this alone
+improves the bound to
+\[
+ 0.6731115225500757512\ldots .
+\]
+The adjacent-pair refinement then gives
+\[
+ \boxed{0.6731175265883904388\ldots}.
+\]
+
+The distinction between the two improvements is structural.  Pressure
+preservation removes an avoidable global accounting loss:
+\[
+ \beta(m-1)\quad\longrightarrow\quad\beta(m-6).
+\]
+Adjacent-pair pinching supplies new information about the same block Gram
+matrix without changing the local seven-point certificate.  It is precisely
+this extra defect lower bound that allows the argument to pass beyond the
+\(A_m<1\) regime and use \(m=450\).
+
+The natural finite-dimensional local optimization remains
+\begin{equation}\label{eq:minimax}
+ \sup_{\substack{p_j\ge0\\\sum p_j=1/500}}
+ \inf_{g\in\R_{\ge0}^6}
+ \left(\sum_{j=1}^6p_jg_j+\mathcal E_7(g)\right).
+\end{equation}
+We do not claim that \eqref{eq:p} solves this minimax problem, nor that
+\(m=450\) is optimal for all refinements of the present method.  The theorem
+uses the already certified vector and a new analytic exploitation of the
+pressure it carries.

@@ -1,0 +1,398 @@
+\begin{corollary}[Coarse span consequence]\label{cor:energy}
+For every \(m\ge7\) and \(y_1<\cdots<y_m\),
+\[
+ E_m+\beta(y_m-y_1)\ge\delta(m-6).
+\]
+For the certified vector \eqref{eq:p},
+\[
+ E_m+\frac1{500}(y_m-y_1)
+ \ge\frac{39}{10000}(m-6).
+\]
+\end{corollary}
+
+\begin{proof}
+Since \(q_r\le\beta\),
+\[
+ P_B=\sum_rq_rg_r
+ \le\beta\sum_rg_r
+ =\beta(y_m-y_1).
+\]
+Apply Proposition~\ref{prop:redist}.
+\end{proof}
+
+
+\section{Pressure-preserving block stability}\label{sec:blockstability}
+
+Put
+\[
+ \delta:=\frac{39}{10000},
+ \qquad
+ \beta:=\frac1{500},
+ \qquad
+ A_m:=\delta(m-6),
+ \qquad
+ Q_m:=\beta(m-6).
+\]
+For a block \(B=(y_1,\ldots,y_m)\), let \(P_B\) be the exact pressure
+\eqref{eq:qr}.  Proposition~\ref{prop:redist} gives
+\begin{equation}\label{eq:EplusP}
+ E_m+P_B\ge A_m,
+ \qquad
+ \sum_{r=1}^{m-1}q_r=Q_m.
+\end{equation}
+
+\begin{remark}[Immediate accounting gain]\label{rem:accounting-gain}
+Take \(m=262\).  Then
+\[
+ A_{262}=\frac{624}{625}<1,
+ \qquad
+ Q_{262}=\frac{64}{125}.
+\]
+The proof of the old block-stability lemma applies verbatim with \(P_B\) in
+place of \(\beta\operatorname{span}(B)\): if \(P_B\ge A_{262}\) the claim is
+trivial, while if \(P_B<A_{262}\), the positive lower bound
+\(q_r\ge\min_jp_j\) confines the block span to a fixed compact interval and
+Lemma~\ref{lem:block} together with \eqref{eq:EplusP} gives
+\[
+ \mathcal D(G_B)+P_B\ge A_{262}-o(1).
+\]
+Averaging the exact pressure as in Section~\ref{sec:pinching} then yields
+\[
+ \liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
+ \ge
+ \frac{655000H_{\rm MT}-1280}{652504}
+ =
+ 0.6731115225500757511923586\ldots .
+\]
+Thus pressure preservation alone already improves the previous theorem.
+\end{remark}
+
+
+\subsection{Adjacent-pair pinching}
+
+Let \(K=(k(y_i-y_j))_{1\le i,j\le m}\) be a limiting Gram matrix.  Then
+\(K\succeq0\), \(K_{ii}=1\), and
+\begin{equation}\label{eq:Em-trace}
+ E_m
+ =
+ \operatorname{tr}(K-I)^2
+ =
+ 2\sum_{1\le i<j\le m}w(y_j-y_i).
+\end{equation}
+
+\begin{lemma}[Adjacent-pair defect]\label{lem:adjacent-pairs}
+For consecutive gaps \(g_j=y_{j+1}-y_j\),
+\begin{equation}\label{eq:adjacent-pair-defect}
+ \boxed{\mathcal D(K)\ge\sum_{j=1}^{m-1}w(g_j)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Pinch \(K\) first into the principal \(2\times2\) blocks
+\[
+ (1,2),(3,4),\ldots
+\]
+and then into
+\[
+ (2,3),(4,5),\ldots .
+\]
+The spectral trace functional \(X\mapsto\operatorname{tr}\Psi(X)\) cannot
+increase under either pinching, since pinching is a random-unitary average
+and this trace functional is convex and unitarily invariant.
+
+The block associated with a consecutive gap \(g\) is
+\[
+ \begin{pmatrix}1&k(g)\\ \overline{k(g)}&1\end{pmatrix},
+\]
+whose eigenvalues are \(1\pm|k(g)|\in[0,2]\).  Its defect is therefore
+exactly \(2|k(g)|^2=2w(g)\).  The first pinching gives
+\[
+ \mathcal D(K)\ge2\sum_{j\ {\rm odd}}w(g_j),
+\]
+and the second gives the corresponding inequality over even \(j\).  Averaging
+the two inequalities proves \eqref{eq:adjacent-pair-defect}.
+\end{proof}
+
+
+\subsection{A scalar kernel inequality}
+
+Set
+\begin{equation}\label{eq:g0t}
+ g_0:=\frac{89}{100},
+ \qquad
+ t:=\frac{33}{2}.
+\end{equation}
+
+\begin{lemma}[Scalar pressure bound]\label{lem:scalar-pressure}
+For every \(g\ge0\) and every \(q\in[0,\beta]\),
+\begin{equation}\label{eq:scalar-pressure}
+ w(g)+tqg\ge tqg_0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The normalized kernel has the integral representation
+\[
+ k(g)
+ =
+ \int_{-1/2}^{1/2}
+ \frac{\cos(\sqrt2\,u)}
+      {\sqrt2\sin(1/\sqrt2)}
+ \cos(2\pi gu)\,du .
+\]
+For \(0<g\le1\), differentiation under the integral sign gives
+\(k'(g)<0\): on \(0<u<1/2\), the density is positive and
+\(\sin(2\pi gu)>0\).  Moreover
+\[
+ k(1)=\frac1{2\pi^2-1}>0.
+\]
+Hence \(w(g)=k(g)^2\) is decreasing on \([0,1]\).
+
+The exact-arithmetic verifier accompanying this version proves
+\begin{equation}\label{eq:w089}
+ w\!\left(\frac{89}{100}\right)
+ >
+ \frac{2937}{100000}
+ =
+ t\beta g_0.
+\end{equation}
+If \(0\le g\le g_0\), then
+\[
+ w(g)\ge w(g_0)>t\beta g_0\ge tqg_0.
+\]
+If \(g\ge g_0\), then \(tqg\ge tqg_0\).  This proves
+\eqref{eq:scalar-pressure}.
+\end{proof}
+
+
+\begin{lemma}[Spectral threshold]\label{lem:spectral-threshold}
+Let \(K\succeq0\) be \(m\times m\) with diagonal \(1\), and set
+\[
+ E:=\operatorname{tr}(K-I)^2.
+\]
+If \(\mathcal D(K)<E\), then
+\begin{equation}\label{eq:spectral-threshold}
+ \mathcal D(K)>\frac{m}{m-1}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+If all eigenvalues of \(K\) belonged to \([0,2]\), then
+\(\Psi(\lambda)=(\lambda-1)^2\) for every eigenvalue and
+\(\mathcal D(K)=E\).  Hence \(\mathcal D(K)<E\) implies the existence of
+an eigenvalue \(1+a>2\), with \(a>1\).
+
+The remaining \(m-1\) eigenvalues have sum \(m-1-a\), hence average
+\(1-a/(m-1)\).  Since \(\Psi\) is convex,
+\[
+ \mathcal D(K)
+ \ge
+ 2a-1
+ +(m-1)\Psi\!\left(1-\frac{a}{m-1}\right)
+ =
+ 2a-1+\frac{a^2}{m-1}.
+\]
+At \(a=1\) the last expression equals \(m/(m-1)\), and it is strictly
+increasing for \(a>1\), proving \eqref{eq:spectral-threshold}.
+\end{proof}
+
+
+\begin{proposition}[Strong block stability at \(m=450\)]
+\label{prop:blockstab450}
+Let \(B\) be a block of
+\[
+ m=450
+\]
+consecutive retained simple zeros, with exact pressure \(P_B\) from
+\eqref{eq:qr}.  Put
+\begin{equation}\label{eq:AQ450}
+ A:=A_{450}=\frac{4329}{2500},
+ \qquad
+ Q:=Q_{450}=\frac{111}{125}.
+\end{equation}
+Uniformly over such blocks,
+\begin{equation}\label{eq:blockstab450}
+ \boxed{\mathcal D(G_B)+P_B\ge A-o(1)}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+If \(P_B\ge A\), the assertion follows from \(\mathcal D(G_B)\ge0\).
+Assume \(P_B<A\).  Since \(q_r\ge\min_jp_j=2714/10^7\),
+\[
+ \operatorname{span}(B)
+ =
+ \sum_rg_r
+ \le
+ \frac{P_B}{\min_jp_j}
+ <
+ \frac{A}{\min_jp_j}.
+\]
+Thus all pair separations remain in a fixed compact interval.  Since \(m\) is
+fixed, Lemma~\ref{lem:kernel} gives, uniformly in this branch,
+\[
+ G_B=K_B+o(1)
+\]
+in matrix norm, where
+\[
+ K_B=(k(y_i-y_j))_{i,j=1}^m.
+\]
+By continuity of the spectral trace functional,
+\[
+ \mathcal D(G_B)=\mathcal D(K_B)+o(1).
+\]
+It remains to prove
+\[
+ \mathcal D(K_B)+P_B\ge A.
+\]
+
+Write \(K=K_B\) and \(D=\mathcal D(K)\).  By
+Proposition~\ref{prop:redist} and \eqref{eq:Em-trace},
+\[
+ E+P_B\ge A,
+ \qquad
+ E=\operatorname{tr}(K-I)^2.
+\]
+Lemma~\ref{lem:adjacent-pairs} and
+Lemma~\ref{lem:scalar-pressure} give
+\begin{equation}\label{eq:Dplus-tP-lower}
+ D+tP_B
+ \ge
+ \sum_{j=1}^{m-1}\bigl(w(g_j)+tq_jg_j\bigr)
+ \ge
+ tg_0\sum_{j=1}^{m-1}q_j
+ =
+ tg_0Q.
+\end{equation}
+
+Suppose for contradiction that \(D+P_B<A\).  Since \(E+P_B\ge A\),
+we have \(D<E\); Lemma~\ref{lem:spectral-threshold} therefore yields
+\[
+ D>\frac{m}{m-1}.
+\]
+Consequently
+\begin{align}
+ D+tP_B
+ &=
+ t(D+P_B)-(t-1)D \nonumber\\
+ &<
+ tA-(t-1)\frac{m}{m-1}.
+ \label{eq:Dplus-tP-upper}
+\end{align}
+For \(m=450\), the lower bound
+\eqref{eq:Dplus-tP-lower} contradicts
+\eqref{eq:Dplus-tP-upper}, because the exact rational margin is
+\begin{equation}\label{eq:contradiction-margin}
+ g_0Q
+ +
+ \left(1-\frac1t\right)\frac{450}{449}
+ -A
+ =
+ \frac{6363}{30868750}
+ >0.
+\end{equation}
+Hence \(D+P_B\ge A\), and the uniform finite-\(T\) statement
+\eqref{eq:blockstab450} follows.
+\end{proof}
+
+
+\section{Shifted block pinching with exact pressure}\label{sec:pinching}
+
+Let
+\[
+ x_1<\cdots<x_{S^\circ}
+\]
+be the normalized ordinates of the retained central set
+\(\mathcal S^\circ\).  As before,
+\[
+ S^\circ=N_0^s(T,2T)-o(N(T,2T)).
+\]
+
+For each of the \(m=450\) offsets modulo \(m\), partition the ordered points
+into full consecutive blocks of size \(m\), with only \(O(m)\) endpoint
+points left over.  Pinching \(M^\circ\) to the full principal blocks and the
+remainder gives
+\[
+ \mathcal D(M^\circ)\ge\sum_B\mathcal D(G_B).
+\]
+Summing over all offsets and applying Proposition~\ref{prop:blockstab450},
+\begin{equation}\label{eq:shifted-exact}
+ m\mathcal D(M^\circ)
+ \ge
+ (S^\circ-m+1)A
+ -\sum_BP_B
+ -o(N).
+\end{equation}
+
+The pressure term retains its exact positional mass.  For each fixed relative
+position \(r\), a given global gap can occupy that position in at most one
+sliding \(m\)-point block.  Therefore its coefficient in the sum over all
+sliding blocks is at most
+\[
+ \sum_{r=1}^{m-1}q_r=Q.
+\]
+Hence
+\begin{equation}\label{eq:pressure-global}
+ \sum_BP_B
+ \le
+ Q(x_{S^\circ}-x_1)
+ \le
+ QN(T,2T)+o(N(T,2T)),
+\end{equation}
+where the last inequality is the same normalized-span consequence of the
+Riemann--von Mangoldt formula used previously.
+
+Combining \eqref{eq:shifted-exact} and \eqref{eq:pressure-global},
+and absorbing \(O(1)\) endpoint terms,
+\begin{equation}\label{eq:defectglobal-new}
+ \mathcal D(M^\circ)
+ \ge
+ \frac{A}{m}N_0^s(T,2T)
+ -\frac{Q}{m}N(T,2T)
+ -o(N(T,2T)).
+\end{equation}
+For \(m=450\),
+\begin{equation}\label{eq:defectnumbers-new}
+ \mathcal D(M^\circ)
+ \ge
+ \frac{481}{125000}N_0^s(T,2T)
+ -\frac{37}{18750}N(T,2T)
+ -o(N(T,2T)).
+\end{equation}
+
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Write
+\[
+ S=N_0^s(T,2T),
+ \qquad
+ N=N(T,2T).
+\]
+Insert \eqref{eq:defectnumbers-new} into
+Corollary~\ref{cor:global}:
+\[
+ S
+ \ge
+ H_{\rm MT}N
+ +\frac{481}{125000}S
+ -\frac{37}{18750}N
+ -o(N).
+\]
+Thus
+\[
+ \frac{124519}{125000}S
+ \ge
+ \left(H_{\rm MT}-\frac{37}{18750}\right)N-o(N).
+\]
+Dividing by \(N\) and passing to the lower limit gives
+\begin{align*}
+ \liminf_{T\to\infty}\frac{S}{N}
+ &\ge
+ \frac{450H_{\rm MT}-111/125}
+      {450-4329/2500}\\
+ &=
+ \frac{1125000H_{\rm MT}-2220}{1120671}\\
+ &=
+ 0.6731175265883904388095857434106058666\ldots .
+\end{align*}
+\end{proof}
