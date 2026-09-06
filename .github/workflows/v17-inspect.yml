@@ -23,15 +23,17 @@ jobs:
           mkdir -p /tmp/zeta
           cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
-      - name: Show definitions needed for v17-450
+      - name: Show exact v17-450 interfaces
         shell: bash
         run: |
           set -euo pipefail
-          echo '===== pairBandEnergy / globalPairEnergyNat ====='
-          grep -R -n -C 12 -E 'def pairBandEnergy|def globalPairEnergyNat|theorem shifted_pair_sum_le_band' /tmp/zeta/HurtadoZeta23 || true
-          echo '===== block length / principal blocks ====='
-          grep -R -n -C 10 -E 'blockLength|principalGramBlock|consecutive.*Block|blockGram' /tmp/zeta/HurtadoZeta23 || true
-          echo '===== diagonal / column norm facts ====='
-          grep -R -n -C 10 -E 'diag.*le|diagonal.*le|column.*norm|norm.*column|gram.*diag' /tmp/zeta/HurtadoZeta23 || true
-          echo '===== Poisson overlap approximation ====='
-          grep -R -n -C 10 -E 'RawPointwiseOverlapApproximation262|pointwiseKernelApproximation262|overlap' /tmp/zeta/HurtadoZeta23/PoissonGaborBridge.lean || true
+          echo '===== PACKED FILES ====='
+          find /tmp/zeta/HurtadoZeta23 -maxdepth 1 -type f -printf '%f\n' | sort
+          echo '===== RAW OVERLAP APPROXIMATION ====='
+          grep -R -n -C 18 -E 'RawPointwiseOverlapApproximation262|pointwiseKernelApproximation262_of_raw|pointwiseKernelApproximation262' /tmp/zeta/HurtadoZeta23 || true
+          echo '===== OVERLAP / KERNEL BRIDGE DEFINITIONS ====='
+          grep -R -n -C 12 -E 'limitingWeightOnPoints|RawPointwise|KernelApproximation|overlapApprox|overlap' /tmp/zeta/HurtadoZeta23 | head -n 600 || true
+          echo '===== POINTWISE DIAGONAL / SYNTHESIS COLUMNS ====='
+          grep -R -n -C 16 -E 'simpleSynthesis|SimpleOnLineColumn|restrictSynthesis|column.*norm|norm.*column|diag.*one|diag.*le|diagonal|conjTranspose.*mul' /tmp/zeta/HurtadoZeta23/OnLineSynthesis.lean /tmp/zeta/HurtadoZeta23/PrincipalGramBlocks.lean /tmp/zeta/HurtadoZeta23/ConcreteBlockDefect.lean 2>/dev/null | head -n 800 || true
+          echo '===== SHIFTED PAIR INJECTION ====='
+          grep -R -n -C 18 -E 'shifted_pair_sum_le_band|summed_localPairEnergy_le_global|sum_shifted_range_le_range' /tmp/zeta/HurtadoZeta23/DirectRedistribution.lean || true
