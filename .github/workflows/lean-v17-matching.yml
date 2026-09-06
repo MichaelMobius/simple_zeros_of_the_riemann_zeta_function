@@ -36,6 +36,7 @@ jobs:
           cp harness/lean_harness/v17_adj/V17AdjacentPair.lean upstream/zeta23/HurtadoZeta23/V17AdjacentPair.lean
           cp harness/lean_harness/v17_matching/V17AdjacentMatching.lean upstream/zeta23/HurtadoZeta23/V17AdjacentMatching.lean
           cp harness/lean_harness/v17_matching/V17ConcreteMatching450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteMatching450.lean
+          cp harness/lean_harness/v17_matching/V17MatchingIndices.lean upstream/zeta23/HurtadoZeta23/V17MatchingIndices.lean
           cp harness/lean_harness/v17_matching/V17AdjacentBandScalar.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBandScalar.lean
           cp harness/lean_harness/v17_matching/V17ParitySplit.lean upstream/zeta23/HurtadoZeta23/V17ParitySplit.lean
           cp harness/lean_harness/v17_matching/V17GramDiagonal.lean upstream/zeta23/HurtadoZeta23/V17GramDiagonal.lean
@@ -50,11 +51,13 @@ jobs:
             "HurtadoZeta23.DirectRedistribution",
             "HurtadoZeta23.MatrixEnergy",
             "HurtadoZeta23.SpectralFrobenius",
+            "HurtadoZeta23.StableRankTraceMatrix",
             "HurtadoZeta23.GramSpectrumBridge",
             "HurtadoZeta23.SylvesterGramBridge",
             "HurtadoZeta23.CharpolyGramBridge",
             "HurtadoZeta23.RootMultisetGramBridge",
             "HurtadoZeta23.OnLineSynthesis",
+            "HurtadoZeta23.ConcreteStableCore",
             "HurtadoZeta23.PrincipalGramBlocks",
             "HurtadoZeta23.GramPinching",
             "HurtadoZeta23.GramPinchingConvex",
@@ -66,6 +69,7 @@ jobs:
             "HurtadoZeta23.V17AdjacentPair",
             "HurtadoZeta23.V17AdjacentMatching",
             "HurtadoZeta23.V17ConcreteMatching450",
+            "HurtadoZeta23.V17MatchingIndices",
             "HurtadoZeta23.V17AdjacentBandScalar",
             "HurtadoZeta23.V17ParitySplit",
             "HurtadoZeta23.V17GramDiagonal"]
