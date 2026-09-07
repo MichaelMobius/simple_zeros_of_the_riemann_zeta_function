@@ -5,6 +5,7 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_concrete/**"
+      - "lean_harness/v17_global/**"
       - "lean_harness/v17_strong/**"
       - "lean_harness/v17_energy/**"
       - "lean_harness/v17_matching/**"
@@ -80,6 +81,7 @@ jobs:
           cp harness/lean_harness/v17_strong/V17StrongBlockMatrix450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockMatrix450.lean
           cp harness/lean_harness/v17_strong/V17ScalarPressureFrontier.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressureFrontier.lean
           cp harness/lean_harness/v17_concrete/V17ConcreteStrongBlock450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteStrongBlock450.lean
+          cp harness/lean_harness/v17_global/V17ShiftedGramPinching450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedGramPinching450.lean
 
       - name: Register exact Hurtado import closure
         working-directory: upstream/zeta23
@@ -88,7 +90,10 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          todo = ["HurtadoZeta23.V17ConcreteStrongBlock450"]
+          todo = [
+              "HurtadoZeta23.V17ConcreteStrongBlock450",
+              "HurtadoZeta23.V17ShiftedGramPinching450",
+          ]
           seen = set()
           missing = []
           while todo:
@@ -141,7 +146,7 @@ jobs:
         shell: bash
         run: lake exe cache get
 
-      - name: Build concrete strong block
+      - name: Build concrete strong block and shifted pinching
         working-directory: upstream/zeta23
         shell: bash
         run: lake build HurtadoZeta23V17ConcreteStrong
