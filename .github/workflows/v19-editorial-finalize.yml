@@ -1,0 +1,99 @@
+name: v19 editorial finalization
+
+on:
+  push:
+    branches:
+      - v19-publication-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v19-publication-hardening
+          fetch-depth: 0
+
+      - name: Final provenance wording
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          tex_path = Path('paper/main.tex')
+          tex = tex_path.read_text(encoding='utf-8')
+
+          replacements = [
+              (
+                  'The analytic work needed by the stability argument is summarized in the next\nproposition.  Its four assertions are proved independently in\nAppendices~\\ref{app:inputI}--\\ref{app:inputIV}.',
+                  'The analytic work needed by the stability argument is summarized in the next\nproposition.  Its four assertions are derived in\nAppendices~\\ref{app:inputI}--\\ref{app:inputIV} from the trust base stated below.'
+              ),
+              (
+                  "Thus the manuscript's independence from Theorem~D as a mathematical premise\nmust not be conflated with clean-room software independence of the Lean\nformalization.",
+                  "Thus the manuscript's logical derivation without importing the\nAlpöge--Furman theorem as a mathematical premise must not be conflated with\nclean-room software independence of the Lean formalization."
+              ),
+              (
+                  'The search over the unbounded orthant has an explicit fail-closed pressure\ncutoff.  The implementation uses cell index $57{,}480$ on the mesh\n$1/4000$.  Since the smallest pressure coefficient is $2714/10^7$,',
+                  'The finite search used by the archived computation is justified on the\nunbounded orthant by a pressure cutoff at cell index $57{,}480$ on the mesh\n$1/4000$.  Since the smallest pressure coefficient is $2714/10^7$,'
+              ),
+              (
+                  'any box with at least one coordinate beyond that cutoff is certified by\nthe pressure term alone.  The verifier now checks this exact rational\nidentity before constructing the finite branch-and-bound search and aborts\nif it fails.\n\nThe frozen 256-bit run reports',
+                  'any box with at least one coordinate beyond that cutoff is certified by\nthe pressure term alone.  The current default-branch hardening copy of the\nverifier checks this exact rational identity before constructing the finite\nbranch-and-bound search and aborts if it fails.  This additional assertion is\nnot retroactively part of the frozen verifier whose SHA-256 is recorded in\nAppendix~\\ref{app:cert}; the archived run remains the certificate of record,\nwhile the v19 assertion makes the domain reduction explicit and fail-closed\nin the current reproducibility copy.\n\nThe frozen 256-bit run reports'
+              ),
+              (
+                  'The frozen archival verifier is\n\\[\n \\texttt{certify\\_nonuniform\\_3900\\_v1\\_1.py}.\n\\]\nIts SHA-256 is',
+                  'The frozen archival verifier in release \\texttt{v1.0.0-paper} is\n\\[\n \\texttt{certify\\_nonuniform\\_3900\\_v1\\_1.py}.\n\\]\nThe file with the same path on the current default branch contains the v19\nfail-closed cutoff assertion and is therefore intentionally not byte-identical\nto this frozen object.  The SHA-256 of the frozen verifier is'
+              ),
+          ]
+
+          for old, new in replacements:
+              if tex.count(old) != 1:
+                  raise SystemExit(f'expected one match, got {tex.count(old)} for: {old[:80]!r}')
+              tex = tex.replace(old, new, 1)
+
+          tex_path.write_text(tex, encoding='utf-8')
+
+          doc = Path('docs/V19_PUBLICATION_HARDENING.md')
+          d = doc.read_text(encoding='utf-8')
+          note = '''\n## Frozen versus hardened verifier\n\nThe historical 256-bit certificate remains tied to the exact verifier object\nin release `v1.0.0-paper` and to its published SHA-256.  The file at the same\nrepository path on the v19/default branch intentionally differs by the new\nfail-closed cutoff assertion and `--check-cutoff-only` audit mode.  v19 does\nnot relabel the modified file as the historical frozen verifier and does not\nchange the archived certificate hash.\n'''
+          if '## Frozen versus hardened verifier' not in d:
+              d = d.rstrip() + note + '\n'
+          doc.write_text(d, encoding='utf-8')
+          PY
+
+      - name: Source gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q 'proved independently in' paper/main.tex
+          ! grep -q "independence from Theorem~D" paper/main.tex
+          grep -q 'current default-branch hardening copy' paper/main.tex
+          grep -q 'intentionally not byte-identical' paper/main.tex
+          grep -q 'Frozen versus hardened verifier' docs/V19_PUBLICATION_HARDENING.md
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+
+      - name: Rebuild manuscript
+        working-directory: paper
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          ! grep -E 'LaTeX Warning: (Reference|Citation).*undefined|There were undefined references|There were undefined citations' main.log
+
+      - name: Clean and commit
+        shell: bash
+        run: |
+          rm -f paper/main.aux paper/main.log paper/main.out paper/main.toc
+          rm -f .github/workflows/v19-editorial-finalize.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Clarify frozen versus hardened verifier provenance'
+          git push origin HEAD:v19-publication-hardening
