@@ -9,6 +9,8 @@ open scoped ComplexOrder BigOperators
 
 namespace HurtadoZeta23
 
+set_option maxRecDepth 10000
+
 /-- The length-450 consecutive principal block of the retained Gram indexed by
 retained rank. -/
 noncomputable def v17RetainedGramFinBlock450
