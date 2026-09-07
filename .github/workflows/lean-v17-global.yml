@@ -8,7 +8,7 @@ on:
       - "lean_harness/v17_endgame/**"
       - "lean_harness/v17_weighted/**"
       - "lean_harness/v17_scalar/**"
-      - "lean_harness/v17_adj/part*.b64"
+      - "lean_src/**"
       - ".github/workflows/lean-v17-global.yml"
 
 permissions:
