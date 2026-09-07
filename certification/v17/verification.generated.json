@@ -45,7 +45,10 @@
       "lower": "0.029374354544166920929639619386763362066297364145494527449917616140",
       "upper": "0.029374354544166920929639619386763362066297364145494527449917616141"
     },
+    "signed_kernel_lower_bound": "171389/1000000",
+    "signed_kernel_claim": "171389/1000000 < k(89/100)",
     "required_w_lower_bound": "2937/100000",
+    "signed_square_margin_over_required_w": "4189321/1000000000000",
     "contradiction_margin": "6363/30868750",
     "bound_exact_expression": "(1125000*H_MT-2220)/1120671",
     "bound": {
