@@ -35,6 +35,7 @@ jobs:
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
+          cp harness/lean_harness/v17_weighted/V17ScalarPressure.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressure.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -44,8 +45,10 @@ jobs:
             "HurtadoZeta23.WindowCombinatorics",
             "HurtadoZeta23.LocalFunctional",
             "HurtadoZeta23.DirectRedistribution",
+            "HurtadoZeta23.LimitingKernel",
             "HurtadoZeta23.V17StrongBlockScalar",
-            "HurtadoZeta23.V17WeightedPressure"]
+            "HurtadoZeta23.V17WeightedPressure",
+            "HurtadoZeta23.V17ScalarPressure"]
           EOF
 
       - name: Install exact Lean toolchain
