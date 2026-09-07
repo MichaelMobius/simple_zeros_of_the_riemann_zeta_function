@@ -272,7 +272,14 @@ theorem v17_Gram450_compact_quantitative
     |(v17Gram450 T s hs i j).re -
         limitingk (v17Y450 T s hs j.1 - v17Y450 T s hs i.1)|
       ≤ articleCompactError T M := by
+  change
+    |(articleGlobalSimpleGram T
+        (v17SimpleColumn450 T s hs i)
+        (v17SimpleColumn450 T s hs j)).re -
+      limitingk (v17Y450 T s hs j.1 - v17Y450 T s hs i.1)|
+      ≤ articleCompactError T M
   rw [v17Y450_of_lt T s hs j.2, v17Y450_of_lt T s hs i.2]
+  unfold v17SimpleColumn450
   exact v17_orderedRetainedGram_compact_quantitative
     hnorm hl hwL hsmall hM1 hM2 hkk
     (v17RetainedRank450 T s hs i)
@@ -320,11 +327,14 @@ theorem v17_Gram450_pointwise_squared_lower
       hnorm hl hwL hsmall hM1 hM2 hkk s hs ⟨a, ha⟩ ⟨b, hb⟩
 
   have hgram : |z.re| ≤ 1 := by
-    dsimp [z, ia, ib, v17Gram450, v17SimpleColumn450]
+    change
+      |(articleGlobalSimpleGram T
+          (v17SimpleColumn450 T s hs ia)
+          (v17SimpleColumn450 T s hs ib)).re| ≤ 1
     exact articleGlobalSimpleGram_re_abs_le_one
       T hPois hnorm
-      (orderedRetainedColumn T (v17RetainedRank450 T s hs ⟨a, ha⟩))
-      (orderedRetainedColumn T (v17RetainedRank450 T s hs ⟨b, hb⟩))
+      (v17SimpleColumn450 T s hs ia)
+      (v17SimpleColumn450 T s hs ib)
 
   have hk : |kval| ≤ 1 := by
     dsimp [kval]
@@ -339,15 +349,16 @@ theorem v17_Gram450_pointwise_squared_lower
     exact mul_nonneg
       (sub_nonneg.mpr hreNorm)
       (add_nonneg (norm_nonneg z) (abs_nonneg z.re))
+  have habsSq : |z.re| ^ 2 = z.re ^ 2 := by
+    simp
   have hreSq : z.re ^ 2 ≤ ‖z‖ ^ 2 := by
-    rw [show |z.re| ^ 2 = z.re ^ 2 by simp] at hprod
-    nlinarith
+    nlinarith [hprod, habsSq]
 
   change
     limitingk (v17Y450 T s hs b - v17Y450 T s hs a) ^ 2 -
         2 * articleCompactError T M
       ≤ ‖v17Gram450 T s hs ⟨a, ha⟩ ⟨b, hb⟩‖ ^ 2
-  dsimp [kval, eps, z] at hsquare hreSq
+  dsimp [kval, eps, z, ia, ib] at hsquare hreSq
   exact hsquare.trans hreSq
 
 /-- Aggregated directed pair-energy consequence for the actual 450-point
