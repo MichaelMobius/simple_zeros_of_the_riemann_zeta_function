@@ -27,7 +27,7 @@ lemma v17_Iio_Ioi_disjoint
     Disjoint (Finset.Iio i) (Finset.Ioi i) := by
   rw [Finset.disjoint_left]
   intro j hjlo jhi
-  exact (Finset.mem_Iio.mp hjlo).not_lt (Finset.mem_Ioi.mp jhi)
+  exact (Finset.mem_Iio.mp hjlo).asymm (Finset.mem_Ioi.mp jhi)
 
 /-- The directed off-diagonal energy is lower plus upper triangular energy. -/
 theorem v17_offDiagonalEnergy_eq_lower_add_upper
