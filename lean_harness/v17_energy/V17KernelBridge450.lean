@@ -43,11 +43,12 @@ lemma v17_globalPairEnergyNat_sub_uniform_450
   rw [hcount]
   ring
 
-/-- Uniform squared-entry lower approximation aggregated over 450 points. -/
+/-- Uniform squared-entry lower approximation aggregated over 450 points.
+Only pairs that actually occur inside the 450-point block are required. -/
 theorem v17_aggregate_kernel_lower_450
     (w gramSq : ℕ → ℕ → ℝ)
     (eta : ℝ)
-    (hpoint : ∀ a b, w a b - eta ≤ gramSq a b) :
+    (hpoint : ∀ a b, a < 450 → b < 450 → w a b - eta ≤ gramSq a b) :
     globalPairEnergyNat 450 w - 202050 * eta
       ≤ globalPairEnergyNat 450 gramSq := by
   rw [← v17_globalPairEnergyNat_sub_uniform_450 w eta]
@@ -58,19 +59,24 @@ theorem v17_aggregate_kernel_lower_450
     unfold pairBandEnergy
     apply Finset.sum_le_sum
     intro a ha
-    exact hpoint a (a + r0 + 1)
+    have hr : r0 < 449 := Finset.mem_range.mp hr0
+    have ha' : a < 450 - (r0 + 1) := Finset.mem_range.mp ha
+    have ha450 : a < 450 := by omega
+    have hb450 : a + r0 + 1 < 450 := by omega
+    exact hpoint a (a + r0 + 1) ha450 hb450
   · norm_num
 
 /-- Clean 450-point interface for the analytic overlap bridge.
 
 The analytic input required downstream is exactly a pointwise lower bound on
-squared Gram entries with loss `2*eps`.  No 262-point hypothesis is reused
-here.  Once this pointwise statement is supplied for the actual finite Gram
-block, the total directed pair-energy loss is exactly `404100*eps`. -/
+squared Gram entries with loss `2*eps` for in-block pairs.  No 262-point
+hypothesis is reused here.  Once this pointwise statement is supplied for the
+actual finite Gram block, the total directed pair-energy loss is exactly
+`404100*eps`. -/
 theorem v17_aggregate_kernel_lower_450_of_pointwise_raw_loss
     (w gramSq : ℕ → ℕ → ℝ)
     (eps : ℝ)
-    (hpoint : ∀ a b, w a b - 2 * eps ≤ gramSq a b) :
+    (hpoint : ∀ a b, a < 450 → b < 450 → w a b - 2 * eps ≤ gramSq a b) :
     globalPairEnergyNat 450 w - 404100 * eps
       ≤ globalPairEnergyNat 450 gramSq := by
   have hs := v17_aggregate_kernel_lower_450 w gramSq (2 * eps) hpoint
