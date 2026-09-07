@@ -1,4 +1,4 @@
-name: Inspect v17 packed sources
+name: Inspect v17 final closure
 
 on:
   push:
@@ -16,20 +16,90 @@ jobs:
     steps:
       - name: Checkout harness
         uses: actions/checkout@v4
-      - name: Extract packed Hurtado sources
-        shell: bash
-        run: |
-          set -euxo pipefail
-          mkdir -p /tmp/zeta
-          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
-          tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
-      - name: Locate threshold dependency sources
+
+      - name: Reconstruct current Hurtado source tree
         shell: bash
         run: |
           set -euo pipefail
-          echo '===== TARGET PATHS ====='
-          find /tmp/zeta -type f \( -name 'UniformBlockAssembly.lean' -o -name 'PoissonGaborBridge.lean' \) -print
-          echo '===== TOP-LEVEL HURTADO LISTING ====='
-          find /tmp/zeta/HurtadoZeta23 -maxdepth 1 -type f -printf '%f\n' 2>/dev/null | sort | grep -E 'UniformBlockAssembly|PoissonGaborBridge|ConsecutiveBlockStabilityBridge' || true
-          echo '===== ARCHIVE MATCHES ====='
-          tar -tzf /tmp/hurtado.tar.gz | grep -E 'UniformBlockAssembly|PoissonGaborBridge|ConsecutiveBlockStabilityBridge' || true
+          mkdir -p /tmp/zeta
+          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
+          tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
+          cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C /tmp/zeta
+          mkdir -p /tmp/zeta/HurtadoZeta23
+          for d in frozen v17_scalar v17_weighted v17_adj v17_matching v17_threshold v17_energy v17_strong v17_concrete v17_endgame v17_global; do
+            if compgen -G "lean_harness/$d/*.lean" > /dev/null; then
+              cp lean_harness/$d/*.lean /tmp/zeta/HurtadoZeta23/
+            fi
+          done
+
+      - name: Compute exact final import closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/zeta
+          python3 - <<'PY'
+          from pathlib import Path
+          todo = ['HurtadoZeta23.V17FinalAssembly']
+          seen = set()
+          missing = []
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = Path(mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  s = line.strip()
+                  if not s.startswith('import '):
+                      continue
+                  for dep in s[len('import '):].split():
+                      if dep.startswith('HurtadoZeta23.'):
+                          dpath = Path(dep.replace('.', '/') + '.lean')
+                          if dpath.exists():
+                              todo.append(dep)
+                          else:
+                              missing.append((dep, mod))
+          if missing:
+              print('MISSING_IMPORTS')
+              for dep, parent in missing:
+                  print(parent, '->', dep)
+              raise SystemExit(1)
+          paths = sorted(Path(m.replace('.', '/') + '.lean') for m in seen)
+          Path('/tmp/v17-closure.txt').write_text('\n'.join(str(p) for p in paths) + '\n')
+          print('FINAL_CLOSURE_MODULES', len(paths))
+          for p in paths:
+              print(p)
+          PY
+
+      - name: Audit proof escape hatches
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/zeta
+          echo '===== SORRY / ADMIT / AXIOM / UNSAFE ====='
+          bad=0
+          while IFS= read -r f; do
+            if grep -nE '(^|[^[:alnum:]_])(sorry|admit|axiom|unsafe)([^[:alnum:]_]|$)' "$f"; then
+              echo "^^^ $f"
+              bad=1
+            fi
+          done < /tmp/v17-closure.txt
+          if [ "$bad" -ne 0 ]; then
+            echo 'PROOF_ESCAPE_HATCH_FOUND'
+            exit 1
+          fi
+          echo 'NO_PROOF_ESCAPE_HATCHES'
+
+      - name: Audit explicit trust propositions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/zeta
+          echo '===== EXPLICIT CLAIM / CERT FRONTIERS ====='
+          while IFS= read -r f; do
+            grep -nE '(Claim|Certificate|CertPointClaim|Frontier)' "$f" || true
+          done < /tmp/v17-closure.txt
