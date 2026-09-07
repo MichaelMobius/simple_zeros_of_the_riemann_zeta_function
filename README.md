@@ -438,7 +438,7 @@ $$
 \frac{191}{50000}=0.00382,
 $$
 
-leading to
+leading to the bound
 
 $$
 0.6730213619501665\ldots.
