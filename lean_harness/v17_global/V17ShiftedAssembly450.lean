@@ -15,9 +15,9 @@ lemma v17_full_block_count_cast
     {S : ℕ} (hS : 450 ≤ S) :
     (((S - 450 + 1 : ℕ) : ℝ)) = (S : ℝ) - 449 := by
   have hnat : S - 450 + 1 = S - 449 := by omega
-  rw [hnat]
-  rw [Nat.cast_sub]
-  omega
+  have h449 : 449 ≤ S := by omega
+  rw [hnat, Nat.cast_sub h449]
+  norm_num
 
 lemma v17_alpha_eq_v17A_div_450 :
     v17Alpha = v17A / 450 := by
