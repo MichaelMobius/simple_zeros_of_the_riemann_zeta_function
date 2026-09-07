@@ -5,6 +5,7 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_weighted/**"
+      - "lean_harness/v17_strong/V17ScalarPressureFrontier.lean"
       - ".github/workflows/lean-v17-weighted.yml"
       - "lean_harness/v17_scalar/V17StrongBlockScalar.lean"
 
@@ -36,6 +37,8 @@ jobs:
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
           cp harness/lean_harness/v17_weighted/V17ScalarPressure.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressure.lean
+          cp harness/lean_harness/v17_strong/V17ScalarPressureFrontier.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressureFrontier.lean
+          cp harness/lean_harness/v17_weighted/V17KernelMonotonicity.lean upstream/zeta23/HurtadoZeta23/V17KernelMonotonicity.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -48,7 +51,9 @@ jobs:
             "HurtadoZeta23.LimitingKernel",
             "HurtadoZeta23.V17StrongBlockScalar",
             "HurtadoZeta23.V17WeightedPressure",
-            "HurtadoZeta23.V17ScalarPressure"]
+            "HurtadoZeta23.V17ScalarPressure",
+            "HurtadoZeta23.V17ScalarPressureFrontier",
+            "HurtadoZeta23.V17KernelMonotonicity"]
           EOF
 
       - name: Install exact Lean toolchain
