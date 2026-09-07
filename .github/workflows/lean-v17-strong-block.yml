@@ -72,6 +72,7 @@ jobs:
           cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17TraceLeSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17TraceLeSpectralThreshold.lean
+          cp harness/lean_harness/v17_threshold/V17FrobeniusBridge.lean upstream/zeta23/HurtadoZeta23/V17FrobeniusBridge.lean
           cp harness/lean_harness/v17_threshold/V17GramThreshold450.lean upstream/zeta23/HurtadoZeta23/V17GramThreshold450.lean
 
           cp harness/lean_harness/v17_strong/V17StrongBlock450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlock450.lean
