@@ -8,6 +8,12 @@ artifacts for
 
 by **Michael Hurtado**.
 
+> **Current default-branch manuscript:** publication-hardened v19  
+> **Repository auditability cleanup:** v20  
+> **Mathematical theorem:** v17  
+> **Current bound:** `0.6731175265883904388095857434...`  
+> **Latest frozen theorem release:** `v1.2.0-paper`
+
 The manuscript establishes the unconditional lower bound
 
 $$
@@ -106,16 +112,18 @@ $$
 │       ├── verification.json
 │       └── verification.generated.json
 │
-├── lean_harness/
-│   ├── frozen/
-│   ├── v17_weighted/
-│   ├── v17_energy/
-│   ├── v17_strong/
-│   ├── v17_global/
-│   └── ...
+├── lean_src/
+│   ├── HurtadoZeta23/        # canonical browseable .lean sources
+│   └── V17_FINAL_CLOSURE.txt
+├── lean_harness/             # historical/stage-specific harness files
+├── scripts/
+│   └── install_hurtado_overlay.sh
 │
 └── docs/
-    └── RELEASE_v1.2.0-paper.md
+    ├── RELEASE_v1.2.0-paper.md
+    ├── V18_ADVERSARIAL_AUDIT.md
+    ├── V19_PUBLICATION_HARDENING.md
+    └── V20_PUBLIC_AUDITABILITY.md
 ```
 
 ### `paper/`
@@ -135,10 +143,16 @@ scalar kernel enclosure, pressure accounting, contradiction margin, and final
 constant. It does **not** rerun the historical seven-point branch-and-bound
 certificate.
 
-### `lean_harness/`
+### `lean_src/` and `lean_harness/`
 
-Contains the Lean adaptation and the exact CI overlay used to compile the v17
-proof against the pinned upstream `formal-math` source tree.
+`lean_src/HurtadoZeta23/` is the canonical human-browseable Lean source tree:
+every Hurtado module in the published v17 final closure is stored as an ordinary
+`.lean` file and can be inspected directly in GitHub.
+`lean_src/V17_FINAL_CLOSURE.txt` records the exact transitive closure of
+`HurtadoZeta23.V17FinalAssembly`. CI installs these sources on top of the pinned
+upstream `formal-math/zeta23` tree using `scripts/install_hurtado_overlay.sh`.
+The stage-specific `lean_harness/` directories remain for provenance and source
+organization; encoded base64/tar source fragments are no longer used.
 
 ---
 
@@ -331,6 +345,11 @@ The universal scalar-pressure inequality is **not** an additional external
 assumption: it is derived inside Lean from the signed kernel certificate using
 the proved monotonicity of the limiting kernel on the relevant interval.
 
+More explicitly, the formal stack is **Mathlib + the pinned Anthropic
+`formal-math/zeta23` formalization + the browseable `HurtadoZeta23` v17 source
+tree**, with exactly two external numerical certificate propositions at the
+final theorem boundary.
+
 The exact final CI closure currently contains **127 Hurtado modules** and
 builds successfully against
 
@@ -348,13 +367,11 @@ Built HurtadoZeta23.V17FinalAssembly
 Build completed successfully (8964 jobs).
 ```
 
-A separate CI audit checks the exact final import closure for `sorry`, `admit`,
-explicit `axiom` declarations, and `unsafe` declarations; it also verifies the
-final theorem signature and the provenance of both external certificate
-frontiers.
-
-The critical post-merge build and trust/provenance audit also run directly on
-`main` and have completed successfully for the v17 published state.
+CI recomputes the exact transitive `HurtadoZeta23` closure from the browseable
+source tree, checks it against `lean_src/V17_FINAL_CLOSURE.txt`, rejects
+`sorry`, `admit`, explicit `axiom` declarations and `unsafe` declarations in
+that closure, verifies the final theorem signature, replays the v17 exact
+arithmetic certificate, and checks the historical certificate manifest hashes.
 
 ---
 
@@ -384,9 +401,11 @@ Accordingly, the statement
 > **the v17 Lean closure is end-to-end kernel-checked**
 
 means that the implication from the two named external certificate propositions
-to the final epsilon theorem is formally checked. It does **not** mean that the
-Arb/FLINT execution or the Python transcendental enclosure has itself been
-reimplemented inside the Lean kernel.
+to the final epsilon theorem is formally checked on top of pinned Mathlib and
+Anthropic `formal-math/zeta23`. It does **not** mean that the Arb/FLINT
+execution or the Python transcendental enclosure has itself been reimplemented
+inside the Lean kernel, nor that the full analytic library was re-formalized
+from scratch in this repository.
 
 The archived 128-bit and 256-bit Arb executions are replications of the same
 verification algorithm at different working precisions; they should not be
@@ -399,7 +418,7 @@ interpreted as algorithmically independent proof implementations.
 The manuscript distinguishes the present contribution from the immediately
 preceding reproducible artifacts.
 
-The upstream work of **Sunghyeon Jo** introduced the relevant reproducible
+The upstream work of **[Sunghyeon Jo (`ainta`)](https://github.com/ainta/zeta-simple-zeros)** introduced the relevant reproducible
 seven-point stability framework with uniform pressure and certified
 
 $$
@@ -412,8 +431,8 @@ $$
 0.6730085279277797\ldots.
 $$
 
-A subsequent reproducible refinement by **Lea Rademacher** strengthened the
-uniform seven-point certificate to
+A subsequent reproducible refinement by **[Lea Rademacher](https://github.com/learademacher/ai-refines-ai-zeta-bound)** strengthened
+the uniform seven-point certificate to
 
 $$
 \frac{191}{50000}=0.00382,
@@ -504,14 +523,15 @@ Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_f
 
 ## Status
 
-- **Current manuscript:** v17
-- **Current frozen release:** `v1.2.0-paper`
+- **Current manuscript:** v19 publication-hardened text; mathematical theorem v17
+- **Repository auditability cleanup:** v20
+- **Current frozen theorem release:** `v1.2.0-paper`
 - **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
 - **Certified seven-point local bound:** `39/10000`
 - **v17 signed kernel claim:** `171389/1000000 < k(89/100)`
+- **Canonical browseable Lean closure:** 127 modules
 - **Lean final assembly:** green against the exact pinned upstream closure
-- **Lean post-merge validation on `main`:** green
-- **Lean explicit external frontiers:** two
+- **Lean explicit external numerical frontiers:** two
 - **Resulting unconditional bound:**
 
 $$
