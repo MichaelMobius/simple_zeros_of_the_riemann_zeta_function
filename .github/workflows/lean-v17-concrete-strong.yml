@@ -2,7 +2,7 @@ name: Lean v17 concrete strong block 450
 
 on:
   push:
-    branches: [lean-v17-adaptation]
+    branches: [main, lean-v17-adaptation]
     paths:
       - "lean_harness/v17_concrete/**"
       - "lean_harness/v17_global/**"
