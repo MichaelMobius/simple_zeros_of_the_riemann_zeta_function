@@ -1,0 +1,77 @@
+name: V20 public Lean auditability
+
+on:
+  push:
+    branches: [main, v20-public-auditability]
+    paths:
+      - "lean_src/**"
+      - "lean_harness/**"
+      - "scripts/install_hurtado_overlay.sh"
+      - ".github/workflows/v20-auditability.yml"
+  pull_request:
+    paths:
+      - "lean_src/**"
+      - "lean_harness/**"
+      - "scripts/install_hurtado_overlay.sh"
+      - ".github/workflows/v20-auditability.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  auditability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check canonical browseable source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f lean_src/HurtadoZeta23/V17FinalAssembly.lean
+          test -f lean_src/V17_FINAL_CLOSURE.txt
+          grep -q '^# Modules: 127$' lean_src/V17_FINAL_CLOSURE.txt
+          count="$(find lean_src/HurtadoZeta23 -maxdepth 1 -type f -name '*.lean' | wc -l)"
+          test "$count" -ge 127
+          if find . -type f -name '*.b64' -print -quit | grep -q .; then
+            echo 'Encoded source fragments remain in repository.' >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('lean_src')
+          expected = [
+              line.strip() for line in Path('lean_src/V17_FINAL_CLOSURE.txt').read_text(encoding='utf-8').splitlines()
+              if line.strip() and not line.startswith('#')
+          ]
+          todo = ['HurtadoZeta23.V17FinalAssembly']
+          seen = set()
+          missing = []
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              p = root / (mod.replace('.', '/') + '.lean')
+              if not p.exists():
+                  missing.append(mod)
+                  continue
+              for line in p.read_text(encoding='utf-8').splitlines():
+                  s = line.strip()
+                  if s.startswith('import '):
+                      for dep in s[len('import '):].split():
+                          if dep.startswith('HurtadoZeta23.'):
+                              dp = root / (dep.replace('.', '/') + '.lean')
+                              if dp.exists():
+                                  todo.append(dep)
+                              else:
+                                  missing.append(dep)
+          if missing:
+              print('MISSING', sorted(set(missing)))
+              raise SystemExit(1)
+          if sorted(seen) != sorted(expected):
+              print('ONLY_IN_MANIFEST', sorted(set(expected) - seen))
+              print('ONLY_IN_ACTUAL', sorted(seen - set(expected)))
+              raise SystemExit(1)
+          print('BROWSEABLE_FINAL_CLOSURE_OK', len(seen))
+          PY

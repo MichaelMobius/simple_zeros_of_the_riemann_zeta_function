@@ -1,0 +1,217 @@
+name: V20 full Lean closure
+
+on:
+  push:
+    branches: [main, v20-public-auditability]
+    paths:
+      - "lean_src/**"
+      - "scripts/install_hurtado_overlay.sh"
+      - "certification/**"
+      - ".github/workflows/v20-full-lean.yml"
+  pull_request:
+    paths:
+      - "lean_src/**"
+      - "scripts/install_hurtado_overlay.sh"
+      - "certification/**"
+      - ".github/workflows/v20-full-lean.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hurtado repository
+        uses: actions/checkout@v4
+        with:
+          path: harness
+
+      - name: Checkout exact Zeta23 upstream
+        uses: actions/checkout@v4
+        with:
+          repository: anthropics/formal-math
+          ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+          path: upstream
+
+      - name: Install canonical Hurtado source overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23
+
+      - name: Verify and register exact final closure
+        working-directory: upstream/zeta23
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path('../../harness/lean_src/V17_FINAL_CLOSURE.txt')
+          expected = [
+              line.strip() for line in manifest.read_text(encoding='utf-8').splitlines()
+              if line.strip() and not line.startswith('#')
+          ]
+          if len(expected) != 127:
+              raise SystemExit(f'Expected 127 manifest modules, found {len(expected)}')
+
+          todo = ['HurtadoZeta23.V17FinalAssembly']
+          seen = set()
+          missing = []
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = Path(mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  s = line.strip()
+                  if not s.startswith('import '):
+                      continue
+                  for dep in s[len('import '):].split():
+                      if dep.startswith('HurtadoZeta23.'):
+                          dpath = Path(dep.replace('.', '/') + '.lean')
+                          if dpath.exists():
+                              todo.append(dep)
+                          else:
+                              missing.append((dep, mod))
+          if missing:
+              for dep, parent in missing:
+                  print(parent, '->', dep)
+              raise SystemExit('Missing Hurtado imports')
+
+          actual = sorted(seen)
+          if actual != sorted(expected):
+              print('ONLY_IN_MANIFEST', sorted(set(expected) - set(actual)))
+              print('ONLY_IN_ACTUAL', sorted(set(actual) - set(expected)))
+              raise SystemExit('Final closure manifest mismatch')
+
+          with open('lakefile.toml', 'a', encoding='utf-8') as f:
+              f.write('\n[[lean_lib]]\n')
+              f.write('name = "HurtadoZeta23V20"\n')
+              f.write('roots = [\n')
+              for i, mod in enumerate(actual):
+                  comma = ',' if i + 1 < len(actual) else ''
+                  f.write(f'  "{mod}"{comma}\n')
+              f.write(']\n')
+          print('FINAL_CLOSURE_MODULES', len(actual))
+          PY
+
+      - name: Audit proof escape hatches and final trust signature
+        working-directory: upstream/zeta23
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest = Path('../../harness/lean_src/V17_FINAL_CLOSURE.txt')
+          modules = [
+              line.strip() for line in manifest.read_text(encoding='utf-8').splitlines()
+              if line.strip() and not line.startswith('#')
+          ]
+
+          def strip_lean_comments(src: str) -> str:
+              out = []
+              i = 0
+              depth = 0
+              n = len(src)
+              while i < n:
+                  if src.startswith('/-', i):
+                      depth += 1; i += 2
+                  elif depth > 0 and src.startswith('-/', i):
+                      depth -= 1; i += 2
+                  elif depth > 0:
+                      if src[i] == '\n': out.append('\n')
+                      i += 1
+                  elif src.startswith('--', i):
+                      j = src.find('\n', i)
+                      if j == -1: break
+                      out.append('\n'); i = j + 1
+                  else:
+                      out.append(src[i]); i += 1
+              return ''.join(out)
+
+          checks = [
+              ('axiom declaration', re.compile(r'(?m)^\s*axiom\s+')),
+              ('sorry', re.compile(r'\bsorry\b')),
+              ('admit', re.compile(r'\badmit\b')),
+              ('unsafe declaration', re.compile(r'(?m)^\s*unsafe\s+(?:def|theorem|opaque|axiom)\b')),
+          ]
+          bad = []
+          for mod in modules:
+              p = Path(mod.replace('.', '/') + '.lean')
+              src = strip_lean_comments(p.read_text(encoding='utf-8'))
+              for label, pat in checks:
+                  for m in pat.finditer(src):
+                      line = src.count('\n', 0, m.start()) + 1
+                      bad.append((str(p), line, label))
+          if bad:
+              for item in bad: print(*item)
+              raise SystemExit('Proof escape hatch found')
+
+          final = Path('HurtadoZeta23/V17FinalAssembly.lean').read_text(encoding='utf-8')
+          start = final.find('theorem v17_published_eps_form_of_certificates')
+          end = final.find(':= by', start)
+          if start < 0 or end < 0:
+              raise SystemExit('Final theorem signature not found')
+          sig = final[start:end]
+          for token in [
+              '(hcertExt : ArchivedSevenPointClaim)',
+              '(hsigned : V17KernelSignedCertPointClaim)',
+          ]:
+              if token not in sig:
+                  raise SystemExit(f'Final signature missing {token}')
+          if '(hscalarExt : V17ScalarPressureClaim)' in sig:
+              raise SystemExit('Unexpected scalar external frontier in final signature')
+          print('NO_PROOF_ESCAPE_HATCHES')
+          print('FINAL_SIGNATURE_TRUST_FRONTIER_OK')
+          PY
+
+      - name: Install exact Lean toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          cd upstream/zeta23
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+
+      - name: Fetch mathlib cache
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake exe cache get
+
+      - name: Build exact 127-module final closure
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake build HurtadoZeta23V20
+
+      - name: Replay v17 exact-arithmetic certificate
+        working-directory: harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 certification/v17/verify_improved_bound.py --output /tmp/verification.replayed.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          frozen = json.loads(Path('certification/v17/verification.json').read_text(encoding='utf-8'))
+          replayed = json.loads(Path('/tmp/verification.replayed.json').read_text(encoding='utf-8'))
+          if frozen != replayed:
+              raise SystemExit('Replayed v17 certificate differs from frozen JSON')
+          print('V17_CERTIFICATE_REPLAY_OK')
+          PY
+
+      - name: Verify historical certificate manifest hashes
+        working-directory: harness/certification/arb_256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum -c SHA256SUMS.txt
