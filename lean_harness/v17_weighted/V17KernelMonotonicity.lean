@@ -28,6 +28,7 @@ lemma v17_cos_freq_antitone_nonneg
     Real.cos (2 * Real.pi * y * t) ≤
       Real.cos (2 * Real.pi * x * t) := by
   have hy0 : 0 ≤ y := hx.trans hxy
+  have hcert0 : 0 ≤ v17KernelCertPoint := hy0.trans hy
   have hfac : 0 ≤ 2 * Real.pi * t := by positivity
   have hargxy :
       2 * Real.pi * x * t ≤ 2 * Real.pi * y * t := by
@@ -37,7 +38,7 @@ lemma v17_cos_freq_antitone_nonneg
         mul_le_mul_of_nonneg_right hxy hfac
       _ = 2 * Real.pi * y * t := by ring
   have hyt : y * t ≤ v17KernelCertPoint * (1 / 2 : ℝ) := by
-    exact mul_le_mul hy ht1 ht0 hy0
+    exact mul_le_mul hy ht1 ht0 hcert0
   have hpi0 : 0 ≤ 2 * Real.pi := by positivity
   have hargy :
       2 * Real.pi * y * t ≤ Real.pi := by
