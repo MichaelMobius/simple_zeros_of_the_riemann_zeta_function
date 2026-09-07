@@ -22,7 +22,8 @@ lemma v17RetainedYNat_eq
     (T : ℝ) {q : ℕ}
     (hq : q < articleRetainedCard T) :
     v17RetainedYNat T q = orderedRetainedY T ⟨q, hq⟩ := by
-  simp [v17RetainedYNat, hq]
+  unfold v17RetainedYNat
+  rw [dif_pos hq]
 
 /-- On its genuine retained range the totalized sequence is nondecreasing. -/
 theorem v17RetainedYNat_mono
@@ -70,7 +71,6 @@ theorem v17_block_pressure_eq_shiftedRetained
   have hb : u + j.1 + 1 < 450 := by omega
   rw [v17Y450_eq_v17RetainedYNat_shift T s hs ha]
   rw [v17Y450_eq_v17RetainedYNat_shift T s hs hb]
-  simp only [Nat.add_assoc]
 
 /-- Totalized actual local pressure; outside the full-block range it is zero. -/
 noncomputable def v17ActualBlockPressure450
@@ -84,7 +84,8 @@ lemma v17ActualBlockPressure450_of_fit
     (hs : s + 450 ≤ articleRetainedCard T) :
     v17ActualBlockPressure450 T s =
       v17LiteralBlockPressure 450 (v17Y450 T s hs) := by
-  simp [v17ActualBlockPressure450, hs]
+  unfold v17ActualBlockPressure450
+  rw [dif_pos hs]
 
 /-- Endpoint span of the concrete global retained ordinate sequence is bounded
 by the universal sampling span. -/
