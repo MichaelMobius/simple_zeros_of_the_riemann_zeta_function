@@ -1,14 +1,14 @@
 # Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function
 
-This repository contains the manuscript and reproducibility artifacts
-for
+This repository contains the manuscript, formalization, and reproducibility
+artifacts for
 
 > **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta
 > Function**
 
 by **Michael Hurtado**.
 
-The paper proves the unconditional lower bound
+The manuscript establishes the unconditional lower bound
 
 $$
 \liminf_{T\to\infty}
@@ -20,45 +20,63 @@ $$
 for the proportion of simple zeros of the Riemann zeta function on the
 critical line.
 
-The new ingredients are **exact pressure-preserving shifted-block accounting** and an **adjacent-pair pinching refinement**, built on the existing nonuniform seven-point certificate.
+The new ingredients are **exact pressure-preserving shifted-block accounting**
+and an **adjacent-pair pinching refinement**, built on the existing nonuniform
+seven-point certificate.
 
-------------------------------------------------------------------------
+---
 
 ## Main result
 
 Let
 
-**H_MT = 3/2 − (1/√2) cot(1/√2).**
+$$
+H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\!\left(\frac1{\sqrt2}\right).
+$$
 
-The manuscript establishes the unconditional lower bound
+The v17 bound is
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ 0.6731175265883904388096…**
+$$
+\boxed{
+\liminf_{T\to\infty}
+\frac{N_0^s(T,2T)}{N(T,2T)}
+\ge
+\frac{1125000H_{\rm MT}-2220}{1120671}
+}
+$$
 
-More precisely,
+with numerical value
 
-**lim inf (T → ∞) N₀ˢ(T, 2T) / N(T, 2T) ≥ (1125000 H_MT − 2220) / 1120671.**
+$$
+0.6731175265883904388095857434\ldots.
+$$
 
-The computer-assisted component uses the position-dependent pressure vector
+The computer-assisted seven-point component uses the position-dependent
+pressure vector
 
-**p = (2714, 3733, 3553, 3553, 3733, 2714) / 10⁷,**
+$$
+p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
+\qquad \sum_j p_j=\frac1{500},
+$$
 
-which satisfies
+and the archived Arb/FLINT computation certifies
 
-**Σ pⱼ = 1/500.**
+$$
+F_{6,\mathrm{nonuniform}}\ge\frac{39}{10000}=0.0039.
+$$
 
-The Arb/FLINT computation certifies the seven-point inequality
+The refined global argument preserves this positional pressure and uses
+adjacent-pair pinching with block length
 
-**F₆,nonuniform ≥ 39/10000 = 0.0039.**
+$$
+m=450.
+$$
 
-The refined global argument preserves the exact positional pressure and uses adjacent-pair pinching with block length
-
-**m = 450.**
-
-------------------------------------------------------------------------
+---
 
 ## Repository structure
 
-``` text
+```text
 .
 ├── README.md
 ├── CITATION.cff
@@ -70,18 +88,31 @@ The refined global argument preserves the exact positional pressure and uses adj
 │   └── main.pdf
 │
 ├── certification/
-│   └── arb_256/
-│       ├── README.md
-│       ├── certify_nonuniform_3900_v1_1.py
-│       ├── run_certificate_256.ps1
-│       ├── run_certificate_256.sh
-│       ├── arb-certificate-256.log
-│       ├── certificate-summary.json
-│       ├── environment-256.txt
-│       ├── requirements-lock-256.txt
-│       ├── verifier-sha256-256.txt
-│       ├── certificate-log-sha256-256.txt
-│       └── SHA256SUMS.txt
+│   ├── arb_256/
+│   │   ├── README.md
+│   │   ├── certify_nonuniform_3900_v1_1.py
+│   │   ├── run_certificate_256.ps1
+│   │   ├── run_certificate_256.sh
+│   │   ├── arb-certificate-256.log
+│   │   ├── certificate-summary.json
+│   │   ├── environment-256.txt
+│   │   ├── requirements-lock-256.txt
+│   │   ├── verifier-sha256-256.txt
+│   │   ├── certificate-log-sha256-256.txt
+│   │   └── SHA256SUMS.txt
+│   │
+│   └── v17/
+│       ├── verify_improved_bound.py
+│       ├── verification.json
+│       └── verification.generated.json
+│
+├── lean_harness/
+│   ├── frozen/
+│   ├── v17_weighted/
+│   ├── v17_energy/
+│   ├── v17_strong/
+│   ├── v17_global/
+│   └── ...
 │
 └── docs/
 ```
@@ -92,40 +123,41 @@ Contains the submission-ready LaTeX source and compiled manuscript.
 
 ### `certification/arb_256/`
 
-Contains the complete computer-assisted proof artifact for the
-nonuniform seven-point certificate.
+Contains the archived 256-bit Arb/FLINT proof artifact for the nonuniform
+seven-point certificate, including the execution log, environment record,
+reproduction scripts, and SHA-256 manifest.
 
-See [`certification/arb_256/README.md`](certification/arb_256/README.md)
-for exact reproduction instructions.
+### `certification/v17/`
 
-------------------------------------------------------------------------
+Contains a Python-standard-library exact-arithmetic verifier for the new v17
+scalar kernel enclosure, pressure accounting, contradiction margin, and final
+constant. It does **not** rerun the historical seven-point branch-and-bound
+certificate.
+
+### `lean_harness/`
+
+Contains the Lean adaptation and the exact CI overlay used to compile the v17
+proof against the pinned upstream `formal-math` source tree.
+
+---
 
 ## Reproducibility releases
 
-Two releases play distinct roles.
+Two previous releases play distinct roles.
 
 ### Previous frozen manuscript
 
-**`v1.1.0-paper`**
+**`v1.1.0-paper`** freezes the preceding submission-ready manuscript. The v17
+revision is the current manuscript, pending its next frozen release.
 
-This release freezes the preceding submission-ready manuscript. The v17 revision is now the current manuscript on the default `main` branch, pending its next frozen release.
+### Frozen computational artifact
 
-### Computational artifact
-
-**`v1.0.0-paper`**
-
-Commit:
-
-``` text
-c57f53e
-```
-
-This earlier immutable release freezes the computational artifact used
-by the manuscript.
+**`v1.0.0-paper @ c57f53e`** freezes the earlier Arb/FLINT computational
+artifact reused by v17.
 
 The separation is intentional:
 
-``` text
+```text
 v1.1.0-paper
     │
     └── preceding frozen manuscript
@@ -142,284 +174,328 @@ v1.0.0-paper @ c57f53e
  F6_nonuniform >= 39/10000
 ```
 
-The v17 manuscript on `main` reuses the frozen computational certificate
-without altering its trust base.
+The v17 refinement reuses that seven-point certificate unchanged and adds a
+separate exact-arithmetic scalar certificate plus a Lean-checked global
+assembly.
 
-------------------------------------------------------------------------
+---
 
-## 256-bit certificate
+## Historical 256-bit seven-point certificate
 
-The archived certification run uses:
+The archived certification run records:
 
-  Parameter                       Value
-  ------------------- -----------------
-  Grid denominator               `4000`
-  Working precision          `256 bits`
-  Initial boxes                  `1296`
-  Visited nodes             `1,119,372`
-  Splits                      `559,038`
-  Pruned nodes                `560,334`
-  Maximum depth                    `39`
-  Status                `verified=true`
+| Parameter | Value |
+| --- | ---: |
+| Grid denominator | `4000` |
+| Working precision | `256 bits` |
+| Initial boxes | `1296` |
+| Visited nodes | `1,119,372` |
+| Splits | `559,038` |
+| Pruned nodes | `560,334` |
+| Maximum depth | `39` |
+| Status | `verified=true` |
 
 The certified pressure vector is
 
-``` text
+```text
 (2714, 3733, 3553, 3553, 3733, 2714) / 10^7
 ```
 
 and the certified target is
 
-``` text
+```text
 F6_nonuniform >= 39/10000
 ```
 
-------------------------------------------------------------------------
+The frozen verifier SHA-256 is
 
-## Verification hashes
-
-The frozen verifier has SHA-256
-
-``` text
+```text
 8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301
 ```
 
-and the archived 256-bit certification log has SHA-256
+and the archived 256-bit log SHA-256 is
 
-``` text
+```text
 4b0e62dcb5c4014504981f16e431144e3a01184b2aa2aa6b0bf650705d59db83
 ```
 
-The complete hash manifest is available at
+The complete manifest is `certification/arb_256/SHA256SUMS.txt`.
 
-``` text
-certification/arb_256/SHA256SUMS.txt
-```
+### Reproduction
 
-These hashes allow the verifier and archived execution log used by the
-paper to be checked independently.
+The recorded reference environment uses
 
-------------------------------------------------------------------------
-
-## Reproducing the certificate
-
-The archived computation uses Python and `python-flint`/FLINT-Arb
-directed interval arithmetic.
-
-The recorded reference environment uses:
-
-``` text
+```text
 Python 3.14.7
 python-flint 0.9.0
 ```
 
-For the complete procedure, see:
+Linux/macOS:
 
-``` text
-certification/arb_256/README.md
-```
-
-Linux/macOS users may use:
-
-``` bash
+```bash
 cd certification/arb_256
 bash run_certificate_256.sh
 ```
 
-Windows PowerShell users may use:
+Windows PowerShell:
 
-``` powershell
+```powershell
 cd certification/arb_256
 .\run_certificate_256.ps1
 ```
 
-A successful execution must terminate with
+A successful execution must terminate with `verified=true`. The verifier
+should not be modified between hash verification and execution.
 
-``` text
-verified=true
+---
+
+## v17 exact-arithmetic certificate
+
+The v17 verifier is
+
+```text
+certification/v17/verify_improved_bound.py
 ```
 
-The verifier should not be modified between hash verification and
-execution.
+and can be replayed with
 
-------------------------------------------------------------------------
+```bash
+python certification/v17/verify_improved_bound.py \
+  --output certification/v17/verification.generated.json
+```
+
+The key additional signed enclosure consumed by the formal v17 route is
+
+$$
+\frac{171389}{1000000}<k\!\left(\frac{89}{100}\right).
+$$
+
+The verifier also checks, using exact rational arithmetic and rigorous
+transcendental enclosures, that
+
+$$
+\left(\frac{171389}{1000000}\right)^2
+>\frac{2937}{100000},
+$$
+
+together with the v17 pressure mass, contradiction margin, and the exact final
+constant
+
+$$
+\frac{1125000H_{\rm MT}-2220}{1120671}.
+$$
+
+CI replays this verifier and compares its machine-readable output
+semantically with the frozen `verification.json`.
+
+---
+
+## Lean formalization status
+
+The v17 implication from the two explicit external certificate propositions to
+the published epsilon-form theorem is kernel-checked in Lean.
+
+The exact CI root is
+
+```text
+HurtadoZeta23.V17FinalAssembly
+```
+
+and the final public theorem is
+
+```text
+HurtadoZeta23.v17_published_eps_form_of_certificates
+```
+
+Its explicit external arguments are exactly
+
+```text
+ArchivedSevenPointClaim
+V17KernelSignedCertPointClaim
+```
+
+The universal scalar-pressure inequality is **not** an additional external
+assumption: it is derived inside Lean from the signed kernel certificate using
+the proved monotonicity of the limiting kernel on the relevant interval.
+
+The exact final CI closure currently contains **127 Hurtado modules** and
+builds successfully against
+
+```text
+formal-math commit: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+Lean:               4.33.0-rc2
+mathlib commit:     51e6992efd06126df61a496bebf8f49482a4e129
+```
+
+The successful full build reaches
+
+```text
+Built HurtadoZeta23.V17ConcreteShiftedAssembly450
+Built HurtadoZeta23.V17FinalAssembly
+Build completed successfully (8964 jobs).
+```
+
+A separate CI audit checks the exact final import closure for `sorry`, `admit`,
+explicit `axiom` declarations, and `unsafe` declarations; it also verifies the
+final theorem signature and the provenance of both external certificate
+frontiers.
+
+---
 
 ## Trust model
 
-The computer-assisted proposition is not claimed to be formally verified
-in a proof assistant.
+There are **two explicit external certificate frontiers** in v17.
 
-Its computational trust base includes:
+1. **Historical seven-point Arb/FLINT certificate.**
+   `ArchivedSevenPointClaim` names the exact mathematical proposition supported
+   by the frozen 256-bit branch-and-bound run. Its trust base includes the
+   frozen verifier, `python-flint`, FLINT/Arb, the recorded environment, and the
+   correctness of directed interval arithmetic in those libraries.
 
--   the frozen verifier;
--   `python-flint`;
--   FLINT/Arb and its dependencies;
--   the execution environment;
--   the correctness of directed interval arithmetic implemented by those
-    libraries.
+2. **Signed limiting-kernel certificate at `g = 0.89`.**
+   `V17KernelSignedCertPointClaim` names the rigorous numerical enclosure
+   produced by `certification/v17/verify_improved_bound.py`. This verifier uses
+   Python standard-library integer/rational arithmetic; transcendental values
+   are bounded by explicit rational series/enclosures.
 
-The archived 128-bit and 256-bit executions are replications of the same
-verification algorithm at different working precisions. They should not
-be interpreted as algorithmically independent proof implementations.
+Neither external execution is silently promoted to a Lean theorem or declared
+as an axiom. Instead, the final Lean theorem takes the two propositions above as
+explicit arguments and kernel-checks the complete mathematical implication
+from them to the published v17 bound.
 
-The analytic and finite-dimensional arguments connecting the certified
-seven-point inequality to the main theorem are given in the manuscript.
+Accordingly, the statement
 
-------------------------------------------------------------------------
+> **the v17 Lean closure is end-to-end kernel-checked**
+
+means that the implication from the two named external certificate propositions
+to the final epsilon theorem is formally checked. It does **not** mean that the
+Arb/FLINT execution or the Python transcendental enclosure has itself been
+reimplemented inside the Lean kernel.
+
+The archived 128-bit and 256-bit Arb executions are replications of the same
+verification algorithm at different working precisions; they should not be
+interpreted as algorithmically independent proof implementations.
+
+---
 
 ## Relation to previous work
 
-The manuscript distinguishes the present contribution from the
-immediately preceding reproducible artifacts.
+The manuscript distinguishes the present contribution from the immediately
+preceding reproducible artifacts.
 
-The upstream work of **Sunghyeon Jo** introduced the relevant
-reproducible seven-point stability framework with a uniform pressure and
-certified
+The upstream work of **Sunghyeon Jo** introduced the relevant reproducible
+seven-point stability framework with uniform pressure and certified
 
-\[ `\frac{19}{5000}`{=tex}=0.0038, \]
+$$
+\frac{19}{5000}=0.0038,
+$$
 
 leading to the bound
 
-\[ 0.6730085279277797`\ldots `{=tex}. \]
+$$
+0.6730085279277797\ldots.
+$$
 
-A subsequent reproducible refinement by **Lea Rademacher** strengthened
-the uniform seven-point certificate to
+A subsequent reproducible refinement by **Lea Rademacher** strengthened the
+uniform seven-point certificate to
 
-\[ `\frac{191}{50000}`{=tex}=0.00382, \]
+$$
+\frac{191}{50000}=0.00382,
+$$
 
 leading to
 
-\[ 0.6730213619501665`\ldots `{=tex}. \]
+$$
+0.6730213619501665\ldots.
+$$
 
 The present work keeps the same total pressure
 
-\[ `\sum `{=tex}p_j=`\frac1{500}`{=tex}, \]
+$$
+\sum_jp_j=\frac1{500},
+$$
 
-but allows its distribution among the six gap positions to vary. The
-certified nonuniform vector raises the local value to
+but allows its distribution among the six gap positions to vary. The certified
+nonuniform vector raises the local value to
 
-\[ `\frac{39}{10000}`{=tex}=0.0039. \]
+$$
+\frac{39}{10000}=0.0039.
+$$
+
+The v17 shifted-block and adjacent-pair argument then raises the resulting
+global lower bound to
+
+$$
+0.6731175265883904388095857434\ldots.
+$$
 
 The precise mathematical and bibliographic comparison is given in the
 manuscript.
 
-------------------------------------------------------------------------
+---
 
 ## AI provenance
 
-Recent upstream computational artifacts relevant to this project report
-the use of AI systems during their development.
+Recent upstream computational artifacts relevant to this project report the use
+of AI systems during their development.
 
-The present repository treats AI use as **research provenance rather
-than mathematical authorship**.
+The present repository treats AI use as **research provenance rather than
+mathematical authorship**.
 
-All mathematical claims in the manuscript are intended to be supported
-by explicit arguments, cited external results, or reproducible
-computational certificates. The computer-assisted component is
-accompanied by source code, execution logs, cryptographic hashes,
-machine-readable parameters, and reproduction instructions so that it
-can be independently inspected.
+All mathematical claims in the manuscript are intended to be supported by
+explicit arguments, cited external results, reproducible computational
+certificates, or kernel-checked formal proofs. The computer-assisted components
+are accompanied by source code, execution records, cryptographic hashes,
+machine-readable parameters, and reproduction instructions so that they can be
+independently inspected.
 
-------------------------------------------------------------------------
+---
 
 ## Citation
 
-If you use the mathematical result, please cite the accompanying
-manuscript.
-
+If you use the mathematical result, please cite the accompanying manuscript.
 If you use or reproduce the computational artifact, please also cite the
 repository/release.
 
-Citation metadata is provided in:
+Citation metadata is provided in `CITATION.cff`.
 
-``` text
-CITATION.cff
-```
+The preceding submission-ready manuscript is frozen in `v1.1.0-paper`. The
+frozen historical computational artifact is `v1.0.0-paper @ c57f53e`. The v17
+revision is pending its next frozen release.
 
-The preceding submission-ready manuscript is frozen in:
-
-``` text
-v1.1.0-paper
-```
-
-The current v17 revision is on the default `main` branch, pending its next frozen release.
-
-The computational artifact used by the manuscript is frozen in:
-
-``` text
-v1.0.0-paper @ c57f53e
-```
-
-------------------------------------------------------------------------
+---
 
 ## License
 
-Different parts of this repository are released under licenses
-appropriate to their content.
+Source code, including the certificate verifiers and reproduction scripts, is
+released under the **MIT License** unless otherwise stated. See `LICENSE-CODE`.
 
-### Source code
-
-Unless otherwise stated, source code in this repository, including the
-Arb/FLINT certificate verifier and reproduction scripts, is released
-under the **MIT License**.
-
-See:
-
-``` text
-LICENSE-CODE
-```
-
-### Manuscript, documentation, and reproducibility data
-
-The manuscript, documentation, certificate metadata, execution logs, and
-other non-software material are released under the **Creative Commons
-Attribution 4.0 International License (CC BY 4.0)**.
-
-See:
-
-``` text
-LICENSE-CONTENT
-```
+The manuscript, documentation, certificate metadata, execution logs, and other
+non-software material are released under **CC BY 4.0**. See
+`LICENSE-CONTENT`.
 
 Third-party software and dependencies retain their respective licenses.
 
-------------------------------------------------------------------------
+---
 
 ## Author
 
 **Michael Hurtado**
 
-Repository:
+Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function`
 
-`https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function`
-
-------------------------------------------------------------------------
+---
 
 ## Status
 
-**Current manuscript version:** `v17` on `main`
-
-**Frozen computational artifact:** `v1.0.0-paper @ c57f53e`
-
-**Certificate status:** `verified=true`
-
-**Working precision:** `256 bits`
-
-**Certified local bound:** `39/10000`
-
-**Resulting unconditional bound:**
-
-\[ 0.6731175265883904388096`\ldots`{=tex} \]
-
-
-## v17 analytic refinement
-
-The v17 manuscript reuses the frozen seven-point certificate unchanged. A new
-exact-arithmetic verifier in `certification/v17/verify_improved_bound.py`
-checks the additional scalar kernel enclosure, pressure mass, contradiction
-margin, and final constant. The v17 result is
+- **Current manuscript:** v17
+- **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
+- **Certified seven-point local bound:** `39/10000`
+- **v17 signed kernel claim:** `171389/1000000 < k(89/100)`
+- **Lean final assembly:** green against the exact pinned upstream closure
+- **Lean explicit external frontiers:** two
+- **Resulting unconditional bound:**
 
 $$
-\liminf_{T\to\infty}\frac{N_0^s(T,2T)}{N(T,2T)}
-\ge 0.6731175265883904388095857434\ldots
+\boxed{0.6731175265883904388095857434\ldots}
 $$

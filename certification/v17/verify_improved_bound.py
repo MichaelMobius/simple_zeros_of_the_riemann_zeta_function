@@ -21,6 +21,7 @@ BETA = F(1, 500)
 Q = 6
 P = tuple(F(v, 10**7) for v in (2714, 3733, 3553, 3553, 3733, 2714))
 RATIO = BETA / DELTA
+SIGNED_KERNEL_LOWER = F(171389, 10**6)
 
 
 def sqrt_bounds(value, digits=80):
@@ -91,8 +92,9 @@ def kernel_at_089(h):
     numerator = add_iv(cosz, neg_iv(mul_iv(mul_iv((F(2),F(2)), z), mul_iv(c,sinz))))
     denominator = add_iv((F(1),F(1)), neg_iv(mul_iv((F(2),F(2)),mul_iv(z,z))))
     k = div_iv(numerator, denominator)
-    assert k[0] > 0
+    assert k[0] > SIGNED_KERNEL_LOWER
     w = k[0]**2, k[1]**2
+    assert SIGNED_KERNEL_LOWER**2 > F(2937,100000)
     assert w[0] > F(2937,100000)
     return k, w
 
@@ -112,7 +114,11 @@ def adjacent_pair_refinement(h):
         "block_size": m, "g0": str(g0), "t": str(t),
         "A": str(energy), "pressure_mass": str(pressure_mass),
         "kernel_at_g0": show_interval(k), "w_at_g0": show_interval(w),
+        "signed_kernel_lower_bound": str(SIGNED_KERNEL_LOWER),
+        "signed_kernel_claim": "171389/1000000 < k(89/100)",
         "required_w_lower_bound": "2937/100000",
+        "signed_square_margin_over_required_w": str(
+            SIGNED_KERNEL_LOWER**2 - F(2937,100000)),
         "contradiction_margin": str(margin),
         "bound_exact_expression": "(1125000*H_MT-2220)/1120671",
         "bound": show_interval(b),

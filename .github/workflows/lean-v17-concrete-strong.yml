@@ -1,0 +1,118 @@
+name: Lean v17 concrete strong block 450
+
+on:
+  push:
+    branches: [lean-v17-adaptation]
+    paths:
+      - "lean_harness/v17_concrete/**"
+      - "lean_harness/v17_global/**"
+      - "lean_harness/v17_endgame/**"
+      - "lean_harness/v17_strong/**"
+      - "lean_harness/v17_energy/**"
+      - "lean_harness/v17_matching/**"
+      - "lean_harness/v17_weighted/**"
+      - "lean_harness/v17_threshold/**"
+      - "lean_harness/v17_scalar/**"
+      - "lean_harness/v17_adj/**"
+      - "lean_harness/v17_analytic/**"
+      - "lean_harness/frozen/**"
+      - ".github/workflows/lean-v17-concrete-strong.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@v4
+        with:
+          path: harness
+
+      - name: Checkout exact Zeta23 upstream
+        uses: actions/checkout@v4
+        with:
+          repository: anthropics/formal-math
+          ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+          path: upstream
+
+      - name: Overlay concrete v17 sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
+          tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
+          cat harness/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C upstream/zeta23
+
+          for d in frozen v17_scalar v17_weighted v17_adj v17_matching v17_threshold v17_energy v17_strong v17_concrete v17_endgame v17_global; do
+            if compgen -G "harness/lean_harness/$d/*.lean" > /dev/null; then
+              cp harness/lean_harness/$d/*.lean upstream/zeta23/HurtadoZeta23/
+            fi
+          done
+
+      - name: Register exact Hurtado import closure
+        working-directory: upstream/zeta23
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          todo = ["HurtadoZeta23.V17FinalAssembly"]
+          seen = set()
+          missing = []
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = Path(mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  line = line.strip()
+                  if not line.startswith('import '):
+                      continue
+                  for dep in line[len('import '):].split():
+                      if dep.startswith('HurtadoZeta23.'):
+                          dpath = Path(dep.replace('.', '/') + '.lean')
+                          if dpath.exists():
+                              todo.append(dep)
+                          else:
+                              missing.append((dep, mod))
+          if missing:
+              print('Missing Hurtado imports:')
+              for dep, parent in missing:
+                  print(f'  {parent} -> {dep}')
+              raise SystemExit(1)
+          roots = sorted(seen)
+          print(f'Registering {len(roots)} modules in exact import closure')
+          with open('lakefile.toml', 'a', encoding='utf-8') as f:
+              f.write('\n[[lean_lib]]\n')
+              f.write('name = "HurtadoZeta23V17ConcreteStrong"\n')
+              f.write('roots = [\n')
+              for i, mod in enumerate(roots):
+                  comma = ',' if i + 1 < len(roots) else ''
+                  f.write(f'  "{mod}"{comma}\n')
+              f.write(']\n')
+          PY
+
+      - name: Install exact Lean toolchain
+        shell: bash
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          cd upstream/zeta23
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+
+      - name: Fetch mathlib cache
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake exe cache get
+
+      - name: Build conditional v17 final assembly
+        working-directory: upstream/zeta23
+        shell: bash
+        run: lake build HurtadoZeta23V17ConcreteStrong
