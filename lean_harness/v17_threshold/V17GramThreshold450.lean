@@ -1,5 +1,5 @@
 import HurtadoZeta23.V17TraceLeSpectralThreshold
-import HurtadoZeta23.ConcreteBlockDefect
+import HurtadoZeta23.V17FrobeniusBridge
 import HurtadoZeta23.MatrixEnergy
 import Mathlib.Tactic
 
@@ -57,7 +57,7 @@ theorem v17_psd_gram_threshold_450
     exact (sum_eigenvalues_reindex hG.isHermitian psi).symm
 
   have hE : E = ∑ i, (lam i - 1) ^ 2 := by
-    have hFS := frobeniusSpectralIdentity_proved G hG.isHermitian
+    have hFS := v17_frobeniusSpectralIdentity_proved G hG.isHermitian
     unfold FrobeniusSpectralIdentity spectralDeviationSq at hFS
     dsimp [E, lam]
     exact hFS
