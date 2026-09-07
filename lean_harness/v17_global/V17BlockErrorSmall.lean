@@ -1,5 +1,8 @@
 import HurtadoZeta23.V17CompactOverlapCore
-import HurtadoZeta23.ArticleBlockErrorSmall
+import HurtadoZeta23.ArticleCompactErrorLimit
+import HurtadoZeta23.RetainedCardinalityBridge
+import HurtadoZeta23.ZetaRvMBridge
+import HurtadoZeta23.GlobalAssembly
 import Mathlib.Tactic
 
 noncomputable section
@@ -19,6 +22,39 @@ def v17FinalLocalErr (T : ℝ) : ℝ :=
 /-- Exact accumulated error after division by the 450 shifted families. -/
 def v17FinalBlockErr (T : ℝ) : ℝ :=
   v17ConsecutiveBlockCountR T * v17FinalLocalErr T / 450
+
+/-- The retained finite Gram cardinality is bounded by the full dyadic zero
+count with multiplicity.  This is the block-length-free part of the old
+asymptotic bookkeeping. -/
+theorem v17RetainedCard_le_Ncount (T : ℝ) :
+    articleRetainedCard T ≤ Zeta23.Ncount T (2 * T) := by
+  rw [articleRetainedCard_eq_ncard]
+  have hsub :
+      retainedSimpleCriticalSet T ⊆ Zeta23.zerosIn T (2 * T) := by
+    intro ρ hρ
+    exact hρ.1.1.1
+  have hncard :
+      (retainedSimpleCriticalSet T).ncard ≤
+        (Zeta23.zerosIn T (2 * T)).ncard :=
+    Set.ncard_le_ncard hsub (Zeta23.zerosIn_finite T (2 * T))
+  calc
+    (retainedSimpleCriticalSet T).ncard
+        ≤ (Zeta23.zerosIn T (2 * T)).ncard := hncard
+    _ = Zeta23.Ndist T (2 * T) := by rfl
+    _ ≤ Zeta23.Ncount T (2 * T) :=
+      (Zeta23.trivial_chain₀ T (2 * T)).2.2.2.2.2
+
+/-- Real-valued retained-cardinality bound in the v17 final notation. -/
+theorem v17RetainedCard_cast_le_globalN (T : ℝ) :
+    (articleRetainedCard T : ℝ) ≤ globalN T := by
+  unfold globalN
+  exact_mod_cast v17RetainedCard_le_Ncount T
+
+/-- Eventually the dyadic zero count is at least one. -/
+theorem v17_eventually_one_le_globalN :
+    ∀ᶠ T : ℝ in atTop, (1 : ℝ) ≤ globalN T := by
+  have h := zetaDyadicN_tendsto_atTop.eventually_ge_atTop (1 : ℝ)
+  simpa [zetaDyadicN, globalN] using h
 
 /-- The lightweight v17 compact error is definitionally the same quantitative
 error used in the historical asymptotic analysis. -/
@@ -58,7 +94,7 @@ theorem v17ConsecutiveBlockCountR_le_retained_add_one
 theorem v17ConsecutiveBlockCountR_isBigO_globalN :
     v17ConsecutiveBlockCountR =O[atTop] globalN := by
   refine IsBigO.of_bound 2 ?_
-  filter_upwards [eventually_one_le_globalN] with T hN1
+  filter_upwards [v17_eventually_one_le_globalN] with T hN1
   have hcount0 : 0 ≤ v17ConsecutiveBlockCountR T := by
     unfold v17ConsecutiveBlockCountR
     positivity
@@ -68,7 +104,7 @@ theorem v17ConsecutiveBlockCountR_isBigO_globalN :
   have hcountLe :
       v17ConsecutiveBlockCountR T ≤ globalN T + 1 := by
     have h1 := v17ConsecutiveBlockCountR_le_retained_add_one T
-    have h2 := articleRetainedCard_cast_le_globalN T
+    have h2 := v17RetainedCard_cast_le_globalN T
     linarith
   rw [Real.norm_eq_abs, Real.norm_eq_abs,
       abs_of_nonneg hcount0, abs_of_nonneg hN0]
