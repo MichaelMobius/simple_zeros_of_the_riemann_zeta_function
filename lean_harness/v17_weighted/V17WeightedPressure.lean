@@ -157,6 +157,7 @@ theorem v17_weighted_adjacent_pressure
     nlinarith
   have hfactor' := hfactor
   norm_num [beta] at hfactor' ⊢
+  exact hfactor'
 
 /-- Exact pressure-preserving version of the seven-point redistribution at
 `m = 450`.  Unlike the older coarse-span theorem, the pressure term is kept
@@ -179,7 +180,6 @@ theorem v17_certificate_energy_pressure_450
           (∑ s ∈ Finset.range (450 - 6), localPairEnergy w s) := by
     unfold v17LiteralBlockPressure localFp
     simp only [Finset.sum_add_distrib]
-    ac_rfl
   rw [hsplit] at hlocal
   have hA : delta * (((450 - 6 : ℕ) : ℝ)) = v17A := by
     norm_num [delta, v17A]
