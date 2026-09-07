@@ -2,7 +2,7 @@ name: Inspect v17 final closure
 
 on:
   push:
-    branches: [lean-v17-adaptation]
+    branches: [main, lean-v17-adaptation]
     paths:
       - ".github/workflows/v17-inspect.yml"
       - "lean_harness/frozen/**"
