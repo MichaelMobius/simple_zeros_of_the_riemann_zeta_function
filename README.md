@@ -31,7 +31,7 @@ seven-point certificate.
 Let
 
 $$
-H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\!\left(\frac1{\sqrt2}\right).
+H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\left(\frac1{\sqrt2}\right).
 $$
 
 The v17 bound is
