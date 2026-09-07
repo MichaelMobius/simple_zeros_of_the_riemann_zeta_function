@@ -115,6 +115,7 @@ $$
 │   └── ...
 │
 └── docs/
+    └── RELEASE_v1.2.0-paper.md
 ```
 
 ### `paper/`
@@ -143,12 +144,17 @@ proof against the pinned upstream `formal-math` source tree.
 
 ## Reproducibility releases
 
-Two previous releases play distinct roles.
+The v17 revision is prepared for the next frozen manuscript release:
+
+### v17 release candidate
+
+**`v1.2.0-paper`** is the intended frozen release for the current v17
+manuscript, formalization, and v17 exact-arithmetic certificate. Its canonical
+release notes are in `docs/RELEASE_v1.2.0-paper.md`.
 
 ### Previous frozen manuscript
 
-**`v1.1.0-paper`** freezes the preceding submission-ready manuscript. The v17
-revision is the current manuscript, pending its next frozen release.
+**`v1.1.0-paper`** freezes the preceding submission-ready manuscript.
 
 ### Frozen computational artifact
 
@@ -158,6 +164,13 @@ artifact reused by v17.
 The separation is intentional:
 
 ```text
+v1.2.0-paper
+    │
+    └── v17 manuscript + Lean formalization + v17 scalar certificate
+             │
+             ├── reuses v1.0.0-paper historical Arb/FLINT certificate
+             │
+             ▼
 v1.1.0-paper
     │
     └── preceding frozen manuscript
@@ -340,6 +353,9 @@ explicit `axiom` declarations, and `unsafe` declarations; it also verifies the
 final theorem signature and the provenance of both external certificate
 frontiers.
 
+The critical post-merge build and trust/provenance audit also run directly on
+`main` and have completed successfully for the v17 published state.
+
 ---
 
 ## Trust model
@@ -461,7 +477,8 @@ Citation metadata is provided in `CITATION.cff`.
 
 The preceding submission-ready manuscript is frozen in `v1.1.0-paper`. The
 frozen historical computational artifact is `v1.0.0-paper @ c57f53e`. The v17
-revision is pending its next frozen release.
+revision is prepared to be frozen as `v1.2.0-paper`; its release-note source is
+`docs/RELEASE_v1.2.0-paper.md`.
 
 ---
 
@@ -489,10 +506,12 @@ Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_f
 ## Status
 
 - **Current manuscript:** v17
+- **Release candidate:** `v1.2.0-paper`
 - **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
 - **Certified seven-point local bound:** `39/10000`
 - **v17 signed kernel claim:** `171389/1000000 < k(89/100)`
 - **Lean final assembly:** green against the exact pinned upstream closure
+- **Lean post-merge validation on `main`:** green
 - **Lean explicit external frontiers:** two
 - **Resulting unconditional bound:**
 
