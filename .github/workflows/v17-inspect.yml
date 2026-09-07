@@ -180,3 +180,54 @@ jobs:
               raise SystemExit(1)
           print('FINAL_SIGNATURE_TRUST_FRONTIER_OK')
           PY
+
+      - name: Audit certificate provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import re
+
+          verifier = Path('certification/v17/verify_improved_bound.py')
+          frozen = Path('certification/v17/verification.json')
+          generated = Path('certification/v17/verification.generated.json')
+          frontier = Path('lean_harness/v17_strong/V17ScalarPressureFrontier.lean').read_text(encoding='utf-8')
+
+          def sha256(path: Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          verifier_sha = sha256(verifier)
+          frozen_sha = sha256(frozen)
+          print('VERIFIER_SHA256', verifier_sha)
+          print('VERIFICATION_JSON_SHA256', frozen_sha)
+
+          m1 = re.search(r'v17ScalarVerifierSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', frontier)
+          m2 = re.search(r'v17ScalarVerificationJSONSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', frontier)
+          if not m1 or not m2:
+              raise SystemExit('PROVENANCE_CONSTANT_NOT_FOUND')
+          if m1.group(1) != verifier_sha:
+              raise SystemExit(f'VERIFIER_SHA_MISMATCH Lean={m1.group(1)} actual={verifier_sha}')
+          if m2.group(1) != frozen_sha:
+              raise SystemExit(f'VERIFICATION_JSON_SHA_MISMATCH Lean={m2.group(1)} actual={frozen_sha}')
+
+          data = json.loads(frozen.read_text(encoding='utf-8'))
+          stronger = data['stronger_adjacent_pair_refinement']
+          required = {
+              'block_size': 450,
+              'g0': '89/100',
+              'signed_kernel_lower_bound': '171389/1000000',
+              'signed_kernel_claim': '171389/1000000 < k(89/100)',
+              'required_w_lower_bound': '2937/100000',
+          }
+          for key, value in required.items():
+              if stronger.get(key) != value:
+                  raise SystemExit(f'CERT_FIELD_MISMATCH {key}: {stronger.get(key)!r} != {value!r}')
+
+          if json.loads(generated.read_text(encoding='utf-8')) != data:
+              raise SystemExit('GENERATED_VERIFICATION_JSON_SEMANTIC_MISMATCH')
+
+          print('CERTIFICATE_PROVENANCE_OK')
+          PY
