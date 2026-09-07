@@ -25,16 +25,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ! grep -nF '\\cite{Claude26}' paper/main.tex
-          ! grep -niE 'immutable (release|snapshot|artifact)' paper/main.tex
-          ! grep -nF 'Theorem D as an imported black box' paper/main.tex
-          grep -nF '\\cite{AlpogeFurman26}' paper/main.tex
-          grep -nF '\\cite{Lamzouri26}' paper/main.tex
-          grep -nF '\\cite{AnthropicFormal26}' paper/main.tex
-          grep -nF 'fbdc36bbf17d20af3fd0447c6d1a8a02773c9844' paper/main.tex
-          grep -nF 'no claim here that the' paper/main.tex
-          grep -nF '0.6733127422722459' paper/main.tex
-          grep -nF '0.673399' paper/main.tex
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('paper/main.tex').read_text(encoding='utf-8')
+          forbidden = [
+              r'\cite{Claude26}',
+              'Theorem D as an imported black box',
+              'immutable release',
+              'immutable snapshot',
+              'immutable artifact',
+          ]
+          required = [
+              r'\cite{AlpogeFurman26}',
+              r'\cite{Lamzouri26}',
+              r'\cite{AnthropicFormal26}',
+              'fbdc36bbf17d20af3fd0447c6d1a8a02773c9844',
+              'no claim here that the',
+              '0.6733127422722459',
+              '0.673399',
+              'frozen snapshot',
+              'clean-room software independence',
+          ]
+          for x in forbidden:
+              if x.lower() in s.lower():
+                  raise SystemExit(f'Forbidden stale wording remains: {x}')
+          for x in required:
+              if x not in s:
+                  raise SystemExit(f'Required v18 wording missing: {x}')
+          print('Adversarial source gates passed')
+          PY
 
       - name: Install TeX
         shell: bash
