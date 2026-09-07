@@ -45,6 +45,8 @@ jobs:
               '0.673399',
               'frozen snapshot',
               'clean-room software independence',
+              'independently applied to the same original \\(K\\)',
+              'A 67.3312742272\\% lower-bound candidate for simple zeros of zeta',
           ]
           for x in forbidden:
               if x.lower() in s.lower():
@@ -95,3 +97,5 @@ jobs:
           git add paper/main.pdf
           git commit -m "Rebuild v18 manuscript PDF"
           git push origin HEAD:v18-editorial-provenance-audit
+
+# Final v18 pre-PR build trigger.
