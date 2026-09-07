@@ -5,8 +5,6 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_threshold/**"
-      - "lean_harness/frozen/ConcreteBlockDefect.lean"
-      - "lean_harness/frozen/ConsecutiveBlockStabilityBridge.lean"
       - "lean_harness/frozen/SpectralFrobenius.lean"
       - ".github/workflows/lean-v17-threshold.yml"
       - "lean_harness/v17_scalar/V17StrongBlockScalar.lean"
@@ -36,13 +34,12 @@ jobs:
           set -euxo pipefail
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
-          cp harness/lean_harness/frozen/ConsecutiveBlockStabilityBridge.lean upstream/zeta23/HurtadoZeta23/ConsecutiveBlockStabilityBridge.lean
           cp harness/lean_harness/frozen/SpectralFrobenius.lean upstream/zeta23/HurtadoZeta23/SpectralFrobenius.lean
-          cp harness/lean_harness/frozen/ConcreteBlockDefect.lean upstream/zeta23/HurtadoZeta23/ConcreteBlockDefect.lean
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
           cp harness/lean_harness/v17_threshold/V17TraceLeSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17TraceLeSpectralThreshold.lean
+          cp harness/lean_harness/v17_threshold/V17FrobeniusBridge.lean upstream/zeta23/HurtadoZeta23/V17FrobeniusBridge.lean
           cp harness/lean_harness/v17_threshold/V17GramThreshold450.lean upstream/zeta23/HurtadoZeta23/V17GramThreshold450.lean
 
       - name: Register exact Hurtado import closure
