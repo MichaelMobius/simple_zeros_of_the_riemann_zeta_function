@@ -39,53 +39,60 @@ jobs:
           cp harness/lean_harness/v17_matching/V17MatchingIndices.lean upstream/zeta23/HurtadoZeta23/V17MatchingIndices.lean
           cp harness/lean_harness/v17_matching/V17AdjacentBandScalar.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBandScalar.lean
           cp harness/lean_harness/v17_matching/V17ParitySplit.lean upstream/zeta23/HurtadoZeta23/V17ParitySplit.lean
-          cp harness/lean_harness/v17_matching/V17GramDiagonal.lean upstream/zeta23/HurtadoZeta23/V17GramDiagonal.lean
           cp harness/lean_harness/v17_matching/V17AdjacentBand450.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBand450.lean
-          cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
-          [[lean_lib]]
-          name = "HurtadoZeta23V17Matching"
-          roots = ["HurtadoZeta23.BlockDefect",
-            "HurtadoZeta23.BlockStability",
-            "HurtadoZeta23.CharpolyGramBridge",
-            "HurtadoZeta23.ConcreteStableCore",
-            "HurtadoZeta23.Constants",
-            "HurtadoZeta23.DirectRedistribution",
-            "HurtadoZeta23.Endgame",
-            "HurtadoZeta23.GlobalAssembly",
-            "HurtadoZeta23.GramPinching",
-            "HurtadoZeta23.GramPinchingBlockDiagonal",
-            "HurtadoZeta23.GramPinchingConvex",
-            "HurtadoZeta23.GramPinchingFinitePartition",
-            "HurtadoZeta23.GramPinchingInvariant",
-            "HurtadoZeta23.GramPinchingPositivePart",
-            "HurtadoZeta23.GramPinchingVariational",
-            "HurtadoZeta23.GramSpectrumBridge",
-            "HurtadoZeta23.LocalFunctional",
-            "HurtadoZeta23.MatrixEnergy",
-            "HurtadoZeta23.OnLineSynthesis",
-            "HurtadoZeta23.PositionWeights",
-            "HurtadoZeta23.PrincipalGramBlocks",
-            "HurtadoZeta23.RootMultisetGramBridge",
-            "HurtadoZeta23.ShiftedAveraging",
-            "HurtadoZeta23.ShiftedPinching",
-            "HurtadoZeta23.SpectralFrobenius",
-            "HurtadoZeta23.StableAssemblySeam",
-            "HurtadoZeta23.StableRankTraceMatrix",
-            "HurtadoZeta23.StableRankTraceScalar",
-            "HurtadoZeta23.StableSeam",
-            "HurtadoZeta23.SylvesterGramBridge",
-            "HurtadoZeta23.WindowCombinatorics",
-            "HurtadoZeta23.ZetaRvMBridge",
-            "HurtadoZeta23.V17AdjacentPair",
-            "HurtadoZeta23.V17AdjacentMatching",
-            "HurtadoZeta23.V17ConcreteMatching450",
-            "HurtadoZeta23.V17MatchingIndices",
-            "HurtadoZeta23.V17AdjacentBandScalar",
-            "HurtadoZeta23.V17ParitySplit",
-            "HurtadoZeta23.V17GramDiagonal",
-            "HurtadoZeta23.V17AdjacentBand450"]
-          EOF
+      - name: Register exact Hurtado import closure
+        working-directory: upstream/zeta23
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          start = ["HurtadoZeta23.V17AdjacentBand450"]
+          todo = list(start)
+          seen = set()
+          missing = []
+
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = Path(mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  line = line.strip()
+                  if not line.startswith('import '):
+                      continue
+                  for dep in line[len('import '):].split():
+                      if not dep.startswith('HurtadoZeta23.'):
+                          continue
+                      dpath = Path(dep.replace('.', '/') + '.lean')
+                      if dpath.exists():
+                          todo.append(dep)
+                      else:
+                          missing.append((dep, mod))
+
+          if missing:
+              print('Missing Hurtado imports:')
+              for dep, parent in missing:
+                  print(f'  {parent} -> {dep}')
+              raise SystemExit(1)
+
+          roots = sorted(seen)
+          print(f'Registering {len(roots)} modules in exact import closure')
+          with open('lakefile.toml', 'a', encoding='utf-8') as f:
+              f.write('\n[[lean_lib]]\n')
+              f.write('name = "HurtadoZeta23V17Matching"\n')
+              f.write('roots = [\n')
+              for i, mod in enumerate(roots):
+                  comma = ',' if i + 1 < len(roots) else ''
+                  f.write(f'  "{mod}"{comma}\n')
+              f.write(']\n')
+          PY
 
       - name: Install exact Lean toolchain
         shell: bash
