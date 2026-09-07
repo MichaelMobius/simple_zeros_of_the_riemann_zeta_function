@@ -1,4 +1,5 @@
 import HurtadoZeta23.V17ConcreteShiftedAssembly450
+import HurtadoZeta23.V17KernelMonotonicity
 import HurtadoZeta23.V17BlockErrorSmall
 import HurtadoZeta23.ConcreteRetainedCore
 import HurtadoZeta23.ConcreteStableSeam
@@ -224,10 +225,10 @@ theorem v17_defect_global_from_claims
   unfold v17PinchingError
   linarith
 
-/-- Conditional end-to-end v17 global refinement.  All internal analytic,
-Gram, spectral, shifted-pressure, and asymptotic steps are kernel-checked;
-only `ArchivedSevenPointClaim` and `V17ScalarPressureClaim` remain explicit
-external trust inputs. -/
+/-- Conditional end-to-end v17 global refinement from the historical
+seven-point certificate and an abstract scalar-pressure frontier.  Retained
+for compatibility; the published wrapper below derives the scalar frontier
+from the single signed kernel enclosure. -/
 noncomputable def v17GlobalRefinement_of_claims
     (hcertExt : ArchivedSevenPointClaim)
     (hscalarExt : V17ScalarPressureClaim) :
@@ -250,8 +251,7 @@ noncomputable def v17GlobalRefinement_of_claims
         ≤ globalS T
     linarith
 
-/-- Final published epsilon theorem, conditional exactly on the two explicit
-certificate frontiers. -/
+/-- Compatibility form exposing the older abstract scalar-pressure input. -/
 theorem v17_published_eps_form_of_claims
     (hcertExt : ArchivedSevenPointClaim)
     (hscalarExt : V17ScalarPressureClaim) :
@@ -261,5 +261,30 @@ theorem v17_published_eps_form_of_claims
         ≤ Zeta23.N0simple T (2 * T) := by
   exact v17_published_eps_form_from_global_refinement
     (v17GlobalRefinement_of_claims hcertExt hscalarExt)
+
+/-- End-to-end v17 global refinement from the actual external trust frontier:
+the archived seven-point certificate and one signed lower enclosure for the
+normalized limiting kernel at `g = 0.89`.  Scalar pressure on every gap is
+derived internally from kernel monotonicity. -/
+noncomputable def v17GlobalRefinement_of_certificates
+    (hcertExt : ArchivedSevenPointClaim)
+    (hsigned : V17KernelSignedCertPointClaim) :
+    V17GlobalRefinement :=
+  v17GlobalRefinement_of_claims
+    hcertExt (v17_scalar_pressure_of_signed_cert hsigned)
+
+/-- Final published epsilon theorem.  Its only explicit external inputs are
+the historical seven-point certificate and the single signed kernel enclosure
+at the certified point; the universal scalar-pressure inequality is proved
+inside Lean. -/
+theorem v17_published_eps_form_of_certificates
+    (hcertExt : ArchivedSevenPointClaim)
+    (hsigned : V17KernelSignedCertPointClaim) :
+    ∀ ε > 0, ∃ T₀ : ℝ, ∀ T ≥ T₀,
+      (v17PublishedConstant - ε) *
+          (Zeta23.Ncount T (2 * T) : ℝ)
+        ≤ Zeta23.N0simple T (2 * T) := by
+  exact v17_published_eps_form_from_global_refinement
+    (v17GlobalRefinement_of_certificates hcertExt hsigned)
 
 end HurtadoZeta23
