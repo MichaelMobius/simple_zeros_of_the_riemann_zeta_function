@@ -34,6 +34,7 @@ jobs:
           set -euxo pipefail
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
+          cp harness/lean_harness/v17_weighted/LimitingKernel.lean upstream/zeta23/HurtadoZeta23/LimitingKernel.lean
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
           cp harness/lean_harness/v17_weighted/V17ScalarPressure.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressure.lean
