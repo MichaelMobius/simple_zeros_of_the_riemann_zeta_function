@@ -103,8 +103,8 @@ theorem v17_pinching_eventually_of_claims
         ≤ articleStableDefect T := by
   filter_upwards
     [eventually_two_le_zeta_l,
-     eventually_article_hwL,
-     eventually_article_hsmall,
+     eventually_v17_article_hwL,
+     eventually_v17_article_hsmall,
      eventually_one_le_articleTailMargin,
      eventually_articleTailMargin_add_two_le_sq,
      eventually_ge_atTop (2 * Real.pi),
