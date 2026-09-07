@@ -100,11 +100,17 @@ theorem v17_adjacent_matrix_band_le_defect_450
       have h0 : 2 * b < 450 := by omega
       have h1 : 2 * b + 1 < 450 := by omega
       simp only [v17MatchingNormSqNat450, h0, h1, dite_true]
-      congr 2
-      · apply Fin.ext
+      have hidx0 :
+          (⟨2 * b, h0⟩ : Fin 450) =
+            v17PairEquiv450 (⟨b, hb225⟩, 0) := by
+        apply Fin.ext
         simpa using (v17PairEquiv450_zero_val ⟨b, hb225⟩).symm
-      · apply Fin.ext
+      have hidx1 :
+          (⟨2 * b + 1, h1⟩ : Fin 450) =
+            v17PairEquiv450 (⟨b, hb225⟩, 1) := by
+        apply Fin.ext
         simpa using (v17PairEquiv450_one_val ⟨b, hb225⟩).symm
+      rw [hidx0, hidx1]
 
   have hoddEq :
       (∑ b ∈ Finset.range 224,
@@ -125,11 +131,17 @@ theorem v17_adjacent_matrix_band_le_defect_450
       have h1 : 2 * b + 1 < 450 := by omega
       have h2 : 2 * b + 2 < 450 := by omega
       simp only [v17MatchingNormSqNat450, h1, h2, dite_true]
-      congr 2
-      · apply Fin.ext
+      have hidx1 :
+          (⟨2 * b + 1, h1⟩ : Fin 450) =
+            finRotate 450 (v17PairEquiv450 ((⟨b, hb224⟩ : Fin 224).castSucc, 0)) := by
+        apply Fin.ext
         simpa using (v17_rotated_pair_zero_val ⟨b, hb224⟩).symm
-      · apply Fin.ext
+      have hidx2 :
+          (⟨2 * b + 2, h2⟩ : Fin 450) =
+            finRotate 450 (v17PairEquiv450 ((⟨b, hb224⟩ : Fin 224).castSucc, 1)) := by
+        apply Fin.ext
         simpa using (v17_rotated_pair_one_val ⟨b, hb224⟩).symm
+      rw [hidx1, hidx2]
 
   have hband :
       pairBandEnergy 450 0 (v17MatchingNormSqNat450 G) = evenE + oddE := by
