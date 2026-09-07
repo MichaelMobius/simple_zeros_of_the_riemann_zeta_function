@@ -1,4 +1,4 @@
-% Manuscript version v17: pressure-preserving averaging and adjacent-pair refinement.
+% Manuscript version v18: v17 mathematics with adversarial provenance and trust-boundary revisions.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -49,7 +49,7 @@ where
  =
  \frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}.
 \]
-The proof reuses the position-weighted seven-point certificate
+The proof reuses our previously certified position-weighted seven-point certificate
 \[
  \delta=\frac{39}{10000},
  \qquad
@@ -82,7 +82,10 @@ certified by an exact-rational verifier; positivity and monotonicity then give
 \(w(89/100)>2937/100000\).  The same verifier checks the pressure mass, the
 contradiction margin, and the final constant.  The complete implication from
 the archived seven-point certificate and this signed scalar claim to the final
-epsilon theorem is kernel-checked in Lean.
+epsilon theorem is kernel-checked in Lean.  The written mathematical derivation
+below does not invoke the recent Alpöge--Furman theorem as a premise; the
+software provenance of the Lean verification is stated separately in
+Section~\ref{sec:trust}.
 \end{abstract}
 
 \section{Introduction and statement of novelty}
@@ -94,11 +97,17 @@ ordinary ordinate in \((T,2T]\), counted with multiplicity, and let
 same interval. The quantitative study of \(N_0^s/N\) goes back to
 Montgomery's pair-correlation method and the Montgomery--Taylor optimization.
 Recent work has made the relevant finite-compression and zero-side inertia
-mechanism unconditional and has produced reproducible improvements beyond the
-Montgomery--Taylor constant; see Claude~\cite{Claude26} for the immediate
-comparison point and
+mechanism unconditional.  Alpöge and Furman~\cite{AlpogeFurman26}, communicating
+a proof discovered autonomously by Claude at Anthropic as recorded both by the
+authors and by Anthropic~\cite{Anthropic26}, establish the finite-compression,
+rank--trace, and inertia route unconditionally.  Their Theorem~D is the
+Montgomery--Taylor optimized specialization of that framework; in the present
+normalization its simple-zero constant is the number denoted below by
+\(H_{\rm MT}\).  Lamzouri~\cite{Lamzouri26} subsequently gave a conceptually
+different unconditional proof of the same \(67.25\%\)-level conclusion.
+For surrounding pair-correlation work see
 Baluyot--Goldston--Suriajaya--Turnage-Butterbaugh~\cite{BGSTB24,BGSTB25} and
-Goldston--Suriajaya~\cite{GS25,GS26} for surrounding pair-correlation work.
+Goldston--Suriajaya~\cite{GS25,GS26}.
 For the optimized Montgomery--Taylor test family we write
 \begin{equation}\label{eq:HMT}
  H_{\rm MT}:=\frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}
@@ -123,9 +132,30 @@ presents the subsequent refinement as AI-generated.  We cite the
 human-maintained artifacts and treat model use as provenance rather than
 mathematical authorship.
 
+Several contemporaneous public computational artifacts report numerically
+larger values.  Ojha's research repository~\cite{Ojha26} currently reports a
+certified candidate bound
+\[
+ 0.6733127422722459\ldots,
+\]
+and explicitly labels the theorem claim a record candidate pending expert
+review and end-to-end formalization.  Devine's Zenodo preprint~\cite{Devine26}
+reports the unconditional value
+\[
+ 0.673399.
+\]
+Neither artifact is an input to the present proof.  Their proof architectures
+and validation status differ from ours, so we make no claim here that the
+numerical value of Theorem~\ref{thm:main} is the largest publicly reported
+bound.
+
 The contribution of the present paper is explicit and layered.  We do not
-claim the stability-enhanced rank--trace inequality or the seven-point
-architecture as new.  We use the already certified nonuniform pressure vector
+claim the finite-compression/rank--trace mechanism, the stability-enhanced
+rank--trace inequality, or the seven-point architecture as new.  The
+position-weighted seven-point certificate itself is an earlier contribution of
+the present project, frozen in the reproducibility artifact
+\cite{Hurtado26Artifact}; that version already introduced the nonuniform
+pressure vector
 \begin{equation}\label{eq:p}
  p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
  \qquad
@@ -175,18 +205,54 @@ one has unconditionally
 A second contribution is expository and logical rather than a separate
 priority claim: we reconstruct the analytic/Gabor package needed by the proof
 from classical theorems and explicitly identify the common finite compression
-on its zero and prime sides. This makes the proof independent of using the
-recent Theorem D as an imported black box.
+on its zero and prime sides.  Consequently, Theorem~\ref{thm:main} does not
+invoke Theorem~D of Alpöge--Furman~\cite{AlpogeFurman26}, or any other theorem
+of that paper, as a mathematical premise.  This is a statement about the
+logical derivation presented in the manuscript, not a claim of clean-room
+software independence: the Lean verification has the distinct provenance
+recorded in Section~\ref{sec:trust}.
 
-\paragraph{Priority convention.}
+\paragraph{Priority and provenance convention.}
 The priority statements above concern the public artifacts inspected while
-preparing this version. Jo's repository is the public upstream artifact for
-the stability/seven-point draft used here; Rademacher's repository records
-that provenance and strengthens its finite certificate.  The new claims of
-the present version are restricted to the exact pressure-preserving global
-accounting, the adjacent-pair defect lemma, the scalar kernel enclosure used
-with that lemma, and the resulting constant.  The seven-point certificate
-itself is inherited unchanged from the frozen artifact.
+preparing this version.  The proof discovered by Claude and verified and
+communicated by Alpöge--Furman supplies the immediate unconditional
+finite-compression/rank--trace comparison point~\cite{AlpogeFurman26,Anthropic26}.
+Jo's repository is the public upstream artifact for the stability-enhanced
+seven-point draft used here; Rademacher's repository records that provenance
+and strengthens its uniform finite certificate.  The position-weighted
+seven-point certificate \eqref{eq:p}--\eqref{eq:local-cert-intro} is frozen in
+our earlier artifact~\cite{Hurtado26Artifact}.  The new claims of the present
+version are restricted to the exact pressure-preserving global accounting, the
+adjacent-pair defect lemma, the scalar kernel enclosure used with that lemma,
+and the resulting constant.  The seven-point branch-and-bound certificate is
+reused unchanged.
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.43\linewidth}p{0.50\linewidth}@{}}
+\toprule
+Component & Provenance used in this paper\\
+\midrule
+Classical analytic inputs & Weil explicit formula, Montgomery--Taylor optimization,
+Riemann--von Mangoldt, PNT, Poisson summation, Montgomery--Vaughan and standard
+matrix analysis\\
+Finite compression, zero-side inertia and rank--trace route & Proof discovered by
+Claude (Anthropic), verified and communicated by Alpöge--Furman
+\cite{AlpogeFurman26,Anthropic26}; not imported as a premise of
+Theorem~\ref{thm:main}\\
+Stability-enhanced rank--trace and seven-point architecture & Jo~\cite{Jo26}\\
+Uniform seven-point strengthening & Rademacher~\cite{Rademacher26}\\
+Position-weighted seven-point certificate \(39/10000\) & Hurtado, earlier frozen
+artifact~\cite{Hurtado26Artifact}\\
+Exact pressure preservation, adjacent-pair pinching, scalar enclosure and
+\(m=450\) assembly & Present paper\\
+Lean base library & Anthropic \texttt{formal-math/zeta23}, pinned commit recorded
+in Section~\ref{sec:trust}~\cite{AnthropicFormal26}\\
+Lean v17 refinement layer & \texttt{HurtadoZeta23} modules in the present
+repository\\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \section{The common finite compression and its two representations}
 \label{sec:common-compression}
@@ -490,7 +556,7 @@ Let $p_1\ge\cdots\ge p_r\ge0$ be the eigenvalues of $M=V^*V$
 eigenvalues of $P=VV^*$ are the same; extend the eigenvalue list of $P$ by
 zeros as necessary.  Likewise write
 $n_1\ge n_2\ge\cdots\ge0$ for the eigenvalues of $Q_-$ and extend either
-list by zeros to a common length.  Von Neumann's trace inequality then implies
+list by zeros to a common length.  Von Neumann's trace inequality~\cite{Bhatia97} then implies
 \[
  \tr(PQ_-)\le\sum_{i\le r}p_i n_i.
 \]
@@ -558,9 +624,10 @@ Hence
 \end{equation}
 Apply the independently proved tail estimate~\eqref{eq:tail-input}.  Pinching $M$ to the
 retained central principal block and its complement does not increase
-$\tr\Psi$: pinching is a random-unitary average, and the spectral trace
-functional $X\mapsto\tr\Psi(X)$ is convex and unitarily invariant.  No
-operator convexity of $\Psi$ is required.  Thus
+$\tr\Psi$: by the standard pinching/majorization principle for Hermitian
+matrices~\cite{Bhatia97}, pinching is a random-unitary average and the spectral
+trace functional $X\mapsto\tr\Psi(X)$ is convex and unitarily invariant.
+No operator convexity of $\Psi$ is required.  Thus
 $\cD(M)\ge\cD(M^\circ)$.  Moreover,
 \[
  N(I')=N(T,2T)+o(N(T,2T)).
@@ -802,8 +869,9 @@ tree.
 The frozen 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
 visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
 verifier also succeeds at 128-bit working precision.  The complete 256-bit
-artifact is publicly archived in the immutable release
-\cite{Hurtado26Artifact}.  Appendix~\ref{app:cert} records the hashes and
+artifact is publicly archived in the frozen release snapshot
+\cite{Hurtado26Artifact}, identified by its release tag, commit SHA, and
+cryptographic hashes.  Appendix~\ref{app:cert} records the hashes and
 environment.
 \end{proof}
 
@@ -897,17 +965,19 @@ For consecutive gaps \(g_j=y_{j+1}-y_j\),
 \end{lemma}
 
 \begin{proof}
-Pinch \(K\) first into the principal \(2\times2\) blocks
+Apply two separate pinchings to the original matrix \(K\).  The first uses the
+principal \(2\times2\) blocks
 \[
- (1,2),(3,4),\ldots
+ (1,2),(3,4),\ldots,
 \]
-and then into
+while the second, independently applied to the same original \(K\), uses
 \[
  (2,3),(4,5),\ldots .
 \]
-The spectral trace functional \(X\mapsto\operatorname{tr}\Psi(X)\) cannot
-increase under either pinching, since pinching is a random-unitary average
-and this trace functional is convex and unitarily invariant.
+For each of these two pinchings, the spectral trace functional
+\(X\mapsto\operatorname{tr}\Psi(X)\) cannot increase by the standard
+pinching/majorization principle~\cite{Bhatia97}: pinching is a random-unitary
+average and this trace functional is convex and unitarily invariant.
 
 The block associated with a consecutive gap \(g\) is
 \[
@@ -918,8 +988,9 @@ exactly \(2|k(g)|^2=2w(g)\).  The first pinching gives
 \[
  \mathcal D(K)\ge2\sum_{j\ {\rm odd}}w(g_j),
 \]
-and the second gives the corresponding inequality over even \(j\).  Averaging
-the two inequalities proves \eqref{eq:adjacent-pair-defect}.
+while the second, as a separate inequality for the same \(K\), gives the
+corresponding bound over even \(j\).  Averaging these two independently
+obtained inequalities proves \eqref{eq:adjacent-pair-defect}.
 \end{proof}
 
 
@@ -1223,6 +1294,13 @@ Dividing by \(N\) and passing to the lower limit gives
 
 \section{Comparison and structural interpretation}
 
+At the baseline level, Alpöge--Furman~\cite{AlpogeFurman26} and
+Lamzouri~\cite{Lamzouri26} now provide different unconditional routes to the
+\(67.25\%\)-level Montgomery--Taylor conclusion.  The present argument is not
+obtained by invoking either result: it reconstructs the analytic package used
+below and then adds the separate stability and local-pressure machinery whose
+provenance is summarized in the table in Section~\ref{sec:introduction}.
+
 Jo's upstream reproducible draft~\cite{Jo26} uses
 \(p_j=1/3000\) and certifies \(19/5000=0.0038\), leading to
 \(0.6730085279277797\ldots\).  Rademacher's subsequent reproducible
@@ -1274,27 +1352,33 @@ pressure it carries.
 
 \section{Scope and trust base}\label{sec:trust}
 
-\noindent\textbf{Logical status of the theorem.}
-The common compression is fixed in Section~\ref{sec:common-compression}, and the analytic/Gabor package used in the main argument is proved in
-Appendices~\ref{app:inputI}--\ref{app:inputIV}; it is not imported from
-Theorem~D of~\cite{Claude26}.  The analytic external trust base consists of
-standard classical results: the Weil explicit formula for $\zeta$ in the
-Fourier normalization stated in Appendix~\ref{app:inputIII}, Stirling's
-formula, the Prime Number Theorem, the Riemann--von Mangoldt formula and its standard local zero-count consequence, standard Chebyshev and prime-power estimates, the weighted
-Montgomery--Vaughan Hilbert inequality, and Poisson summation.  The
-Montgomery--Vaughan paper is correctly cited as
-\emph{Hilbert's inequality}, J. London Math. Soc. (2) \textbf{8} (1974),
-73--82.
+\noindent\textbf{Logical status of the theorem and relation to the
+Alpöge--Furman/Claude result.}
+The common compression is fixed in Section~\ref{sec:common-compression}, and
+the analytic/Gabor package used in the main argument is proved in
+Appendices~\ref{app:inputI}--\ref{app:inputIV}.  In particular it is not
+imported from Theorem~D of Alpöge--Furman~\cite{AlpogeFurman26}.  That theorem
+is the Montgomery--Taylor optimized specialization of the unconditional
+finite-compression/rank--trace framework discovered by Claude and verified and
+communicated by Alpöge and Furman~\cite{AlpogeFurman26,Anthropic26}.  Its role
+here is comparison, provenance, and normalization cross-checking only; no
+proposition from that paper is a premise of Theorem~\ref{thm:main}.
 
-The role of~\cite{Claude26} in this version is comparison and normalization
-cross-checking only.  No proposition from that preprint is invoked as a
-premise of Theorem~\ref{thm:main}.  Likewise, the recent pair-correlation
-papers cited in the introduction provide context; the particular
-first/second-moment route used here is reconstructed directly in
-Appendix~\ref{app:inputIII}.
+The analytic external trust base consists of standard classical results: the
+Weil explicit formula for $\zeta$ in the Fourier normalization stated in
+Appendix~\ref{app:inputIII}, Stirling's formula, the Prime Number Theorem, the
+Riemann--von Mangoldt formula and its standard local zero-count consequence,
+standard Chebyshev and prime-power estimates, the weighted
+Montgomery--Vaughan Hilbert inequality, Poisson summation, and standard
+finite-dimensional matrix facts such as von Neumann's trace inequality and the
+pinching/majorization principle~\cite{Bhatia97}.  The Montgomery--Vaughan paper
+is correctly cited as \emph{Hilbert's inequality}, J. London Math. Soc. (2)
+\textbf{8} (1974), 73--82.  The recent pair-correlation papers cited in the
+introduction provide context; the particular first/second-moment route used
+here is reconstructed directly in Appendix~\ref{app:inputIII}.
 
 Proposition~\ref{prop:cert} is computer-assisted.  Its trust base includes the
-immutable artifact release~\cite{Hurtado26Artifact}, the frozen verifier,
+frozen artifact release snapshot~\cite{Hurtado26Artifact}, the frozen verifier,
 \texttt{python-flint}, FLINT/Arb and their dependencies, and the correctness
 of the execution environment.  The 128- and 256-bit runs are
 replications of the same implementation at different working precisions, not
@@ -1322,21 +1406,34 @@ as well as the final constant.  Decimal arithmetic is used only for outward
 display of certified intervals.  This verifier does not replay the existing
 seven-point branch-and-bound certificate.
 
-The v17 formalization has a separate, explicit trust boundary.  The Lean root
+The v17 formalization has a separate, explicit trust boundary and a distinct
+software provenance.  The Lean root
 \texttt{HurtadoZeta23.V17FinalAssembly} kernel-checks the implication from
-exactly two external propositions---the archived seven-point claim and the
-signed kernel claim above---to the published epsilon-form theorem
+exactly two \emph{explicit external certificate propositions}---the archived
+seven-point claim and the signed kernel claim above---to the published
+epsilon-form theorem
 \texttt{v17\_published\_eps\_form\_of\_certificates}.  The universal scalar
 pressure inequality, including the required kernel monotonicity, is proved
 inside Lean.  The external computations are not promoted silently to Lean
 proof terms or declared as axioms; their propositions remain explicit
 arguments of the final theorem.
 
+The phrase ``exactly two'' refers to the explicit mathematical certificate
+arguments of that final theorem, not to the entire software or foundational
+stack.  The v17 \texttt{HurtadoZeta23} modules are compiled as an overlay on
+the pinned Anthropic \texttt{formal-math/zeta23} source tree at commit
+\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
+together with the pinned Lean/Mathlib toolchain recorded in the repository.
+Thus the manuscript's independence from Theorem~D as a mathematical premise
+must not be conflated with clean-room software independence of the Lean
+formalization.
+
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
-optimality theorem.  Thus the paper is self-contained relative to the
-classical analytic results just listed and to the stated Arb/FLINT
+optimality theorem.  Thus the written mathematical proof is self-contained relative to the
+classical analytic and matrix results just listed and to the stated Arb/FLINT
 certificate; it does not claim to reprove those classical theorems from first
-principles.
+principles.  The separate Lean verification should be read with the software
+provenance in the preceding paragraph.
 
 \appendix
 
@@ -3153,9 +3250,10 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 The complete Arb/FLINT verifier, the archived 256-bit certification run,
 machine-readable parameters, execution logs, environment information,
 SHA-256 hashes, and reproduction instructions are publicly available in the
-reproducibility artifact~\cite{Hurtado26Artifact}.  The immutable snapshot
+reproducibility artifact~\cite{Hurtado26Artifact}.  The frozen snapshot
 used for the present certificate is GitHub release
-\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e}.  The release
+\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e} and identified
+additionally by the verifier and log SHA-256 values below.  The release
 contains the manuscript snapshot and the computational evidence used to
 certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
 default branch are not part of the trust base of this certificate.
@@ -3282,11 +3380,51 @@ Oxford University Press, 1986.
 
 
 
-\bibitem{Claude26}
-Claude,
-\emph{More than two thirds of the zeros of the Riemann zeta function lie on
-the critical line},
-preprint, August 10, 2026, Anthropic.
+\bibitem{AlpogeFurman26}
+L.~Alpöge and R.~Furman,
+\emph{More than two thirds of the zeta zeros are simple and on the critical
+line},
+arXiv:2608.13637v2 (2026).
+The arXiv record states that the proof was discovered autonomously by Claude
+(Anthropic), and verified and communicated by the listed authors.
+
+\bibitem{Anthropic26}
+Anthropic,
+\emph{Learning more about Claude's mathematical capabilities},
+research note, 10 August 2026,
+\url{https://www.anthropic.com/research/riemann-zeta}.
+
+\bibitem{Lamzouri26}
+Y.~Lamzouri,
+\emph{A new proof that more than $2/3$ of the zeros of the Riemann zeta
+function are simple and on the critical line},
+arXiv:2609.02882 (2026).
+
+\bibitem{Bhatia97}
+R.~Bhatia,
+\emph{Matrix Analysis},
+Graduate Texts in Mathematics, Vol.~169, Springer, 1997.
+
+\bibitem{AnthropicFormal26}
+Anthropic,
+\emph{formal-math: zeta23 Lean 4 formalisation},
+GitHub repository \texttt{anthropics/formal-math},
+\url{https://github.com/anthropics/formal-math},
+pinned by the present verification at commit
+\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844} (2026).
+
+\bibitem{Ojha26}
+V.~Ojha,
+\emph{A 67.3312742272\% lower-bound candidate for simple zeros of zeta},
+research repository \texttt{trmdy/zeta-simple-zeros-673137}, 2026,
+\url{https://github.com/trmdy/zeta-simple-zeros-673137}.
+
+\bibitem{Devine26}
+M.~Devine,
+\emph{An Unconditional 67.3399\% Bound and Conditional Advances Beyond
+67.92\% for Simple Critical Zeros of the Riemann Zeta Function},
+Zenodo, version 1.0.3, 23 August 2026,
+DOI: 10.5281/zenodo.22066689.
 
 \bibitem{BGSTB24}
 S.~A.~C.~Baluyot, D.~A.~Goldston, A.~I.~Suriajaya, and
