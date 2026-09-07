@@ -64,7 +64,7 @@ theorem v17_strong_block_450_of_interfaces
         ≤ pairBandEnergy 450 0 gramSq := by
     apply v17_adjacent_kernel_lower_450_of_pointwise_raw_loss
     intro a ha
-    exact hpoint a (a + 1) ha (by omega)
+    exact hpoint a (a + 1) (by omega) (by omega)
 
   have hweighted :
       v17t * v17g0 * v17Q ≤ D + v17t * P + 898 * eps := by
