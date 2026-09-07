@@ -31,3 +31,4 @@ jobs:
           grep -R -l -E 'articleRetainedCard|articleRetainedColumnsFinset|articleRetainedTotalSpan_le_samplingSpanScale|articleRetainedTotalSpan_eq_endpoints' /tmp/zeta || true
           echo '=== interfaces with context ==='
           grep -R -n -B 6 -A 14 -E 'def articleRetainedCard|abbrev articleRetainedCard|theorem articleRetainedTotalSpan_le_samplingSpanScale|theorem articleRetainedTotalSpan_eq_endpoints|articleRetainedColumnsFinset.*card|card.*articleRetainedColumnsFinset' /tmp/zeta || true
+          echo '=== probe complete ==='
