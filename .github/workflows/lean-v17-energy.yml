@@ -5,6 +5,7 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_energy/**"
+      - "lean_harness/v17_adj/part*.b64"
       - "lean_harness/frozen/FiniteGridEndpointBridge.lean"
       - "lean_harness/frozen/DiscreteCentralityBridge.lean"
       - "lean_harness/frozen/FourierL1.lean"
