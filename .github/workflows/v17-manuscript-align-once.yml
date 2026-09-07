@@ -1,0 +1,191 @@
+name: Align v17 manuscript once
+
+on:
+  push:
+    branches: [lean-v17-adaptation]
+    paths:
+      - ".github/workflows/v17-manuscript-align-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  align:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: lean-v17-adaptation
+          fetch-depth: 0
+
+      - name: Apply exact manuscript alignment patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('paper/main.tex')
+          s = path.read_text(encoding='utf-8')
+
+          replacements = []
+
+          replacements.append((
+          r'''\date{September 6, 2026}''',
+          r'''\date{September 7, 2026}'''))
+
+          replacements.append((
+          r'''The only new numerical input is a rigorous scalar enclosure for
+\(w(89/100)\); an exact-rational verifier checks this enclosure, the pressure
+mass, the contradiction margin, and the final constant.  The analytic/Gabor
+package and the seven-point certificate are the same inputs as in the previous
+version.''',
+          r'''The only new numerical input is the rigorous signed enclosure
+\[
+ \frac{171389}{1000000}<k(89/100),
+\]
+certified by an exact-rational verifier; positivity and monotonicity then give
+\(w(89/100)>2937/100000\).  The same verifier checks the pressure mass, the
+contradiction margin, and the final constant.  The complete implication from
+the archived seven-point certificate and this signed scalar claim to the final
+epsilon theorem is kernel-checked in Lean.'''))
+
+          replacements.append((
+          r'''For \(0<g\le1\), differentiation under the integral sign gives
+\(k'(g)<0\): on \(0<u<1/2\), the density is positive and
+\(\sin(2\pi gu)>0\).  Moreover
+\[
+ k(1)=\frac1{2\pi^2-1}>0.
+\]
+Hence \(w(g)=k(g)^2\) is decreasing on \([0,1]\).
+
+The exact-arithmetic verifier accompanying this version proves
+\begin{equation}\label{eq:w089}
+ w\!\left(\frac{89}{100}\right)
+ >
+ \frac{2937}{100000}
+ =
+ t\beta g_0.
+\end{equation}''',
+          r'''For \(0\le x\le y\le g_0\) and \(|u|\le1/2\), one has
+\[
+ 0\le2\pi x|u|\le2\pi y|u|\le\pi g_0<\pi.
+\]
+Since cosine is decreasing on \([0,\pi]\) and
+\(\cos(\sqrt2\,u)>0\) on \([-1/2,1/2]\), direct comparison of the two
+integrands gives
+\[
+ k(y)\le k(x).
+\]
+This avoids any differentiation under the integral sign.
+
+The exact-arithmetic verifier accompanying this version certifies the signed
+bound
+\begin{equation}\label{eq:k089-signed}
+ \frac{171389}{1000000}
+ <
+ k\!\left(\frac{89}{100}\right).
+\end{equation}
+In particular \(k(g_0)>0\), and the preceding monotonicity shows that
+\(k(g)\ge k(g_0)>0\) for \(0\le g\le g_0\).  Squaring therefore preserves the
+order on this interval.  Moreover the same exact-rational verification gives
+\begin{equation}\label{eq:w089}
+ w\!\left(\frac{89}{100}\right)
+ >
+ \left(\frac{171389}{1000000}\right)^2
+ >
+ \frac{2937}{100000}
+ =
+ t\beta g_0.
+\end{equation}'''))
+
+          replacements.append((
+          r'''The refinement from the previous constant to Theorem~\ref{thm:main} introduces
+no new seven-point branch-and-bound certificate.  Its additional numerical
+trust base is the small exact-arithmetic verifier
+\texttt{verify\_improved\_bound.py}.  It uses Python integer arithmetic and
+\texttt{Fraction} for all decisive comparisons, rigorous rational enclosures
+for the elementary transcendental quantities, and checks in particular
+\[
+ w(89/100)>\frac{2937}{100000},
+ \qquad
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =\frac{6363}{30868750}>0,
+\]
+as well as the final constant.  Decimal arithmetic is used only for outward
+display of certified intervals.  This verifier does not replay the existing
+seven-point certificate, the analytic/Gabor package, or the Lean
+formalization; those remain inputs from the preceding version.''',
+          r'''The refinement from the previous constant to Theorem~\ref{thm:main} introduces
+no new seven-point branch-and-bound certificate.  Its additional numerical
+trust base is the small exact-arithmetic verifier
+\texttt{verify\_improved\_bound.py}.  It uses Python integer arithmetic and
+\texttt{Fraction} for all decisive comparisons, together with rigorous
+rational enclosures for the elementary transcendental quantities.  It
+certifies in particular
+\[
+ \frac{171389}{1000000}<k(89/100),
+ \qquad
+ \left(\frac{171389}{1000000}\right)^2
+ >\frac{2937}{100000},
+\]
+and checks
+\[
+ g_0Q+\left(1-\frac1t\right)\frac{450}{449}-A
+ =\frac{6363}{30868750}>0,
+\]
+as well as the final constant.  Decimal arithmetic is used only for outward
+display of certified intervals.  This verifier does not replay the existing
+seven-point branch-and-bound certificate.
+
+The v17 formalization has a separate, explicit trust boundary.  The Lean root
+\texttt{HurtadoZeta23.V17FinalAssembly} kernel-checks the implication from
+exactly two external propositions---the archived seven-point claim and the
+signed kernel claim above---to the published epsilon-form theorem
+\texttt{v17\_published\_eps\_form\_of\_certificates}.  The universal scalar
+pressure inequality, including the required kernel monotonicity, is proved
+inside Lean.  The external computations are not promoted silently to Lean
+proof terms or declared as axioms; their propositions remain explicit
+arguments of the final theorem.'''))
+
+          replacements.append((
+          r'''The scalar adjacent-pair input is
+\[
+ g_0=\frac{89}{100},\qquad t=\frac{33}{2},
+ \qquad
+ w(g_0)>\frac{2937}{100000}=t\beta g_0.
+\]''',
+          r'''The scalar adjacent-pair input is
+\[
+ g_0=\frac{89}{100},\qquad t=\frac{33}{2},
+ \qquad
+ \frac{171389}{1000000}<k(g_0),
+\]
+which implies
+\[
+ w(g_0)>\left(\frac{171389}{1000000}\right)^2
+ >\frac{2937}{100000}=t\beta g_0.
+\]'''))
+
+          for i, (old, new) in enumerate(replacements, 1):
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f'replacement {i}: expected exactly one match, found {count}')
+              s = s.replace(old, new, 1)
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+          git diff --check
+          git diff -- paper/main.tex
+
+      - name: Commit aligned manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Michael Hurtado"
+          git config user.email "mhe777@gmail.com"
+          git add paper/main.tex
+          git commit -m "Align v17 manuscript with formal trust boundary"
+          git push origin HEAD:lean-v17-adaptation
