@@ -48,6 +48,7 @@ jobs:
           cp harness/lean_harness/frozen/DiscreteCentralityBridge.lean upstream/zeta23/HurtadoZeta23/DiscreteCentralityBridge.lean
           cp harness/lean_harness/frozen/FiniteGridEndpointBridge.lean upstream/zeta23/HurtadoZeta23/FiniteGridEndpointBridge.lean
           cp harness/lean_harness/frozen/FourierL1.lean upstream/zeta23/HurtadoZeta23/FourierL1.lean
+          cp harness/lean_harness/frozen/SevenPointCertificateBridge.lean upstream/zeta23/HurtadoZeta23/SevenPointCertificateBridge.lean
           cp harness/lean_harness/frozen/ExternalCertificateFrontier.lean upstream/zeta23/HurtadoZeta23/ExternalCertificateFrontier.lean
 
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
