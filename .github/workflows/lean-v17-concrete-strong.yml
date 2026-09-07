@@ -89,6 +89,8 @@ jobs:
           cp harness/lean_harness/v17_global/V17ShiftedGramPinching450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedGramPinching450.lean
           cp harness/lean_harness/v17_global/V17ConcretePressure450.lean upstream/zeta23/HurtadoZeta23/V17ConcretePressure450.lean
           cp harness/lean_harness/v17_global/V17ConcreteShiftedAssembly450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteShiftedAssembly450.lean
+          cp harness/lean_harness/v17_global/V17BlockErrorSmall.lean upstream/zeta23/HurtadoZeta23/V17BlockErrorSmall.lean
+          cp harness/lean_harness/v17_global/V17FinalAssembly.lean upstream/zeta23/HurtadoZeta23/V17FinalAssembly.lean
 
       - name: Register exact Hurtado import closure
         working-directory: upstream/zeta23
@@ -97,7 +99,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          todo = ["HurtadoZeta23.V17ConcreteShiftedAssembly450"]
+          todo = ["HurtadoZeta23.V17FinalAssembly"]
           seen = set()
           missing = []
           while todo:
@@ -150,7 +152,7 @@ jobs:
         shell: bash
         run: lake exe cache get
 
-      - name: Build concrete shifted assembly
+      - name: Build conditional v17 final assembly
         working-directory: upstream/zeta23
         shell: bash
         run: lake build HurtadoZeta23V17ConcreteStrong
