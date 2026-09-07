@@ -5,7 +5,9 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_energy/**"
-      - "lean_harness/frozen/**"
+      - "lean_harness/frozen/FiniteGridEndpointBridge.lean"
+      - "lean_harness/frozen/DiscreteCentralityBridge.lean"
+      - "lean_harness/frozen/FourierL1.lean"
       - ".github/workflows/lean-v17-energy.yml"
 
 permissions:
@@ -27,25 +29,23 @@ jobs:
           ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
           path: upstream
 
-      - name: Overlay v17 energy sources
+      - name: Overlay lightweight v17 energy sources
         shell: bash
         run: |
           set -euxo pipefail
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
 
-          cp harness/lean_harness/frozen/ConcreteCompactOverlapInputIV.lean upstream/zeta23/HurtadoZeta23/ConcreteCompactOverlapInputIV.lean
+          cp harness/lean_harness/frozen/DiscreteCentralityBridge.lean upstream/zeta23/HurtadoZeta23/DiscreteCentralityBridge.lean
           cp harness/lean_harness/frozen/FiniteGridEndpointBridge.lean upstream/zeta23/HurtadoZeta23/FiniteGridEndpointBridge.lean
-          cp harness/lean_harness/frozen/PoissonGramUnitBound.lean upstream/zeta23/HurtadoZeta23/PoissonGramUnitBound.lean
-          cp harness/lean_harness/frozen/ConcreteRawOverlapReduction.lean upstream/zeta23/HurtadoZeta23/ConcreteRawOverlapReduction.lean
-          cp harness/lean_harness/frozen/ConcreteFiniteClosure.lean upstream/zeta23/HurtadoZeta23/ConcreteFiniteClosure.lean
+          cp harness/lean_harness/frozen/FourierL1.lean upstream/zeta23/HurtadoZeta23/FourierL1.lean
 
           cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
-          cp harness/lean_harness/v17_energy/V17OffDiagonalSplit.lean upstream/zeta23/HurtadoZeta23/V17OffDiagonalSplit.lean
-          cp harness/lean_harness/v17_energy/V17PairBands.lean upstream/zeta23/HurtadoZeta23/V17PairBands.lean
-          cp harness/lean_harness/v17_energy/V17PoissonTail.lean upstream/zeta23/HurtadoZeta23/V17PoissonTail.lean
           cp harness/lean_harness/v17_energy/V17PairBandReindexCore.lean upstream/zeta23/HurtadoZeta23/V17PairBandReindexCore.lean
           cp harness/lean_harness/v17_energy/V17MatrixEnergy450.lean upstream/zeta23/HurtadoZeta23/V17MatrixEnergy450.lean
+          cp harness/lean_harness/v17_energy/V17ArticleSynthesisOverlapCore.lean upstream/zeta23/HurtadoZeta23/V17ArticleSynthesisOverlapCore.lean
+          cp harness/lean_harness/v17_energy/V17PoissonGramBound.lean upstream/zeta23/HurtadoZeta23/V17PoissonGramBound.lean
+          cp harness/lean_harness/v17_energy/V17CompactOverlapCore.lean upstream/zeta23/HurtadoZeta23/V17CompactOverlapCore.lean
           cp harness/lean_harness/v17_energy/V17AnalyticBridge450.lean upstream/zeta23/HurtadoZeta23/V17AnalyticBridge450.lean
           cp harness/lean_harness/v17_energy/V17GramEnergy450.lean upstream/zeta23/HurtadoZeta23/V17GramEnergy450.lean
 
