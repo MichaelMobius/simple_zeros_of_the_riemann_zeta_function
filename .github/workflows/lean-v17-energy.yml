@@ -39,6 +39,7 @@ jobs:
           cp harness/lean_harness/v17_energy/V17PairBands.lean upstream/zeta23/HurtadoZeta23/V17PairBands.lean
           cp harness/lean_harness/v17_energy/V17PoissonTail.lean upstream/zeta23/HurtadoZeta23/V17PoissonTail.lean
           cp harness/lean_harness/v17_energy/V17AnalyticBridge450.lean upstream/zeta23/HurtadoZeta23/V17AnalyticBridge450.lean
+          cp harness/lean_harness/v17_energy/V17GramEnergy450.lean upstream/zeta23/HurtadoZeta23/V17GramEnergy450.lean
           cat >> upstream/zeta23/lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -139,7 +140,8 @@ jobs:
             "HurtadoZeta23.V17OffDiagonalSplit",
             "HurtadoZeta23.V17PairBands",
             "HurtadoZeta23.V17PoissonTail",
-            "HurtadoZeta23.V17AnalyticBridge450"]
+            "HurtadoZeta23.V17AnalyticBridge450",
+            "HurtadoZeta23.V17GramEnergy450"]
           EOF
 
       - name: Install exact Lean toolchain
