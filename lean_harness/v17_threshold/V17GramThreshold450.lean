@@ -67,7 +67,6 @@ theorem v17_psd_gram_threshold_450
     exact offDiagonalEnergy_le_frobeniusDeviationSq G
 
   have hDE : D < E := by
-    dsimp [D] at hDO
     exact lt_of_lt_of_le hDO hOE
 
   have hexact : v17Threshold < D :=
