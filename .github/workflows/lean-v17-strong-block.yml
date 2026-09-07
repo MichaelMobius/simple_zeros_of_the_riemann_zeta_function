@@ -11,6 +11,7 @@ on:
       - "lean_harness/v17_threshold/**"
       - "lean_harness/v17_scalar/**"
       - "lean_harness/v17_adj/V17AdjacentPair.lean"
+      - "lean_harness/frozen/SpectralFrobenius.lean"
       - ".github/workflows/lean-v17-strong-block.yml"
 
 permissions:
@@ -39,6 +40,7 @@ jobs:
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
 
+          cp harness/lean_harness/frozen/SpectralFrobenius.lean upstream/zeta23/HurtadoZeta23/SpectralFrobenius.lean
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
           cp harness/lean_harness/v17_energy/V17PairBandReindexCore.lean upstream/zeta23/HurtadoZeta23/V17PairBandReindexCore.lean
