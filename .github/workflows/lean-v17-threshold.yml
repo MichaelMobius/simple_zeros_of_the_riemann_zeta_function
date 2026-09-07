@@ -6,6 +6,7 @@ on:
     paths:
       - "lean_harness/v17_threshold/**"
       - "lean_harness/frozen/ConcreteBlockDefect.lean"
+      - "lean_harness/frozen/ConsecutiveBlockStabilityBridge.lean"
       - "lean_harness/frozen/SpectralFrobenius.lean"
       - ".github/workflows/lean-v17-threshold.yml"
       - "lean_harness/v17_scalar/V17StrongBlockScalar.lean"
@@ -35,6 +36,8 @@ jobs:
           set -euxo pipefail
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
+          cp harness/lean_harness/frozen/ConsecutiveBlockStabilityBridge.lean \
+             upstream/zeta23/HurtadoZeta23/ConsecutiveBlockStabilityBridge.lean
           cp harness/lean_harness/frozen/SpectralFrobenius.lean \
              upstream/zeta23/HurtadoZeta23/SpectralFrobenius.lean
           cp harness/lean_harness/frozen/ConcreteBlockDefect.lean \
@@ -62,6 +65,7 @@ jobs:
             "HurtadoZeta23.MatrixEnergy",
             "HurtadoZeta23.BlockDefect",
             "HurtadoZeta23.SpectralFrobenius",
+            "HurtadoZeta23.ConsecutiveBlockStabilityBridge",
             "HurtadoZeta23.ConcreteBlockDefect",
             "HurtadoZeta23.V17StrongBlockScalar",
             "HurtadoZeta23.V17SpectralThreshold",
