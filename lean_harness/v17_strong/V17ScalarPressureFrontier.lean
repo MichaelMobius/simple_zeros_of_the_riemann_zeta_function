@@ -10,22 +10,22 @@ namespace HurtadoZeta23
 /-- Exact mathematical statement needed from the new scalar-kernel check.
 
 The accompanying v17 verifier establishes the numerical enclosure at
-`g0 = 89/100`; together with the monotonicity argument in the manuscript this
-is the only new scalar trust frontier introduced by v17.  Keeping it as a
-named proposition prevents the finite strong-block proof from silently
-assuming a separate inequality for every block. -/
+`g0 = 89/100`.  In the final v17 theorem this universal statement is no
+longer an external trust input: `V17KernelMonotonicity` derives it inside
+Lean from the single signed kernel certificate.  It remains named here as
+the interface consumed by the finite strong-block proof. -/
 def V17ScalarPressureClaim : Prop :=
   ∀ g : ℝ, 0 ≤ g →
     v17t * beta * v17g0 ≤
       limitingWeight g + v17t * beta * g
 
-/-- SHA-256 of the exact-rational v17 verifier retained as provenance data. -/
+/-- SHA-256 of the current exact-rational v17 verifier retained as provenance data. -/
 def v17ScalarVerifierSHA256 : String :=
-  "2beb9b2ce3d2925d546292d75cf3e627e6564884659dcb8808d92cb008e64671"
+  "73ba433447a15659a78f1485fd0403fe0fa767371ff6b22f3e6c1a1929c54208"
 
-/-- SHA-256 of the verifier's retained `verification.json`. -/
+/-- SHA-256 of the current frozen `certification/v17/verification.json`. -/
 def v17ScalarVerificationJSONSHA256 : String :=
-  "60b5382aadfac1f74e622664e5fab9971ab6fe9cbb85d980a257eacd40cb0a36"
+  "c3ceab7fb966ecd9bc954da5e29414a84ef8d8a699f290a9378335a9b3542446"
 
 /-- A single universal scalar-pressure statement supplies the pointwise
 adjacent-gap hypothesis required by `V17WeightedPressure` on any monotone
