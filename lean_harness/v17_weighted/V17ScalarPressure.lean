@@ -1,5 +1,6 @@
 import HurtadoZeta23.V17StrongBlockScalar
 import HurtadoZeta23.LimitingKernel
+import HurtadoZeta23.Constants
 import Mathlib.Tactic
 
 noncomputable section
