@@ -10,7 +10,7 @@ on:
       - "lean_harness/v17_weighted/**"
       - "lean_harness/v17_threshold/**"
       - "lean_harness/v17_scalar/**"
-      - "lean_harness/frozen/**"
+      - "lean_harness/v17_adj/V17AdjacentPair.lean"
       - ".github/workflows/lean-v17-strong-block.yml"
 
 permissions:
@@ -32,31 +32,17 @@ jobs:
           ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
           path: upstream
 
-      - name: Overlay strong-block modules
+      - name: Overlay finite strong-block modules
         shell: bash
         run: |
           set -euxo pipefail
           cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
 
-          cp harness/lean_harness/frozen/ConcreteBlockDefect.lean upstream/zeta23/HurtadoZeta23/ConcreteBlockDefect.lean
-          cp harness/lean_harness/frozen/ConsecutiveBlockStabilityBridge.lean upstream/zeta23/HurtadoZeta23/ConsecutiveBlockStabilityBridge.lean
-          cp harness/lean_harness/frozen/SpectralFrobenius.lean upstream/zeta23/HurtadoZeta23/SpectralFrobenius.lean
-          cp harness/lean_harness/frozen/ConcreteCompactOverlapInputIV.lean upstream/zeta23/HurtadoZeta23/ConcreteCompactOverlapInputIV.lean
-          cp harness/lean_harness/frozen/FiniteGridEndpointBridge.lean upstream/zeta23/HurtadoZeta23/FiniteGridEndpointBridge.lean
-          cp harness/lean_harness/frozen/PoissonGramUnitBound.lean upstream/zeta23/HurtadoZeta23/PoissonGramUnitBound.lean
-          cp harness/lean_harness/frozen/ConcreteRawOverlapReduction.lean upstream/zeta23/HurtadoZeta23/ConcreteRawOverlapReduction.lean
-          cp harness/lean_harness/frozen/ConcreteFiniteClosure.lean upstream/zeta23/HurtadoZeta23/ConcreteFiniteClosure.lean
-          cp harness/lean_harness/frozen/GramPairEnergyIdentity.lean upstream/zeta23/HurtadoZeta23/GramPairEnergyIdentity.lean
-
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
-
           cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
-          cp harness/lean_harness/v17_energy/V17OffDiagonalSplit.lean upstream/zeta23/HurtadoZeta23/V17OffDiagonalSplit.lean
-          cp harness/lean_harness/v17_energy/V17PairBands.lean upstream/zeta23/HurtadoZeta23/V17PairBands.lean
-          cp harness/lean_harness/v17_energy/V17PoissonTail.lean upstream/zeta23/HurtadoZeta23/V17PoissonTail.lean
-          cp harness/lean_harness/v17_energy/V17AnalyticBridge450.lean upstream/zeta23/HurtadoZeta23/V17AnalyticBridge450.lean
-          cp harness/lean_harness/v17_energy/V17GramEnergy450.lean upstream/zeta23/HurtadoZeta23/V17GramEnergy450.lean
+          cp harness/lean_harness/v17_energy/V17PairBandReindexCore.lean upstream/zeta23/HurtadoZeta23/V17PairBandReindexCore.lean
+          cp harness/lean_harness/v17_energy/V17MatrixEnergy450.lean upstream/zeta23/HurtadoZeta23/V17MatrixEnergy450.lean
 
           cp harness/lean_harness/v17_adj/V17AdjacentPair.lean upstream/zeta23/HurtadoZeta23/V17AdjacentPair.lean
           cp harness/lean_harness/v17_matching/V17AdjacentMatching.lean upstream/zeta23/HurtadoZeta23/V17AdjacentMatching.lean
@@ -66,7 +52,6 @@ jobs:
           cp harness/lean_harness/v17_matching/V17ParitySplit.lean upstream/zeta23/HurtadoZeta23/V17ParitySplit.lean
           cp harness/lean_harness/v17_matching/V17AdjacentBand450.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBand450.lean
 
-          cp harness/lean_harness/v17_weighted/V17ScalarPressure.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressure.lean
           cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
 
           cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
@@ -76,6 +61,7 @@ jobs:
           cp harness/lean_harness/v17_threshold/V17GramThreshold450.lean upstream/zeta23/HurtadoZeta23/V17GramThreshold450.lean
 
           cp harness/lean_harness/v17_strong/V17StrongBlock450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlock450.lean
+          cp harness/lean_harness/v17_strong/V17StrongBlockMatrix450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockMatrix450.lean
 
       - name: Register exact Hurtado import closure
         working-directory: upstream/zeta23
@@ -84,7 +70,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          todo = ["HurtadoZeta23.V17StrongBlock450"]
+          todo = ["HurtadoZeta23.V17StrongBlockMatrix450"]
           seen = set()
           missing = []
           while todo:
@@ -137,7 +123,7 @@ jobs:
         shell: bash
         run: lake exe cache get
 
-      - name: Build strong block 450
+      - name: Build strong block matrix wrapper
         working-directory: upstream/zeta23
         shell: bash
         run: lake build HurtadoZeta23V17StrongBlock
