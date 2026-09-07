@@ -1,0 +1,45 @@
+name: Apply v18 editorial provenance patch
+
+on:
+  push:
+    branches: [v18-editorial-provenance-audit]
+    paths:
+      - "scripts/apply_v18_editorial_patch.py"
+      - ".github/workflows/v18-editorial-patch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: v18-editorial-provenance-audit
+          fetch-depth: 0
+
+      - name: Apply adversarial editorial patch
+        run: python3 scripts/apply_v18_editorial_patch.py
+
+      - name: Check resulting diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff -- paper/main.tex
+
+      - name: Commit revised manuscript source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- paper/main.tex; then
+            echo "No manuscript changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/main.tex
+          git commit -m "Clarify v18 mathematical and formal provenance"
+          git push origin HEAD:v18-editorial-provenance-audit
