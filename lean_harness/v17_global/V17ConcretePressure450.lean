@@ -97,9 +97,10 @@ theorem v17RetainedYNat_span_le_sampling
     v17RetainedYNat T (articleRetainedCard T - 1) -
         v17RetainedYNat T 0
       ≤ samplingSpanScale T := by
-  have hSold : blockLength ≤ articleRetainedCard T := by
+  have hblock : blockLength ≤ 450 := by
     norm_num [blockLength]
-    omega
+  have hSold : blockLength ≤ articleRetainedCard T :=
+    hblock.trans hS
   have hspan :=
     articleRetainedTotalSpan_le_samplingSpanScale T hSold hT hl
   rw [articleRetainedTotalSpan_eq_endpoints T hSold] at hspan
