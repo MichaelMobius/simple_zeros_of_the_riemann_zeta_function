@@ -22,7 +22,7 @@ lemma v17_sum_range_sub_eq_triangle_ite
     (∑ a ∈ Finset.range (N - r), f a) =
       ∑ a ∈ Finset.range N, if r + a < N then f a else 0 := by
   rw [v17_range_sub_eq_triangle_filter]
-  simp
+  rw [Finset.sum_filter]
 
 /-- Finite Fubini on the triangular domain `r+a<N`.  This is the exact
 combinatorial reindexing from separation-first pair sums to row-first pair
@@ -73,17 +73,22 @@ theorem v17_globalPairEnergyNat_450_eq_two_upperRows
     globalPairEnergyNat 450 w = 2 * v17UpperRowPairEnergyNat450 w := by
   unfold globalPairEnergyNat pairBandEnergy v17UpperRowPairEnergyNat450
   norm_num
-  congr 1
-  calc
-    (∑ r ∈ Finset.range 449,
-        ∑ a ∈ Finset.range (450 - (r + 1)), w a (a + r + 1))
-        = ∑ r ∈ Finset.range 449,
-            ∑ a ∈ Finset.range (449 - r), w a (a + r + 1) := by
-              apply Finset.sum_congr rfl
-              intro r hr
-              rw [show 450 - (r + 1) = 449 - r by omega]
-    _ = ∑ a ∈ Finset.range 449,
+  have hsum :
+      (∑ r ∈ Finset.range 449,
+          ∑ a ∈ Finset.range (450 - (r + 1)), w a (a + r + 1)) =
+        ∑ a ∈ Finset.range 449,
           ∑ r ∈ Finset.range (449 - a), w a (a + r + 1) := by
-            exact v17_triangle_sum_comm 449 (fun r a => w a (a + r + 1))
+    calc
+      (∑ r ∈ Finset.range 449,
+          ∑ a ∈ Finset.range (450 - (r + 1)), w a (a + r + 1))
+          = ∑ r ∈ Finset.range 449,
+              ∑ a ∈ Finset.range (449 - r), w a (a + r + 1) := by
+                apply Finset.sum_congr rfl
+                intro r hr
+                rw [show 450 - (r + 1) = 449 - r by omega]
+      _ = ∑ a ∈ Finset.range 449,
+            ∑ r ∈ Finset.range (449 - a), w a (a + r + 1) := by
+              exact v17_triangle_sum_comm 449 (fun r a => w a (a + r + 1))
+  exact congrArg (fun x : ℝ => 2 * x) hsum
 
 end HurtadoZeta23
