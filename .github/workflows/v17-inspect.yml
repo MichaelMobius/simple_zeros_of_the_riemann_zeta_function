@@ -23,16 +23,13 @@ jobs:
           mkdir -p /tmp/zeta
           cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
-      - name: Inspect exact source modules
+      - name: Locate threshold dependency sources
         shell: bash
         run: |
           set -euo pipefail
-          for f in OrderedRetainedColumns.lean SevenPointCertificateBridge.lean ShiftedAveraging.lean ShiftedPinching.lean GlobalAssembly.lean UniformBlockAssembly.lean; do
-            p="/tmp/zeta/HurtadoZeta23/$f"
-            if [ -f "$p" ]; then
-              echo "===== $f ====="
-              cat "$p"
-            else
-              echo "===== MISSING $f ====="
-            fi
-          done
+          echo '===== TARGET PATHS ====='
+          find /tmp/zeta -type f \( -name 'UniformBlockAssembly.lean' -o -name 'PoissonGaborBridge.lean' \) -print
+          echo '===== TOP-LEVEL HURTADO LISTING ====='
+          find /tmp/zeta/HurtadoZeta23 -maxdepth 1 -type f -printf '%f\n' 2>/dev/null | sort | grep -E 'UniformBlockAssembly|PoissonGaborBridge|ConsecutiveBlockStabilityBridge' || true
+          echo '===== ARCHIVE MATCHES ====='
+          tar -tzf /tmp/hurtado.tar.gz | grep -E 'UniformBlockAssembly|PoissonGaborBridge|ConsecutiveBlockStabilityBridge' || true
