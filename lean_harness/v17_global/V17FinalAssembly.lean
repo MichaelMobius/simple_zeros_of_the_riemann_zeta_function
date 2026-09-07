@@ -129,7 +129,7 @@ theorem v17_pinching_eventually_of_claims
       v17_concrete_shifted_assembly_450
         hcertExt hscalarExt hS hT hPois hnorm hl hwL hsmall
         hM1 hM2 hkk
-    simpa [v17FinalBlockErr, v17FinalLocalErr,
+    simpa only [v17FinalBlockErr, v17FinalLocalErr,
       v17ConsecutiveBlockCountR] using hfin
 
   · have hretNat : articleRetainedCard T ≤ 449 := by omega
@@ -154,10 +154,11 @@ theorem v17_pinching_eventually_of_claims
       exact mul_nonneg (by norm_num) heps
     have hcount : 0 ≤ v17ConsecutiveBlockCountR T := by
       unfold v17ConsecutiveBlockCountR
-      positivity
+      exact_mod_cast
+        (Nat.zero_le (articleRetainedCard T - 450 + 1))
     have hblock : 0 ≤ v17FinalBlockErr T := by
       unfold v17FinalBlockErr
-      positivity
+      exact div_nonneg (mul_nonneg hcount hlocal) (by norm_num)
     have hdef : 0 ≤ articleStableDefect T := by
       unfold articleStableDefect
       exact gramSpectralDefect_nonneg _ _
