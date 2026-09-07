@@ -89,6 +89,6 @@ theorem v17_globalPairEnergyNat_450_eq_two_upperRows
       _ = ∑ a ∈ Finset.range 449,
             ∑ r ∈ Finset.range (449 - a), w a (a + r + 1) := by
               exact v17_triangle_sum_comm 449 (fun r a => w a (a + r + 1))
-  exact congrArg (fun x : ℝ => 2 * x) hsum
+  exact hsum
 
 end HurtadoZeta23
