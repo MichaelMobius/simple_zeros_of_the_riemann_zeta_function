@@ -87,8 +87,6 @@ lemma v17_pairBandEnergy_zero_sub_uniform_450
       = pairBandEnergy 450 0 w - 449 * eta := by
   unfold pairBandEnergy
   norm_num
-  simp_rw [Finset.sum_sub_distrib]
-  simp
 
 /-- The adjacent 449-entry analogue of the global energy bridge.  A pointwise
 loss of `2*eps` on adjacent squared entries aggregates to exactly
