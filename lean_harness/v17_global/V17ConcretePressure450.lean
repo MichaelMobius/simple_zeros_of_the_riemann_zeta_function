@@ -72,6 +72,20 @@ theorem v17_block_pressure_eq_shiftedRetained
   rw [v17Y450_eq_v17RetainedYNat_shift T s hs hb]
   simp only [Nat.add_assoc]
 
+/-- Totalized actual local pressure; outside the full-block range it is zero. -/
+noncomputable def v17ActualBlockPressure450
+    (T : ℝ) (s : ℕ) : ℝ :=
+  if hs : s + 450 ≤ articleRetainedCard T then
+    v17LiteralBlockPressure 450 (v17Y450 T s hs)
+  else 0
+
+lemma v17ActualBlockPressure450_of_fit
+    (T : ℝ) (s : ℕ)
+    (hs : s + 450 ≤ articleRetainedCard T) :
+    v17ActualBlockPressure450 T s =
+      v17LiteralBlockPressure 450 (v17Y450 T s hs) := by
+  simp [v17ActualBlockPressure450, hs]
+
 /-- Endpoint span of the concrete global retained ordinate sequence is bounded
 by the universal sampling span. -/
 theorem v17RetainedYNat_span_le_sampling
@@ -102,10 +116,7 @@ theorem v17_sum_actual_block_pressure450_le_sampling
     (hT : 0 ≤ T)
     (hl : 0 ≤ Zeta23.l T) :
     (∑ b ∈ Finset.range (articleRetainedCard T - 450 + 1),
-      v17LiteralBlockPressure 450
-        (v17Y450 T b (by
-          have hb' := Finset.mem_range.mp ‹b ∈ Finset.range (articleRetainedCard T - 450 + 1)›
-          omega)))
+      v17ActualBlockPressure450 T b)
       ≤ v17Q * samplingSpanScale T := by
   have hL : 0 ≤ articleParams.L T := by
     simpa [articleParams_L_eq_zeta_l] using hl
@@ -117,16 +128,17 @@ theorem v17_sum_actual_block_pressure450_le_sampling
   have hQ : 0 ≤ v17Q := by norm_num [v17Q]
   calc
     (∑ b ∈ Finset.range (articleRetainedCard T - 450 + 1),
-      v17LiteralBlockPressure 450
-        (v17Y450 T b (by
-          have hb' := Finset.mem_range.mp ‹b ∈ Finset.range (articleRetainedCard T - 450 + 1)›
-          omega)))
+      v17ActualBlockPressure450 T b)
         =
       ∑ b ∈ Finset.range (articleRetainedCard T - 450 + 1),
         v17ShiftedLiteralPressure450 (v17RetainedYNat T) b := by
           apply Finset.sum_congr rfl
           intro b hb
-          apply v17_block_pressure_eq_shiftedRetained
+          have hfit : b + 450 ≤ articleRetainedCard T := by
+            have hb' := Finset.mem_range.mp hb
+            omega
+          rw [v17ActualBlockPressure450_of_fit T b hfit]
+          exact v17_block_pressure_eq_shiftedRetained T b hfit
     _ ≤ v17Q *
           (v17RetainedYNat T (articleRetainedCard T - 1) -
             v17RetainedYNat T 0) := hshift
