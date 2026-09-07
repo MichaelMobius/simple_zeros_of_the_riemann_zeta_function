@@ -26,8 +26,7 @@ most one copy of its spectral defect, assuming only the robust diagonal bound
 `Re G_ii ≤ 1`.
 
 The proof joins the even matching with the once-rotated matching.  The latter
-contains the 224 odd adjacent edges plus the nonnegative wrap edge `(449,0)`.
--/
+contains the 224 odd adjacent edges plus the nonnegative wrap edge `(449,0)`. -/
 theorem v17_adjacent_matrix_band_le_defect_450
     (G : Matrix (Fin 450) (Fin 450) ℂ)
     (hG : G.PosSemidef)
@@ -80,13 +79,15 @@ theorem v17_adjacent_matrix_band_le_defect_450
 
   have hwrap : 0 ≤ wrapE := by
     dsimp [wrapE]
-    positivity
+    exact sq_nonneg _
 
   have hevenEq :
       (∑ b ∈ Finset.range 225,
           v17MatchingNormSqNat450 G (2 * b) (2 * b + 1)) = evenE := by
     dsimp [evenE]
-    rw [Fin.sum_univ_eq_sum_range]
+    rw [Fin.sum_univ_eq_sum_range
+      (fun b : Fin 225 =>
+        ‖G (v17PairEquiv450 (b, 0)) (v17PairEquiv450 (b, 1))‖ ^ 2)]
     apply Finset.sum_congr rfl
     intro b hb
     have hb225 : b < 225 := Finset.mem_range.mp hb
@@ -103,7 +104,10 @@ theorem v17_adjacent_matrix_band_le_defect_450
       (∑ b ∈ Finset.range 224,
           v17MatchingNormSqNat450 G (2 * b + 1) (2 * b + 2)) = oddE := by
     dsimp [oddE]
-    rw [Fin.sum_univ_eq_sum_range]
+    rw [Fin.sum_univ_eq_sum_range
+      (fun b : Fin 224 =>
+        ‖G (finRotate 450 (v17PairEquiv450 (b.castSucc, 0)))
+            (finRotate 450 (v17PairEquiv450 (b.castSucc, 1)))‖ ^ 2)]
     apply Finset.sum_congr rfl
     intro b hb
     have hb224 : b < 224 := Finset.mem_range.mp hb
