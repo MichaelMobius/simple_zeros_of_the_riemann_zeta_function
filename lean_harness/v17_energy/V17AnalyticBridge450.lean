@@ -140,8 +140,8 @@ theorem v17_orderedRetainedGram_compact_quantitative
         hwL
         hkk
         hM1
-        (by simpa [articleCriticalStep] using hcentj.1)
-        (by simpa [articleCriticalStep] using hcenti.2)
+        (by simpa [articleCriticalStep] using hcentj)
+        (by simpa [articleCriticalStep] using hcenti)
     simpa [v17ArticleRawTailBound, articleCriticalStep] using h
 
   have hquant :=
