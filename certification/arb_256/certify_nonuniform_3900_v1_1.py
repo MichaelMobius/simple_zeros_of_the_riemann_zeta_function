@@ -277,6 +277,20 @@ PRESSURE_NUMERATORS = (2714, 3733, 3553, 3553, 3733, 2714)
 PRESSURE_DENOMINATOR = 10_000_000
 PRESSURE_CUTOFF_CELLS = 57_480
 
+TARGET_RATIONAL = fmpq(TARGET_NUMERATOR, TARGET_DENOMINATOR)
+PRESSURE_CUTOFF_LOWER = fmpq(
+    min(PRESSURE_NUMERATORS) * PRESSURE_CUTOFF_CELLS,
+    GRID * PRESSURE_DENOMINATOR,
+)
+PRESSURE_CUTOFF_MARGIN = PRESSURE_CUTOFF_LOWER - TARGET_RATIONAL
+
+def certify_pressure_cutoff() -> fmpq:
+    """Fail closed unless the pressure alone covers the unbounded tail."""
+    expected_margin = fmpq(9, 500_000_000)
+    assert PRESSURE_CUTOFF_MARGIN == expected_margin
+    assert PRESSURE_CUTOFF_LOWER > TARGET_RATIONAL
+    return PRESSURE_CUTOFF_MARGIN
+
 # c_s = 2/(7-s), where s is the number of gaps crossed by a pair.
 COEFFICIENTS = {
     1: down_ratio(1, 3),
@@ -326,6 +340,7 @@ def verify_seven(progress_every: int = 0, precision_bits: int = PRECISION_BITS) 
     """
 
     started = time.perf_counter()
+    cutoff_margin = certify_pressure_cutoff()
     cell_count = PRESSURE_CUTOFF_CELLS + 8
     table = build_kernel_table(GRID, cell_count, precision_bits)
     ranges = RangeMinimum(table)
@@ -624,6 +639,9 @@ def verify_seven(progress_every: int = 0, precision_bits: int = PRECISION_BITS) 
             ),
             "pressure_numerators": str(PRESSURE_NUMERATORS),
             "pressure_denominator": PRESSURE_DENOMINATOR,
+            "pressure_cutoff_cells": PRESSURE_CUTOFF_CELLS,
+            "pressure_cutoff_lower": str(PRESSURE_CUTOFF_LOWER),
+            "pressure_cutoff_margin": str(cutoff_margin),
             "python_version": sys.version.split()[0],
             "python_flint_version": package_version("python-flint"),
             "verifier_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
@@ -636,6 +654,12 @@ if __name__ == "__main__":
     parser.add_argument("--progress-every", type=int, default=100000)
     parser.add_argument("--precision", type=int, default=PRECISION_BITS,
                         help="Arb working precision in bits (default: 256)")
+    parser.add_argument("--check-cutoff-only", action="store_true",
+                        help="verify only the exact unbounded-domain pressure cutoff")
     args=parser.parse_args()
-    report=verify_seven(progress_every=args.progress_every, precision_bits=args.precision)
-    print(report.to_text())
+    if args.check_cutoff_only:
+        margin = certify_pressure_cutoff()
+        print(f"pressure_cutoff_verified=true\npressure_cutoff_margin={margin}")
+    else:
+        report=verify_seven(progress_every=args.progress_every, precision_bits=args.precision)
+        print(report.to_text())

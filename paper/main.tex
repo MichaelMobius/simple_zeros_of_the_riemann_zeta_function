@@ -100,10 +100,11 @@ Recent work has made the relevant finite-compression and zero-side inertia
 mechanism unconditional.  Alpöge and Furman~\cite{AlpogeFurman26}, communicating
 a proof discovered autonomously by Claude at Anthropic as recorded both by the
 authors and by Anthropic~\cite{Anthropic26}, establish the finite-compression,
-rank--trace, and inertia route unconditionally.  Their Theorem~D is the
-Montgomery--Taylor optimized specialization of that framework; in the present
-normalization its simple-zero constant is the number denoted below by
-\(H_{\rm MT}\).  Lamzouri~\cite{Lamzouri26} subsequently gave a conceptually
+rank--trace, and inertia route unconditionally.  The Montgomery--Taylor clause of their Theorem~A gives the optimized
+simple-zero constant denoted below by \(H_{\rm MT}\).  The companion
+Anthropic Lean artifact retains the historical label "Theorem D" for the
+corresponding Montgomery--Taylor constant and formal theorem family
+\cite{AnthropicFormal26}.  Lamzouri~\cite{Lamzouri26} subsequently gave a conceptually
 different unconditional proof of the same \(67.25\%\)-level conclusion.
 For surrounding pair-correlation work see
 Baluyot--Goldston--Suriajaya--Turnage-Butterbaugh~\cite{BGSTB24,BGSTB25} and
@@ -206,7 +207,7 @@ A second contribution is expository and logical rather than a separate
 priority claim: we reconstruct the analytic/Gabor package needed by the proof
 from classical theorems and explicitly identify the common finite compression
 on its zero and prime sides.  Consequently, Theorem~\ref{thm:main} does not
-invoke Theorem~D of Alpöge--Furman~\cite{AlpogeFurman26}, or any other theorem
+invoke the Montgomery--Taylor clause of Theorem~A of Alpöge--Furman~\cite{AlpogeFurman26}, or any other theorem
 of that paper, as a mathematical premise.  This is a statement about the
 logical derivation presented in the manuscript, not a claim of clean-room
 software independence: the Lean verification has the distinct provenance
@@ -439,8 +440,8 @@ Montgomery--Taylor window used below, and define
 \]
 
 The analytic work needed by the stability argument is summarized in the next
-proposition.  Its four assertions are proved independently in
-Appendices~\ref{app:inputI}--\ref{app:inputIV}.
+proposition.  Its four assertions are derived in
+Appendices~\ref{app:inputI}--\ref{app:inputIV} from the trust base stated below.
 
 \begin{proposition}[Analytic/Gabor package]\label{prop:analytic-package}
 Let the zeros in $I'$ be partitioned into simple critical-line zeros
@@ -515,6 +516,10 @@ Appendix~\ref{app:inputIII}, culminating in
 Theorem~\ref{aiv:thm:IV}.  These appendices use only the classical trust base
 listed in Section~\ref{sec:trust}.
 \end{proof}
+
+The stability-enhanced rank--trace inequality used next is due to
+Jo~\cite{Jo26}; we include the proof to fix the normalization and the
+precise defect functional used in the present argument.
 
 Define the convex function
 \begin{equation}\label{eq:Psi}
@@ -866,6 +871,24 @@ Otherwise the widest coordinate is bisected.  Reaching an uncertified terminal
 grid cell raises an exception; thus a successful run closes the entire search
 tree.
 
+The finite search used by the archived computation is justified on the
+unbounded orthant by a pressure cutoff at cell index $57{,}480$ on the mesh
+$1/4000$.  Since the smallest pressure coefficient is $2714/10^7$,
+\[
+ \frac{2714}{10^7}\frac{57480}{4000}
+ =\frac{1950009}{500000000}
+ =\frac{39}{10000}+\frac{9}{500000000}
+ >\frac{39}{10000},
+\]
+any box with at least one coordinate beyond that cutoff is certified by
+the pressure term alone.  The current default-branch hardening copy of the
+verifier checks this exact rational identity before constructing the finite
+branch-and-bound search and aborts if it fails.  This additional assertion is
+not retroactively part of the frozen verifier whose SHA-256 is recorded in
+Appendix~\ref{app:cert}; the archived run remains the certificate of record,
+while the v19 assertion makes the domain reduction explicit and fail-closed
+in the current reproducibility copy.
+
 The frozen 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
 visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
 verifier also succeeds at 128-bit working precision.  The complete 256-bit
@@ -1099,7 +1122,8 @@ Let \(B\) be a block of
  m=450
 \]
 consecutive retained simple zeros, with exact pressure \(P_B\) from
-\eqref{eq:qr}.  Put
+\eqref{eq:qr}.  Let \(G_B\) denote the corresponding principal Gram
+block of \(M^\circ\).  Put
 \begin{equation}\label{eq:AQ450}
  A:=A_{450}=\frac{4329}{2500},
  \qquad
@@ -1123,20 +1147,37 @@ Assume \(P_B<A\).  Since \(q_r\ge\min_jp_j=2714/10^7\),
  <
  \frac{A}{\min_jp_j}.
 \]
-Thus all pair separations remain in a fixed compact interval.  Since \(m\) is
-fixed, Lemma~\ref{lem:kernel} gives, uniformly in this branch,
+Thus all pair separations remain in the fixed compact interval
 \[
- G_B=K_B+o(1)
+ 0\le |y_i-y_j|\le R:=\frac{A}{\min_jp_j}.
 \]
-in matrix norm, where
+Make the uniform error explicit by setting
 \[
- K_B=(k(y_i-y_j))_{i,j=1}^m.
+ \eta_T(R):=
+ \sup_{\substack{\rho,\rho'\in\mathcal S^\circ\\
+ |x_\rho-x_{\rho'}|\le R}}
+ \left|\langle v_\rho,v_{\rho'}\rangle
+       -k(x_\rho-x_{\rho'})\right|.
 \]
-By continuity of the spectral trace functional,
+Lemma~\ref{lem:kernel} gives \(\eta_T(R)\to0\).  Since \(m\) is
+fixed and
 \[
- \mathcal D(G_B)=\mathcal D(K_B)+o(1).
+ K_B=(k(y_i-y_j))_{i,j=1}^m,
 \]
-It remains to prove
+the entrywise bound implies
+\[
+ \|G_B-K_B\|_{\rm op}\le m\eta_T(R).
+\]
+The function \(\Psi\) is globally $2$-Lipschitz on $[0,\infty)$;
+therefore Weyl's eigenvalue perturbation inequality gives the quantitative
+uniform estimate
+\begin{equation}\label{eq:block-defect-uniform-error}
+ \left|\mathcal D(G_B)-\mathcal D(K_B)\right|
+ \le 2m\|G_B-K_B\|_{\rm op}
+ \le 2m^2\eta_T(R)=o(1).
+\end{equation}
+In particular, the $o(1)$ is uniform over every block in the branch
+\(P_B<A\).  It remains to prove
 \[
  \mathcal D(K_B)+P_B\ge A.
 \]
@@ -1218,6 +1259,12 @@ Summing over all offsets and applying Proposition~\ref{prop:blockstab450},
  -\sum_BP_B
  -o(N).
 \end{equation}
+Here the accumulated error is genuinely $o(N)$ rather than merely a
+blockwise notation: across all $m$ offsets there are $O(N)$ full blocks,
+and \eqref{eq:block-defect-uniform-error} bounds the error of each relevant
+block by $2m^2\eta_T(R)$ with the same \(\eta_T(R)\to0\).  Hence the
+total contribution is $O(N\eta_T(R))=o(N)$; endpoint blocks contribute
+only $O(1)$ because $m$ is fixed.
 
 The pressure term retains its exact positional mass.  For each fixed relative
 position \(r\), a given global gap can occupy that position in at most one
@@ -1226,16 +1273,23 @@ sliding blocks is at most
 \[
  \sum_{r=1}^{m-1}q_r=Q.
 \]
-Hence
+The span estimate can be made explicit.  Because the retained coordinates
+lie in the sampling interval,
+\[
+ x_{S^\circ}-x_1\le\frac{LT}{2\pi}.
+\]
+On the other hand Riemann--von Mangoldt gives
+\[
+ N(T,2T)=\frac{T}{2\pi}
+ \bigl(L+2\log2-1\bigr)+O(\log T),
+\]
+and $2\log2-1>0$.  Thus, for all sufficiently large $T$,
+\(x_{S^\circ}-x_1\le N(T,2T)\), and therefore
 \begin{equation}\label{eq:pressure-global}
  \sum_BP_B
- \le
- Q(x_{S^\circ}-x_1)
- \le
- QN(T,2T)+o(N(T,2T)),
+ \le Q(x_{S^\circ}-x_1)
+ \le QN(T,2T).
 \end{equation}
-where the last inequality is the same normalized-span consequence of the
-Riemann--von Mangoldt formula used previously.
 
 Combining \eqref{eq:shifted-exact} and \eqref{eq:pressure-global},
 and absorbing \(O(1)\) endpoint terms,
@@ -1357,12 +1411,13 @@ Alpöge--Furman/Claude result.}
 The common compression is fixed in Section~\ref{sec:common-compression}, and
 the analytic/Gabor package used in the main argument is proved in
 Appendices~\ref{app:inputI}--\ref{app:inputIV}.  In particular it is not
-imported from Theorem~D of Alpöge--Furman~\cite{AlpogeFurman26}.  That theorem
-is the Montgomery--Taylor optimized specialization of the unconditional
-finite-compression/rank--trace framework discovered by Claude and verified and
-communicated by Alpöge and Furman~\cite{AlpogeFurman26,Anthropic26}.  Its role
-here is comparison, provenance, and normalization cross-checking only; no
-proposition from that paper is a premise of Theorem~\ref{thm:main}.
+imported from the Montgomery--Taylor clause of Theorem~A of Alpöge--Furman~\cite{AlpogeFurman26}.  That clause belongs to the unconditional finite-compression/rank--trace
+framework discovered by Claude and verified and communicated by Alpöge and
+Furman~\cite{AlpogeFurman26,Anthropic26}.  In Anthropic's companion Lean
+artifact, the corresponding optimized result is organized under the historical
+label Theorem~D~\cite{AnthropicFormal26}.  Its role here is comparison,
+provenance, and normalization cross-checking only; no theorem from the
+Alpöge--Furman paper is a premise of Theorem~\ref{thm:main}.
 
 The analytic external trust base consists of standard classical results: the
 Weil explicit formula for $\zeta$ in the Fourier normalization stated in
@@ -1424,9 +1479,9 @@ stack.  The v17 \texttt{HurtadoZeta23} modules are compiled as an overlay on
 the pinned Anthropic \texttt{formal-math/zeta23} source tree at commit
 \texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
 together with the pinned Lean/Mathlib toolchain recorded in the repository.
-Thus the manuscript's independence from Theorem~D as a mathematical premise
-must not be conflated with clean-room software independence of the Lean
-formalization.
+Thus the manuscript's logical derivation without importing the
+Alpöge--Furman theorem as a mathematical premise must not be conflated with
+clean-room software independence of the Lean formalization.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
 optimality theorem.  Thus the written mathematical proof is self-contained relative to the
@@ -1438,7 +1493,7 @@ provenance in the preceding paragraph.
 \appendix
 
 
-\section{Independent proof of Input I: zero-side inertia}\label{app:inputI}
+\section{Self-contained derivation of Input I: zero-side inertia}\label{app:inputI}
 This appendix proves the algebraic finite-compression statement used in
 Proposition~\ref{prop:analytic-package}.  The horizontal partner
 $\rho^\sharp=1-\overline\rho$ is the composition of conjugation with the
@@ -1634,7 +1689,7 @@ where $V$ has the $v_\rho$ as columns, and put
  Q'=\widehat A-P_1.
 \]
 
-\begin{theorem}[Independent Input I]\label{ai:thm:InputI}
+\begin{theorem}[Self-contained Input I]\label{ai:thm:InputI}
 With the preceding notation,
 \[
  P_1\succeq0,\qquad
@@ -1744,7 +1799,7 @@ Lemma~\ref{ai:lem:pullback} is formulated for arbitrary linear maps.
 
 
 
-\section{Independent proof of Input II: exterior-zero tail}\label{app:inputII}
+\section{Self-contained derivation of Input II: exterior-zero tail}\label{app:inputII}
 This appendix proves the trace-class tail estimate and its effect on the
 rank--trace functional.  The exterior matrix is grouped into Hermitian
 critical-line squares and off-line pair terms $uv^*+vu^*$, so that
@@ -2021,7 +2076,7 @@ Also
 Squaring and combining the two inequalities proves \eqref{aii:eq:pert}.
 \end{proof}
 
-\begin{theorem}[Independent Input II]\label{aii:thm:II}
+\begin{theorem}[Self-contained Input II]\label{aii:thm:II}
 For the optimized bandwidth $\lambda=1$, the prime-side moment estimate of Appendix~\ref{app:inputIII} gives $\|\widehat G\|_{\Frob}=O(N(T,2T)^{1/2})$.  Then
 \[
  \boxed{
@@ -2062,12 +2117,20 @@ Appendix~\ref{app:inputIII} establishes the prime-side second moment without usi
 
 
 
-\section{Independent proof of Input III: prime-side moments}\label{app:inputIII}
+\section{Self-contained derivation of Input III: prime-side moments}\label{app:inputIII}
 This appendix fixes the Fourier normalization of Weil's explicit formula~\cite{Weil52,Titchmarsh86},
 derives the spectral density, controls integrated finite-grid end effects,
 and evaluates the prime diagonal and both off-diagonal frequency types.
 The weighted Montgomery--Vaughan inequality~\cite{MV74} is used only with an unspecified
 absolute constant.
+The route is deliberately written out from these classical ingredients.  Its
+prime-side architecture parallels Section~5 of Alpöge--Furman
+~\cite{AlpogeFurman26}---continuous second moment, diagonal prime term,
+quotient-frequency off-diagonal terms controlled by Montgomery--Vaughan,
+and secondary terms---but no theorem from that paper is invoked as a
+premise here.  Thus "self-contained" in this appendix is a statement
+about logical derivation from the cited classical inputs, not a claim of
+independent discovery of the base analytic architecture.
 \subsection{Classical input and notation}
 
 Put
@@ -3009,7 +3072,7 @@ and therefore
 
 
 
-\section{Independent proof of Input IV: Poisson--Gabor sampling}\label{app:inputIV}
+\section{Self-contained derivation of Input IV: Poisson--Gabor sampling}\label{app:inputIV}
 This appendix proves the critical-lattice Poisson identity, the tapered
 Fourier decay, finite-grid truncation, and the Montgomery--Taylor overlap
 limit.  The window is real and even, so the real-axis transforms used below
@@ -3042,7 +3105,7 @@ Define
 
 The required form of Input IV is the following.
 
-\begin{theorem}[Independent Input IV]\label{aiv:thm:IV}
+\begin{theorem}[Self-contained Input IV]\label{aiv:thm:IV}
 Fix $R>0$.  Let $\gamma,\gamma'$ be points whose normalized coordinates
 $x=L\gamma/(2\pi)$ and $x'=L\gamma'/(2\pi)$ are at least $L^2$ grid cells
 from both ends of the finite sampling interval, and suppose
@@ -3258,11 +3321,13 @@ contains the manuscript snapshot and the computational evidence used to
 certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
 default branch are not part of the trust base of this certificate.
 
-The frozen archival verifier is
+The frozen archival verifier in release \texttt{v1.0.0-paper} is
 \[
  \texttt{certify\_nonuniform\_3900\_v1\_1.py}.
 \]
-Its SHA-256 is
+The file with the same path on the current default branch contains the v19
+fail-closed cutoff assertion and is therefore intentionally not byte-identical
+to this frozen object.  The SHA-256 of the frozen verifier is
 \begin{sloppypar}
 \small\ttfamily
 8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301.

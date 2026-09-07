@@ -59,3 +59,27 @@ CERTIFICATE PASSED: verified=true
 - `certificate-log-sha256-256.txt`
 
 Do not edit the verifier between hashing and execution.
+
+## Unbounded-domain cutoff
+
+The branch-and-bound search itself is finite, but the certified statement is
+for all nonnegative gaps.  This reduction is fail-closed in the verifier.  The
+smallest pressure coefficient is `2714/10^7`, the mesh is `1/4000`, and the
+cutoff index is `57480`, so exactly
+
+\[
+\frac{2714}{10^7}\frac{57480}{4000}
+=\frac{39}{10000}+\frac{9}{500000000}
+>\frac{39}{10000}.
+\]
+
+Therefore, if any coordinate lies beyond the cutoff, its pressure contribution
+alone proves the target.  `certify_pressure_cutoff()` checks the exact rational
+margin before the search tree is created.  A cheap standalone audit is
+
+```bash
+python certify_nonuniform_3900_v1_1.py --check-cutoff-only
+```
+
+and must print `pressure_cutoff_verified=true`.
+
