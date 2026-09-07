@@ -1,89 +1,70 @@
 import HurtadoZeta23.V17WeightedPressure
-import HurtadoZeta23.V17ScalarPressure
 import HurtadoZeta23.V17KernelBridge450
-import HurtadoZeta23.V17GramEnergy450
-import HurtadoZeta23.V17AdjacentBand450
-import HurtadoZeta23.V17GramThreshold450
+import HurtadoZeta23.V17StrongBlockScalar
 import Mathlib.Tactic
 
 noncomputable section
 
-open Matrix Finset
-open scoped BigOperators ComplexOrder
+open scoped BigOperators
 
 namespace HurtadoZeta23
 
 /-!
-# Fully assembled v17 strong block at length 450
+# Abstract v17 strong block at length 450
 
-This theorem joins the already isolated interfaces:
+This file contains only the finite/algebraic strong-block mechanism.  It is
+intentionally independent of the concrete zeta kernel, retained columns, Gram
+construction, PSD arguments, and the analytic compact-overlap estimate.
 
-* seven-point certificate -> `A ≤ E + P`;
-* scalar-pressure frontier -> weighted adjacent lower bound;
-* pointwise kernel/Gram comparison -> `404100 eps` global loss and `898 eps`
-  adjacent loss;
-* two finite matchings -> adjacent Gram band ≤ spectral defect;
-* one-sided trace spectral threshold -> `5011/5000 < D` whenever `D < O`;
-* the exact rational scalar finisher.
+The concrete layer must provide five interfaces:
 
-No asymptotic or shifted-block averaging occurs here.
+* a seven-point certificate for a nonnegative pair weight `w`;
+* the one-gap weighted-pressure scalar inequality;
+* a pointwise lower comparison `w - 2 eps <= gramSq`;
+* adjacent Gram-band control `pairBandEnergy ... gramSq <= D`;
+* exact global Gram-energy identification together with the spectral threshold.
+
+Once those are supplied, the exact losses `898 eps` and `404100 eps` and the
+rational scalar contradiction are entirely internal.
 -/
 
 theorem v17_strong_block_450_of_interfaces
     (y : ℕ → ℝ)
-    (G : Matrix (Fin 450) (Fin 450) ℂ)
-    (hG : G.PosSemidef)
-    (hdiag : ∀ i, (G i i).re ≤ 1)
-    (eps : ℝ)
+    (w gramSq : ℕ → ℕ → ℝ)
+    (D O eps : ℝ)
     (heps : 0 ≤ eps)
-    (hcert : SevenPointCertificate (limitingWeightOnPoints y) y 450)
-    (hy : ∀ q < 449, y q ≤ y (q + 1))
-    (hnum : V17KernelAtCertPointClaim)
-    (hmono : V17KernelAntitoneOnUnitClaim)
+    (hw : ∀ a b, 0 ≤ w a b)
+    (hcert : SevenPointCertificate w y 450)
+    (hscalar : ∀ q < 449,
+      v17t * beta * v17g0 ≤
+        w q (q + 1) +
+          v17t * beta * (y (q + 1) - y q))
     (hpoint : ∀ a b, a < 450 → b < 450 →
-      limitingWeightOnPoints y a b - 2 * eps
-        ≤ v17MatrixNormSqNat450 G a b) :
+      w a b - 2 * eps ≤ gramSq a b)
+    (hband : pairBandEnergy 450 0 gramSq ≤ D)
+    (hglobal : globalPairEnergyNat 450 gramSq = O)
+    (hthreshold : D < O → v17FiniteThreshold < D) :
     v17A - 404100 * eps ≤
-      gramSpectralDefect G hG + v17LiteralBlockPressure 450 y := by
-  let E : ℝ := globalPairEnergyNat 450 (limitingWeightOnPoints y)
+      D + v17LiteralBlockPressure 450 y := by
+  let E : ℝ := globalPairEnergyNat 450 w
   let P : ℝ := v17LiteralBlockPressure 450 y
-  let D : ℝ := gramSpectralDefect G hG
-  let O : ℝ := offDiagonalEnergy G
-
-  have hw : ∀ a b, 0 ≤ limitingWeightOnPoints y a b := by
-    intro a b
-    unfold limitingWeightOnPoints
-    exact limitingWeight_nonneg _
 
   have hEP : v17A ≤ E + P := by
     dsimp [E, P]
-    exact v17_certificate_energy_pressure_450 y (limitingWeightOnPoints y) hw hcert
-
-  have hscalar : ∀ q < 449,
-      v17t * beta * v17g0 ≤
-        limitingWeightOnPoints y q (q + 1) +
-          v17t * beta * (y (q + 1) - y q) :=
-    v17_scalar_pressure_on_points_of_frontiers hnum hmono y hy
+    exact v17_certificate_energy_pressure_450 y w hw hcert
 
   have hweightedKernel :
       v17t * v17g0 * v17Q ≤
-        pairBandEnergy 450 0 (limitingWeightOnPoints y) + v17t * P := by
+        pairBandEnergy 450 0 w + v17t * P := by
     dsimp [P]
-    exact v17_weighted_adjacent_pressure_450
-      y (limitingWeightOnPoints y) hw hscalar
+    exact v17_weighted_adjacent_pressure_450 y w hw hscalar
 
   have hadjBridge :
-      pairBandEnergy 450 0 (limitingWeightOnPoints y) - 898 * eps
-        ≤ pairBandEnergy 450 0 (v17MatrixNormSqNat450 G) := by
+      pairBandEnergy 450 0 w - 898 * eps
+        ≤ pairBandEnergy 450 0 gramSq := by
     apply v17_adjacent_kernel_lower_450_of_pointwise_raw_loss
     intro a ha
     exact hpoint a (a + 1) ha (by omega)
-
-  have hbandGram :
-      pairBandEnergy 450 0 (v17MatrixNormSqNat450 G) ≤ D := by
-    dsimp [D]
-    have h := v17_adjacent_matrix_band_le_defect_450 G hG hdiag
-    simpa [v17MatrixNormSqNat450, v17MatchingNormSqNat450] using h
 
   have hweighted :
       v17t * v17g0 * v17Q ≤ D + v17t * P + 898 * eps := by
@@ -91,27 +72,13 @@ theorem v17_strong_block_450_of_interfaces
 
   have hglobalBridge : E - 404100 * eps ≤ O := by
     have hraw :
-        globalPairEnergyNat 450 (limitingWeightOnPoints y) - 404100 * eps
-          ≤ globalPairEnergyNat 450 (v17MatrixNormSqNat450 G) := by
+        globalPairEnergyNat 450 w - 404100 * eps
+          ≤ globalPairEnergyNat 450 gramSq := by
       apply v17_aggregate_kernel_lower_450_of_pointwise_raw_loss
       exact hpoint
-    have hcomm : ∀ i j : Fin 450,
-        ‖G i j‖ ^ 2 = ‖G j i‖ ^ 2 := by
-      intro i j
-      calc
-        ‖G i j‖ ^ 2 = ‖star (G j i)‖ ^ 2 := by
-          rw [(hG.isHermitian.apply i j).symm]
-        _ = ‖G j i‖ ^ 2 := by simp
-    have hid :=
-      v17_globalPairEnergyNat_matrixNormSq450_eq_offDiagonalEnergy G hcomm
-    dsimp [E, O]
-    rw [hid] at hraw
+    dsimp [E]
+    rw [hglobal] at hraw
     exact hraw
-
-  have hthreshold : D < O → v17FiniteThreshold < D := by
-    intro hDO
-    dsimp [D, O] at hDO ⊢
-    exact v17_psd_gram_threshold_450_of_diag G hG hdiag hDO
 
   have herr : 898 * eps ≤ v17t * (404100 * eps) :=
     v17_raw_error_absorption eps heps
