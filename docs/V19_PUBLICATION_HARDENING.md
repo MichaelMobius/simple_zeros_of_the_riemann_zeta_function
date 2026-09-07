@@ -54,3 +54,12 @@ used implicitly to reduce the nonnegative orthant to a finite search.
 These changes address the three mandatory issues from the hostile-referee pass:
 correct theorem provenance, explicit unbounded-domain certificate closure, and
 quantitative passage from uniform block error to the global `o(N)` term.
+## Frozen versus hardened verifier
+
+The historical 256-bit certificate remains tied to the exact verifier object
+in release `v1.0.0-paper` and to its published SHA-256.  The file at the same
+repository path on the v19/default branch intentionally differs by the new
+fail-closed cutoff assertion and `--check-cutoff-only` audit mode.  v19 does
+not relabel the modified file as the historical frozen verifier and does not
+change the archived certificate hash.
+

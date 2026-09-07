@@ -440,8 +440,8 @@ Montgomery--Taylor window used below, and define
 \]
 
 The analytic work needed by the stability argument is summarized in the next
-proposition.  Its four assertions are proved independently in
-Appendices~\ref{app:inputI}--\ref{app:inputIV}.
+proposition.  Its four assertions are derived in
+Appendices~\ref{app:inputI}--\ref{app:inputIV} from the trust base stated below.
 
 \begin{proposition}[Analytic/Gabor package]\label{prop:analytic-package}
 Let the zeros in $I'$ be partitioned into simple critical-line zeros
@@ -871,8 +871,8 @@ Otherwise the widest coordinate is bisected.  Reaching an uncertified terminal
 grid cell raises an exception; thus a successful run closes the entire search
 tree.
 
-The search over the unbounded orthant has an explicit fail-closed pressure
-cutoff.  The implementation uses cell index $57{,}480$ on the mesh
+The finite search used by the archived computation is justified on the
+unbounded orthant by a pressure cutoff at cell index $57{,}480$ on the mesh
 $1/4000$.  Since the smallest pressure coefficient is $2714/10^7$,
 \[
  \frac{2714}{10^7}\frac{57480}{4000}
@@ -881,9 +881,13 @@ $1/4000$.  Since the smallest pressure coefficient is $2714/10^7$,
  >\frac{39}{10000},
 \]
 any box with at least one coordinate beyond that cutoff is certified by
-the pressure term alone.  The verifier now checks this exact rational
-identity before constructing the finite branch-and-bound search and aborts
-if it fails.
+the pressure term alone.  The current default-branch hardening copy of the
+verifier checks this exact rational identity before constructing the finite
+branch-and-bound search and aborts if it fails.  This additional assertion is
+not retroactively part of the frozen verifier whose SHA-256 is recorded in
+Appendix~\ref{app:cert}; the archived run remains the certificate of record,
+while the v19 assertion makes the domain reduction explicit and fail-closed
+in the current reproducibility copy.
 
 The frozen 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
 visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
@@ -1475,9 +1479,9 @@ stack.  The v17 \texttt{HurtadoZeta23} modules are compiled as an overlay on
 the pinned Anthropic \texttt{formal-math/zeta23} source tree at commit
 \texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
 together with the pinned Lean/Mathlib toolchain recorded in the repository.
-Thus the manuscript's independence from Theorem~D as a mathematical premise
-must not be conflated with clean-room software independence of the Lean
-formalization.
+Thus the manuscript's logical derivation without importing the
+Alpöge--Furman theorem as a mathematical premise must not be conflated with
+clean-room software independence of the Lean formalization.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
 optimality theorem.  Thus the written mathematical proof is self-contained relative to the
@@ -3317,11 +3321,13 @@ contains the manuscript snapshot and the computational evidence used to
 certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
 default branch are not part of the trust base of this certificate.
 
-The frozen archival verifier is
+The frozen archival verifier in release \texttt{v1.0.0-paper} is
 \[
  \texttt{certify\_nonuniform\_3900\_v1\_1.py}.
 \]
-Its SHA-256 is
+The file with the same path on the current default branch contains the v19
+fail-closed cutoff assertion and is therefore intentionally not byte-identical
+to this frozen object.  The SHA-256 of the frozen verifier is
 \begin{sloppypar}
 \small\ttfamily
 8eb7b4a17da8e114881264d3c2fc8daf262a0558d4248692b386c0fca2cc4301.
