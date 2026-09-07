@@ -46,53 +46,11 @@ jobs:
           cat harness/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
           tar -xzf /tmp/hurtado-analytic.tar.gz -C upstream/zeta23
 
-          cp harness/lean_harness/frozen/SpectralFrobenius.lean upstream/zeta23/HurtadoZeta23/SpectralFrobenius.lean
-          cp harness/lean_harness/frozen/DiscreteCentralityBridge.lean upstream/zeta23/HurtadoZeta23/DiscreteCentralityBridge.lean
-          cp harness/lean_harness/frozen/FiniteGridEndpointBridge.lean upstream/zeta23/HurtadoZeta23/FiniteGridEndpointBridge.lean
-          cp harness/lean_harness/frozen/FourierL1.lean upstream/zeta23/HurtadoZeta23/FourierL1.lean
-          cp harness/lean_harness/frozen/SevenPointCertificateBridge.lean upstream/zeta23/HurtadoZeta23/SevenPointCertificateBridge.lean
-          cp harness/lean_harness/frozen/ExternalCertificateFrontier.lean upstream/zeta23/HurtadoZeta23/ExternalCertificateFrontier.lean
-          cp harness/lean_harness/frozen/ArticleBlockErrorSmall.lean upstream/zeta23/HurtadoZeta23/ArticleBlockErrorSmall.lean
-          cp harness/lean_harness/frozen/ArticleFinalPinchingConstruction.lean upstream/zeta23/HurtadoZeta23/ArticleFinalPinchingConstruction.lean
-
-          cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
-          cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
-
-          cp harness/lean_harness/v17_adj/V17AdjacentPair.lean upstream/zeta23/HurtadoZeta23/V17AdjacentPair.lean
-          cp harness/lean_harness/v17_matching/V17AdjacentMatching.lean upstream/zeta23/HurtadoZeta23/V17AdjacentMatching.lean
-          cp harness/lean_harness/v17_matching/V17ConcreteMatching450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteMatching450.lean
-          cp harness/lean_harness/v17_matching/V17MatchingIndices.lean upstream/zeta23/HurtadoZeta23/V17MatchingIndices.lean
-          cp harness/lean_harness/v17_matching/V17AdjacentBandScalar.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBandScalar.lean
-          cp harness/lean_harness/v17_matching/V17ParitySplit.lean upstream/zeta23/HurtadoZeta23/V17ParitySplit.lean
-          cp harness/lean_harness/v17_matching/V17AdjacentBand450.lean upstream/zeta23/HurtadoZeta23/V17AdjacentBand450.lean
-
-          cp harness/lean_harness/v17_threshold/V17SpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17SpectralThreshold.lean
-          cp harness/lean_harness/v17_threshold/V17FiniteSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17FiniteSpectralThreshold.lean
-          cp harness/lean_harness/v17_threshold/V17TraceLeSpectralThreshold.lean upstream/zeta23/HurtadoZeta23/V17TraceLeSpectralThreshold.lean
-          cp harness/lean_harness/v17_threshold/V17FrobeniusBridge.lean upstream/zeta23/HurtadoZeta23/V17FrobeniusBridge.lean
-          cp harness/lean_harness/v17_threshold/V17GramThreshold450.lean upstream/zeta23/HurtadoZeta23/V17GramThreshold450.lean
-
-          cp harness/lean_harness/v17_energy/V17KernelBridge450.lean upstream/zeta23/HurtadoZeta23/V17KernelBridge450.lean
-          cp harness/lean_harness/v17_energy/V17PairBandReindexCore.lean upstream/zeta23/HurtadoZeta23/V17PairBandReindexCore.lean
-          cp harness/lean_harness/v17_energy/V17MatrixEnergy450.lean upstream/zeta23/HurtadoZeta23/V17MatrixEnergy450.lean
-          cp harness/lean_harness/v17_energy/V17ArticleSynthesisOverlapCore.lean upstream/zeta23/HurtadoZeta23/V17ArticleSynthesisOverlapCore.lean
-          cp harness/lean_harness/v17_energy/V17PoissonGramBound.lean upstream/zeta23/HurtadoZeta23/V17PoissonGramBound.lean
-          cp harness/lean_harness/v17_energy/V17CompactOverlapCore.lean upstream/zeta23/HurtadoZeta23/V17CompactOverlapCore.lean
-          cp harness/lean_harness/v17_energy/V17AnalyticBridge450.lean upstream/zeta23/HurtadoZeta23/V17AnalyticBridge450.lean
-
-          cp harness/lean_harness/v17_strong/V17StrongBlock450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlock450.lean
-          cp harness/lean_harness/v17_strong/V17StrongBlockMatrix450.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockMatrix450.lean
-          cp harness/lean_harness/v17_strong/V17ScalarPressureFrontier.lean upstream/zeta23/HurtadoZeta23/V17ScalarPressureFrontier.lean
-          cp harness/lean_harness/v17_concrete/V17ConcreteStrongBlock450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteStrongBlock450.lean
-
-          cp harness/lean_harness/v17_endgame/V17Endgame.lean upstream/zeta23/HurtadoZeta23/V17Endgame.lean
-          cp harness/lean_harness/v17_global/V17ShiftedPressure450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedPressure450.lean
-          cp harness/lean_harness/v17_global/V17ShiftedAssembly450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedAssembly450.lean
-          cp harness/lean_harness/v17_global/V17ShiftedGramPinching450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedGramPinching450.lean
-          cp harness/lean_harness/v17_global/V17ConcretePressure450.lean upstream/zeta23/HurtadoZeta23/V17ConcretePressure450.lean
-          cp harness/lean_harness/v17_global/V17ConcreteShiftedAssembly450.lean upstream/zeta23/HurtadoZeta23/V17ConcreteShiftedAssembly450.lean
-          cp harness/lean_harness/v17_global/V17BlockErrorSmall.lean upstream/zeta23/HurtadoZeta23/V17BlockErrorSmall.lean
-          cp harness/lean_harness/v17_global/V17FinalAssembly.lean upstream/zeta23/HurtadoZeta23/V17FinalAssembly.lean
+          for d in frozen v17_scalar v17_weighted v17_adj v17_matching v17_threshold v17_energy v17_strong v17_concrete v17_endgame v17_global; do
+            if compgen -G "harness/lean_harness/$d/*.lean" > /dev/null; then
+              cp harness/lean_harness/$d/*.lean upstream/zeta23/HurtadoZeta23/
+            fi
+          done
 
       - name: Register exact Hurtado import closure
         working-directory: upstream/zeta23
