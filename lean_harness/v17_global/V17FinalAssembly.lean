@@ -1,6 +1,5 @@
 import HurtadoZeta23.V17ConcreteShiftedAssembly450
 import HurtadoZeta23.V17BlockErrorSmall
-import HurtadoZeta23.ArticleFinalPinchingConstruction
 import HurtadoZeta23.ConcreteRetainedCore
 import HurtadoZeta23.ConcreteStableSeam
 import HurtadoZeta23.RvMAsymptotics
@@ -11,6 +10,75 @@ noncomputable section
 open Filter Asymptotics Topology
 
 namespace HurtadoZeta23
+
+/-- Large-height nonnegativity of the last finite critical-grid index, stated
+locally for the v17 closure so the new proof does not depend on the historical
+262-point final wrapper. -/
+theorem v17_articleLastGridIndex_nonneg_of_two_le_l
+    {T : ℝ}
+    (hl2 : 2 ≤ Zeta23.l T)
+    (hTlarge : 2 * Real.pi ≤ T) :
+    (0 : ℤ) ≤ articleLastGridIndex T := by
+  have hL2 : 2 ≤ articleParams.L T := by
+    simpa [articleParams_L_eq_zeta_l] using hl2
+  have hL0 : 0 ≤ articleParams.L T := by linarith
+  have hpi0 : 0 < 2 * Real.pi := by positivity
+  have hprod : 2 * Real.pi ≤ articleParams.L T * T := by
+    have hmul :=
+      mul_le_mul
+        (show (1 : ℝ) ≤ articleParams.L T by linarith)
+        hTlarge (le_of_lt hpi0) hL0
+    simpa using hmul
+  have hx1 :
+      (1 : ℝ) ≤ articleParams.L T * T / (2 * Real.pi) :=
+    (le_div_iff₀ hpi0).2 (by simpa using hprod)
+  have hfloor :
+      articleParams.L T * T / (2 * Real.pi) - 1 <
+        (articleParams.d T : ℝ) := by
+    unfold Zeta23.Params.d
+    simpa using
+      (Nat.sub_one_lt_floor
+        (articleParams.L T * T / (2 * Real.pi)))
+  have hdcast : (0 : ℝ) < (articleParams.d T : ℝ) :=
+    lt_of_le_of_lt (sub_nonneg.mpr hx1) hfloor
+  have hdpos : 0 < articleParams.d T := by exact_mod_cast hdcast
+  have hd1 : 1 ≤ articleParams.d T := by omega
+  have hd1z : (1 : ℤ) ≤ (articleParams.d T : ℤ) := by
+    exact_mod_cast hd1
+  unfold articleLastGridIndex
+  exact sub_nonneg.mpr hd1z
+
+/-- Positivity of the exact finite simple-synthesis normalization in the v17
+large-height compact-overlap regime. -/
+theorem v17_articleNormalization_pos
+    {T : ℝ}
+    (hl : 0 < Zeta23.l T)
+    (hwL : 8 * articleParams.w ≤ articleParams.L T)
+    (hsmall :
+      4 * articleParams.w / articleParams.L T ≤ limitingK 0 / 2) :
+    0 < (articleParams.atD T).a T *
+      (articleParams.atD T).L T ^ 2 := by
+  have hK : 0 < limitingK 0 := limitingK_zero_pos
+  have hclose0 :=
+    phiDMean_close_limitingK_zero
+      articleParams_valid.taper
+      articleParams_valid.one_le_w hwL
+  have hclose :
+      |phiDMean articleParams.ϱ 1 (articleParams.L T) articleParams.w -
+          limitingK 0| ≤ limitingK 0 / 2 :=
+    hclose0.trans hsmall
+  have hlower := (abs_le.mp hclose).1
+  have hmean :
+      0 < phiDMean
+        articleParams.ϱ 1 (articleParams.L T) articleParams.w := by
+    linarith
+  have ha : 0 < (articleParams.atD T).a T := by
+    rw [article_atD_a_eq_phiDMean]
+    exact hmean
+  have hL : 0 < (articleParams.atD T).L T := by
+    simp only [Zeta23.Params.atD_L]
+    simpa [articleParams_L_eq_zeta_l] using hl
+  exact mul_pos ha (pow_pos hL 2)
 
 /-- Complete v17 pinching error after replacing retained cardinality and span
 by the global zero-count quantities. -/
@@ -53,9 +121,9 @@ theorem v17_pinching_eventually_of_claims
       Zeta23.ThmD.poissonSqD articleParams_valid h8
     have hnorm :
         0 < (articleParams.atD T).a T * (articleParams.atD T).L T ^ 2 :=
-      articleNormalization_pos hl hwL hsmall
+      v17_articleNormalization_pos hl hwL hsmall
     have hkk : (0 : ℤ) ≤ articleLastGridIndex T :=
-      articleLastGridIndex_nonneg_of_two_le_l hl2 hTlarge
+      v17_articleLastGridIndex_nonneg_of_two_le_l hl2 hTlarge
     have hfin :=
       v17_concrete_shifted_assembly_450
         hcertExt hscalarExt hS hT hPois hnorm hl hwL hsmall
