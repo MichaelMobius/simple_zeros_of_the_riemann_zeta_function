@@ -5,10 +5,9 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - ".github/workflows/v17-inspect.yml"
-      - "lean_harness/v17_weighted/**"
-      - "lean_harness/v17_strong/**"
-      - "lean_harness/v17_energy/**"
-      - "lean_harness/v17_global/**"
+      - "lean_harness/frozen/**"
+      - "lean_harness/v17_*/**"
+      - "certification/arb_256/**"
       - "certification/v17/**"
   workflow_dispatch:
 
@@ -186,6 +185,14 @@ jobs:
           print('FINAL_SIGNATURE_TRUST_FRONTIER_OK')
           PY
 
+      - name: Replay v17 exact arithmetic verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 certification/v17/verify_improved_bound.py \
+            --output /tmp/verification.replayed.json \
+            > /tmp/v17-verifier-output.json
+
       - name: Audit certificate provenance
         shell: bash
         run: |
@@ -196,27 +203,29 @@ jobs:
           import json
           import re
 
-          verifier = Path('certification/v17/verify_improved_bound.py')
-          frozen = Path('certification/v17/verification.json')
-          generated = Path('certification/v17/verification.generated.json')
-          frontier = Path('lean_harness/v17_strong/V17ScalarPressureFrontier.lean').read_text(encoding='utf-8')
-
           def sha256(path: Path) -> str:
               return hashlib.sha256(path.read_bytes()).hexdigest()
 
+          # v17 signed-kernel/exact-arithmetic certificate.
+          verifier = Path('certification/v17/verify_improved_bound.py')
+          frozen = Path('certification/v17/verification.json')
+          generated = Path('certification/v17/verification.generated.json')
+          replayed = Path('/tmp/verification.replayed.json')
+          scalar_frontier = Path('lean_harness/v17_strong/V17ScalarPressureFrontier.lean').read_text(encoding='utf-8')
+
           verifier_sha = sha256(verifier)
           frozen_sha = sha256(frozen)
-          print('VERIFIER_SHA256', verifier_sha)
-          print('VERIFICATION_JSON_SHA256', frozen_sha)
+          print('V17_VERIFIER_SHA256', verifier_sha)
+          print('V17_VERIFICATION_JSON_SHA256', frozen_sha)
 
-          m1 = re.search(r'v17ScalarVerifierSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', frontier)
-          m2 = re.search(r'v17ScalarVerificationJSONSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', frontier)
+          m1 = re.search(r'v17ScalarVerifierSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', scalar_frontier)
+          m2 = re.search(r'v17ScalarVerificationJSONSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', scalar_frontier)
           if not m1 or not m2:
-              raise SystemExit('PROVENANCE_CONSTANT_NOT_FOUND')
+              raise SystemExit('V17_PROVENANCE_CONSTANT_NOT_FOUND')
           if m1.group(1) != verifier_sha:
-              raise SystemExit(f'VERIFIER_SHA_MISMATCH Lean={m1.group(1)} actual={verifier_sha}')
+              raise SystemExit(f'V17_VERIFIER_SHA_MISMATCH Lean={m1.group(1)} actual={verifier_sha}')
           if m2.group(1) != frozen_sha:
-              raise SystemExit(f'VERIFICATION_JSON_SHA_MISMATCH Lean={m2.group(1)} actual={frozen_sha}')
+              raise SystemExit(f'V17_VERIFICATION_JSON_SHA_MISMATCH Lean={m2.group(1)} actual={frozen_sha}')
 
           data = json.loads(frozen.read_text(encoding='utf-8'))
           stronger = data['stronger_adjacent_pair_refinement']
@@ -229,10 +238,55 @@ jobs:
           }
           for key, value in required.items():
               if stronger.get(key) != value:
-                  raise SystemExit(f'CERT_FIELD_MISMATCH {key}: {stronger.get(key)!r} != {value!r}')
+                  raise SystemExit(f'V17_CERT_FIELD_MISMATCH {key}: {stronger.get(key)!r} != {value!r}')
 
-          if json.loads(generated.read_text(encoding='utf-8')) != data:
+          generated_data = json.loads(generated.read_text(encoding='utf-8'))
+          replayed_data = json.loads(replayed.read_text(encoding='utf-8'))
+          if generated_data != data:
               raise SystemExit('GENERATED_VERIFICATION_JSON_SEMANTIC_MISMATCH')
+          if replayed_data != data:
+              raise SystemExit('REPLAYED_VERIFICATION_JSON_SEMANTIC_MISMATCH')
+          print('V17_CERTIFICATE_PROVENANCE_OK')
 
-          print('CERTIFICATE_PROVENANCE_OK')
+          # Historical seven-point Arb/FLINT certificate.
+          arb_dir = Path('certification/arb_256')
+          manifest_path = arb_dir / 'SHA256SUMS.txt'
+          manifest = {}
+          for line in manifest_path.read_text(encoding='utf-8').splitlines():
+              if not line.strip():
+                  continue
+              digest, name = line.split(None, 1)
+              manifest[name.strip()] = digest
+
+          for name, expected_digest in manifest.items():
+              path = arb_dir / name
+              actual_digest = sha256(path)
+              if actual_digest != expected_digest:
+                  raise SystemExit(
+                      f'ARB_MANIFEST_SHA_MISMATCH {name}: manifest={expected_digest} actual={actual_digest}')
+
+          arb_verifier = arb_dir / 'certify_nonuniform_3900_v1_1.py'
+          arb_log = arb_dir / 'arb-certificate-256.log'
+          arb_verifier_sha = sha256(arb_verifier)
+          arb_log_sha = sha256(arb_log)
+          print('ARB_VERIFIER_SHA256', arb_verifier_sha)
+          print('ARB_CERTIFICATE_LOG_SHA256', arb_log_sha)
+
+          external_frontier = Path('lean_harness/frozen/ExternalCertificateFrontier.lean').read_text(encoding='utf-8')
+          ma = re.search(r'archivedVerifierSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', external_frontier)
+          mb = re.search(r'archivedCertificateLogSHA256\s*:\s*String\s*:=\s*\n?\s*"([0-9a-f]{64})"', external_frontier)
+          if not ma or not mb:
+              raise SystemExit('ARB_PROVENANCE_CONSTANT_NOT_FOUND')
+          if ma.group(1) != arb_verifier_sha:
+              raise SystemExit(f'ARB_VERIFIER_SHA_MISMATCH Lean={ma.group(1)} actual={arb_verifier_sha}')
+          if mb.group(1) != arb_log_sha:
+              raise SystemExit(f'ARB_LOG_SHA_MISMATCH Lean={mb.group(1)} actual={arb_log_sha}')
+
+          if manifest.get(arb_verifier.name) != arb_verifier_sha:
+              raise SystemExit('ARB_VERIFIER_MANIFEST_ENTRY_MISMATCH')
+          if manifest.get(arb_log.name) != arb_log_sha:
+              raise SystemExit('ARB_LOG_MANIFEST_ENTRY_MISMATCH')
+
+          print('ARB_CERTIFICATE_PROVENANCE_OK')
+          print('ALL_EXTERNAL_TRUST_BOUNDARIES_PROVENANCE_OK')
           PY
