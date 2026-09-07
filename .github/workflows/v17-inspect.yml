@@ -5,6 +5,11 @@ on:
     branches: [lean-v17-adaptation]
     paths:
       - ".github/workflows/v17-inspect.yml"
+      - "lean_harness/v17_weighted/**"
+      - "lean_harness/v17_strong/**"
+      - "lean_harness/v17_energy/**"
+      - "lean_harness/v17_global/**"
+      - "certification/v17/**"
   workflow_dispatch:
 
 permissions:
