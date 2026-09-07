@@ -51,6 +51,7 @@ jobs:
             "HurtadoZeta23.DirectRedistribution",
             "HurtadoZeta23.MatrixEnergy",
             "HurtadoZeta23.SpectralFrobenius",
+            "HurtadoZeta23.StableRankTraceScalar",
             "HurtadoZeta23.StableRankTraceMatrix",
             "HurtadoZeta23.GramSpectrumBridge",
             "HurtadoZeta23.SylvesterGramBridge",
