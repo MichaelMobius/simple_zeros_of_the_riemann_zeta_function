@@ -3,106 +3,88 @@ from pathlib import Path
 p = Path('paper/main.tex')
 text = p.read_text(encoding='utf-8')
 
-# 1. Correct the remaining technically false GitHub immutability wording.
-old = '''The immutable snapshot
-used for the present certificate is GitHub release
-\\texttt{v1.0.0-paper}, attached to commit \\texttt{c57f53e}.'''
-new = '''The frozen snapshot
-used for the present certificate is GitHub release
-\\texttt{v1.0.0-paper}, attached to commit \\texttt{c57f53e} and identified
-additionally by the verifier and log SHA-256 values below.'''
-if old not in text:
-    raise SystemExit('archival snapshot wording not found')
-text = text.replace(old, new, 1)
+old_adj = r'''\begin{proof}
+Pinch \(K\) first into the principal \(2\times2\) blocks
+\[
+ (1,2),(3,4),\ldots
+\]
+and then into
+\[
+ (2,3),(4,5),\ldots .
+\]
+The spectral trace functional \(X\mapsto\operatorname{tr}\Psi(X)\) cannot
+increase under either pinching by the standard pinching/majorization
+principle~\cite{Bhatia97}: pinching is a random-unitary average and this trace
+functional is convex and unitarily invariant.
 
-# 2. Acknowledge contemporaneous larger public claims so the literature review
-# cannot be read as a numerical-record claim.
-anchor = '''Rademacher's repository records Jo's artifact as its upstream provenance and
-presents the subsequent refinement as AI-generated.  We cite the
-human-maintained artifacts and treat model use as provenance rather than
-mathematical authorship.
-'''
-addition = anchor + '''
-Several contemporaneous public computational artifacts report numerically
-larger values.  Ojha's research repository~\\cite{Ojha26} currently reports a
-certified candidate bound
-\\[
- 0.6733127422722459\\ldots,
-\\]
-and explicitly labels the theorem claim a record candidate pending expert
-review and end-to-end formalization.  Devine's Zenodo preprint~\\cite{Devine26}
-reports the unconditional value
-\\[
- 0.673399.
-\\]
-Neither artifact is an input to the present proof.  Their proof architectures
-and validation status differ from ours, so we make no claim here that the
-numerical value of Theorem~\\ref{thm:main} is the largest publicly reported
-bound.
-'''
-if anchor not in text:
-    raise SystemExit('intro candidate anchor not found')
-text = text.replace(anchor, addition, 1)
+The block associated with a consecutive gap \(g\) is
+\[
+ \begin{pmatrix}1&k(g)\\ \overline{k(g)}&1\end{pmatrix},
+\]
+whose eigenvalues are \(1\pm|k(g)|\in[0,2]\).  Its defect is therefore
+exactly \(2|k(g)|^2=2w(g)\).  The first pinching gives
+\[
+ \mathcal D(K)\ge2\sum_{j\ {\rm odd}}w(g_j),
+\]
+and the second gives the corresponding inequality over even \(j\).  Averaging
+the two inequalities proves \eqref{eq:adjacent-pair-defect}.
+\end{proof}'''
 
-# 3. Add bibliography entries for those contemporaneous claims and make the
-# formal-software reference directly navigable.
-old_formal = '''\\bibitem{AnthropicFormal26}
-Anthropic,
-\\emph{formal-math: zeta23 Lean 4 formalisation},
-GitHub repository \\texttt{anthropics/formal-math},
-pinned by the present verification at commit
-\\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844} (2026).
-'''
-new_formal = '''\\bibitem{AnthropicFormal26}
-Anthropic,
-\\emph{formal-math: zeta23 Lean 4 formalisation},
-GitHub repository \\texttt{anthropics/formal-math},
-\\url{https://github.com/anthropics/formal-math},
-pinned by the present verification at commit
-\\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844} (2026).
+new_adj = r'''\begin{proof}
+Apply two separate pinchings to the original matrix \(K\).  The first uses the
+principal \(2\times2\) blocks
+\[
+ (1,2),(3,4),\ldots,
+\]
+while the second, independently applied to the same original \(K\), uses
+\[
+ (2,3),(4,5),\ldots .
+\]
+For each of these two pinchings, the spectral trace functional
+\(X\mapsto\operatorname{tr}\Psi(X)\) cannot increase by the standard
+pinching/majorization principle~\cite{Bhatia97}: pinching is a random-unitary
+average and this trace functional is convex and unitarily invariant.
 
-\\bibitem{Ojha26}
+The block associated with a consecutive gap \(g\) is
+\[
+ \begin{pmatrix}1&k(g)\\ \overline{k(g)}&1\end{pmatrix},
+\]
+whose eigenvalues are \(1\pm|k(g)|\in[0,2]\).  Its defect is therefore
+exactly \(2|k(g)|^2=2w(g)\).  The first pinching gives
+\[
+ \mathcal D(K)\ge2\sum_{j\ {\rm odd}}w(g_j),
+\]
+while the second, as a separate inequality for the same \(K\), gives the
+corresponding bound over even \(j\).  Averaging these two independently
+obtained inequalities proves \eqref{eq:adjacent-pair-defect}.
+\end{proof}'''
+
+if old_adj not in text:
+    raise SystemExit('adjacent-pair proof block not found')
+text = text.replace(old_adj, new_adj, 1)
+
+old_ojha = r'''\bibitem{Ojha26}
 V.~Ojha,
-\\emph{Certified lower-bound candidate for simple zeros of the Riemann zeta
+\emph{Certified lower-bound candidate for simple zeros of the Riemann zeta
 function},
-research repository \\texttt{trmdy/zeta-simple-zeros-673137}, 2026,
-\\url{https://github.com/trmdy/zeta-simple-zeros-673137}.
+research repository \texttt{trmdy/zeta-simple-zeros-673137}, 2026,
+\url{https://github.com/trmdy/zeta-simple-zeros-673137}.'''
+new_ojha = r'''\bibitem{Ojha26}
+V.~Ojha,
+\emph{A 67.3312742272\% lower-bound candidate for simple zeros of zeta},
+research repository \texttt{trmdy/zeta-simple-zeros-673137}, 2026,
+\url{https://github.com/trmdy/zeta-simple-zeros-673137}.'''
 
-\\bibitem{Devine26}
-M.~Devine,
-\\emph{An Unconditional 67.3399\\% Bound and Conditional Advances Beyond
-67.92\\% for Simple Critical Zeros of the Riemann Zeta Function},
-Zenodo, version 1.0.3, 23 August 2026,
-DOI: 10.5281/zenodo.22066689.
-'''
-if old_formal not in text:
-    raise SystemExit('formal bibliography anchor not found')
-text = text.replace(old_formal, new_formal, 1)
-
-# 4. Harden exact prose around the proof boundary.
-text = text.replace(
-    'The proof reuses the position-weighted seven-point certificate',
-    'The proof reuses our previously certified position-weighted seven-point certificate',
-    1,
-)
-
-# Safety gates.
-for forbidden in [
-    'The immutable snapshot',
-    '\\cite{Claude26}',
-    'largest publicly reported bound.\n\nSeveral',  # guard accidental duplicate insertion
-]:
-    if forbidden in text:
-        raise SystemExit(f'stale/duplicate wording remains: {forbidden}')
+if old_ojha not in text:
+    raise SystemExit('Ojha bibliography block not found')
+text = text.replace(old_ojha, new_ojha, 1)
 
 for required in [
-    '\\cite{Ojha26}', '\\cite{Devine26}',
-    '0.6733127422722459', '0.673399',
-    'no claim here that the\nnumerical value',
-    'frozen snapshot',
+    'independently applied to the same original \\(K\\)',
+    'A 67.3312742272\\% lower-bound candidate for simple zeros of zeta',
 ]:
     if required not in text:
-        raise SystemExit(f'required v18 audit wording missing: {required}')
+        raise SystemExit(f'missing required final wording: {required}')
 
 p.write_text(text, encoding='utf-8')
-print('final v18 adversarial-audit corrections applied')
+print('final v18 adjacent-pair and bibliography corrections applied')
