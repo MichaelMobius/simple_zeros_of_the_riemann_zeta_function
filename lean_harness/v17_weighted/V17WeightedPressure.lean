@@ -159,4 +159,50 @@ theorem v17_weighted_adjacent_pressure
   norm_num [beta] at hfactor' ⊢
   linarith
 
+/-- Exact pressure-preserving version of the seven-point redistribution at
+`m = 450`.  Unlike the older coarse-span theorem, the pressure term is kept
+literally as the sum of the local position-weighted pressures. -/
+theorem v17_certificate_energy_pressure_450
+    (y : ℕ → ℝ)
+    (w : ℕ → ℕ → ℝ)
+    (hw : ∀ a b, 0 ≤ w a b)
+    (hcert : SevenPointCertificate w y 450) :
+    v17A ≤ globalPairEnergyNat 450 w + v17LiteralBlockPressure 450 y := by
+  have hlocal :=
+    summed_explicit_local_certificate
+      (m := 450) (by norm_num) w y hcert
+  have hpairs :=
+    summed_localPairEnergy_le_global
+      (m := 450) (by norm_num) w hw
+  have hsplit :
+      (∑ s ∈ Finset.range (450 - 6), localFp w y s) =
+        v17LiteralBlockPressure 450 y +
+          (∑ s ∈ Finset.range (450 - 6), localPairEnergy w s) := by
+    unfold v17LiteralBlockPressure localFp
+    simp only [Finset.sum_add_distrib]
+    ac_rfl
+  rw [hsplit] at hlocal
+  have hA : delta * (((450 - 6 : ℕ) : ℝ)) = v17A := by
+    norm_num [delta, v17A]
+  rw [hA] at hlocal
+  linarith
+
+/-- The weighted adjacent-pressure inequality in the exact constants expected
+by the strong `m = 450` scalar finisher. -/
+theorem v17_weighted_adjacent_pressure_450
+    (y : ℕ → ℝ)
+    (w : ℕ → ℕ → ℝ)
+    (hw : ∀ a b, 0 ≤ w a b)
+    (hscalar : ∀ q < 449,
+      v17t * beta * v17g0 ≤
+        w q (q + 1) + v17t * beta * (y (q + 1) - y q)) :
+    v17t * v17g0 * v17Q ≤
+      pairBandEnergy 450 0 w + v17t * v17LiteralBlockPressure 450 y := by
+  have h :=
+    v17_weighted_adjacent_pressure
+      (m := 450) (by norm_num) y w hw hscalar
+  have hQ : beta * (((450 - 6 : ℕ) : ℝ)) = v17Q := by
+    norm_num [beta, v17Q]
+  simpa [hQ] using h
+
 end HurtadoZeta23
