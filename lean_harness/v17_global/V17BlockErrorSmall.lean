@@ -1,5 +1,4 @@
-import HurtadoZeta23.V17CompactOverlapCore
-import HurtadoZeta23.ArticleCompactErrorLimit
+import HurtadoZeta23.V17CompactErrorLimit
 import HurtadoZeta23.RetainedCardinalityBridge
 import HurtadoZeta23.ZetaRvMBridge
 import HurtadoZeta23.GlobalAssembly
@@ -56,23 +55,16 @@ theorem v17_eventually_one_le_globalN :
   have h := zetaDyadicN_tendsto_atTop.eventually_ge_atTop (1 : ℝ)
   simpa [zetaDyadicN, globalN] using h
 
-/-- The lightweight v17 compact error is definitionally the same quantitative
-error used in the historical asymptotic analysis. -/
-theorem v17ArticleCompactError_eq_articleCompactError
-    (T : ℝ) (M : ℕ) :
-    v17ArticleCompactError T M = articleCompactError T M := by
-  rfl
-
 /-- The exact v17 local analytic loss tends to zero. -/
 theorem tendsto_v17FinalLocalErr_zero :
     Tendsto v17FinalLocalErr atTop (𝓝 0) := by
   change
     Tendsto
       (fun T : ℝ =>
-        404100 * articleCompactError T (articleTailMargin T))
+        404100 * v17ArticleCompactError T (articleTailMargin T))
       atTop (𝓝 0)
   simpa using
-    tendsto_articleCompactError_margin_zero.const_mul 404100
+    tendsto_v17ArticleCompactError_margin_zero.const_mul 404100
 
 /-- Equivalently, the local loss is `o(1)`. -/
 theorem v17FinalLocalErr_isLittleO_one :
