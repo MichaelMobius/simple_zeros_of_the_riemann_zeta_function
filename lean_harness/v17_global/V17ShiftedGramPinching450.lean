@@ -305,7 +305,8 @@ theorem v17_sum_all_blockDefect450_le_retained
         apply Finset.sum_le_sum
         intro r hr
         exact v17_one_shift_defect_le_retained T hS r
-    _ = (450 : ℝ) * articleRetainedDefect T := by simp
+    _ = (450 : ℝ) * articleRetainedDefect T := by
+      simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
 
 /-- Published/global form: the total defect of all consecutive v17 blocks is
 bounded by 450 copies of the global stable defect. -/
