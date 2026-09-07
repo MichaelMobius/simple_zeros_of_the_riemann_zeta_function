@@ -157,7 +157,6 @@ theorem v17_weighted_adjacent_pressure
     nlinarith
   have hfactor' := hfactor
   norm_num [beta] at hfactor' ⊢
-  linarith
 
 /-- Exact pressure-preserving version of the seven-point redistribution at
 `m = 450`.  Unlike the older coarse-span theorem, the pressure term is kept
@@ -203,6 +202,7 @@ theorem v17_weighted_adjacent_pressure_450
       (m := 450) (by norm_num) y w hw hscalar
   have hQ : beta * (((450 - 6 : ℕ) : ℝ)) = v17Q := by
     norm_num [beta, v17Q]
-  simpa [hQ] using h
+  rw [← hQ]
+  exact h
 
 end HurtadoZeta23
