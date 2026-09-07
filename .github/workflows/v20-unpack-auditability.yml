@@ -19,4 +19,4 @@ jobs:
           fetch-depth: 0
       - name: Retarget CI and remove encoded source transport
         shell: bash
-        run: bash .github/v20_retarget.sh
+        run: bash .github/v20_retarget_wrapper.sh
