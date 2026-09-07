@@ -19,6 +19,7 @@ natural index `2*b+1`. -/
 @[simp] theorem v17PairEquiv450_one_val (b : Fin 225) :
     (v17PairEquiv450 (b, 1)).val = 2 * b.val + 1 := by
   simp [v17PairEquiv450, finProdFinEquiv]
+  omega
 
 /-- For the first 224 blocks, rotating the even endpoint advances it to the
 odd adjacent index. -/
