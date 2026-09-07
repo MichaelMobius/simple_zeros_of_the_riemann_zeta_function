@@ -144,13 +144,13 @@ proof against the pinned upstream `formal-math` source tree.
 
 ## Reproducibility releases
 
-The v17 revision is prepared for the next frozen manuscript release:
+The current frozen manuscript release is:
 
-### v17 release candidate
+### Current frozen v17 manuscript
 
-**`v1.2.0-paper`** is the intended frozen release for the current v17
-manuscript, formalization, and v17 exact-arithmetic certificate. Its canonical
-release notes are in `docs/RELEASE_v1.2.0-paper.md`.
+**`v1.2.0-paper`** freezes the current v17 manuscript, formalization, and v17
+exact-arithmetic certificate. Its canonical release notes are in
+`docs/RELEASE_v1.2.0-paper.md`.
 
 ### Previous frozen manuscript
 
@@ -475,10 +475,9 @@ repository/release.
 
 Citation metadata is provided in `CITATION.cff`.
 
-The preceding submission-ready manuscript is frozen in `v1.1.0-paper`. The
-frozen historical computational artifact is `v1.0.0-paper @ c57f53e`. The v17
-revision is prepared to be frozen as `v1.2.0-paper`; its release-note source is
-`docs/RELEASE_v1.2.0-paper.md`.
+The v17 revision is frozen in `v1.2.0-paper`. The preceding submission-ready
+manuscript is frozen in `v1.1.0-paper`, and the historical computational
+artifact is frozen in `v1.0.0-paper @ c57f53e`.
 
 ---
 
@@ -506,7 +505,7 @@ Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_f
 ## Status
 
 - **Current manuscript:** v17
-- **Release candidate:** `v1.2.0-paper`
+- **Current frozen release:** `v1.2.0-paper`
 - **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
 - **Certified seven-point local bound:** `39/10000`
 - **v17 signed kernel claim:** `171389/1000000 < k(89/100)`
