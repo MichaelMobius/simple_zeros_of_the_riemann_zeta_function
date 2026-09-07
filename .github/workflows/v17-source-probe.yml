@@ -1,0 +1,33 @@
+name: V17 source probe
+
+on:
+  push:
+    branches: [lean-v17-adaptation]
+    paths:
+      - ".github/workflows/v17-source-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@v4
+        with:
+          path: harness
+
+      - name: Inspect frozen cardinality and span interfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/zeta
+          cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
+          tar -xzf /tmp/hurtado.tar.gz -C /tmp/zeta
+          cat harness/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C /tmp/zeta
+          echo '=== matching files ==='
+          grep -R -l -E 'articleRetainedCard|articleRetainedColumnsFinset|articleRetainedTotalSpan_le_samplingSpanScale|articleRetainedTotalSpan_eq_endpoints' /tmp/zeta || true
+          echo '=== interfaces with context ==='
+          grep -R -n -B 6 -A 14 -E 'def articleRetainedCard|abbrev articleRetainedCard|theorem articleRetainedTotalSpan_le_samplingSpanScale|theorem articleRetainedTotalSpan_eq_endpoints|articleRetainedColumnsFinset.*card|card.*articleRetainedColumnsFinset' /tmp/zeta || true
