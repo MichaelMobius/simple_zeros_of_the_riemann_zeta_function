@@ -49,7 +49,7 @@ where
  =
  \frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}.
 \]
-The proof reuses the position-weighted seven-point certificate
+The proof reuses our previously certified position-weighted seven-point certificate
 \[
  \delta=\frac{39}{10000},
  \qquad
@@ -131,6 +131,23 @@ Rademacher's repository records Jo's artifact as its upstream provenance and
 presents the subsequent refinement as AI-generated.  We cite the
 human-maintained artifacts and treat model use as provenance rather than
 mathematical authorship.
+
+Several contemporaneous public computational artifacts report numerically
+larger values.  Ojha's research repository~\cite{Ojha26} currently reports a
+certified candidate bound
+\[
+ 0.6733127422722459\ldots,
+\]
+and explicitly labels the theorem claim a record candidate pending expert
+review and end-to-end formalization.  Devine's Zenodo preprint~\cite{Devine26}
+reports the unconditional value
+\[
+ 0.673399.
+\]
+Neither artifact is an input to the present proof.  Their proof architectures
+and validation status differ from ours, so we make no claim here that the
+numerical value of Theorem~\ref{thm:main} is the largest publicly reported
+bound.
 
 The contribution of the present paper is explicit and layered.  We do not
 claim the finite-compression/rank--trace mechanism, the stability-enhanced
@@ -3231,9 +3248,10 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 The complete Arb/FLINT verifier, the archived 256-bit certification run,
 machine-readable parameters, execution logs, environment information,
 SHA-256 hashes, and reproduction instructions are publicly available in the
-reproducibility artifact~\cite{Hurtado26Artifact}.  The immutable snapshot
+reproducibility artifact~\cite{Hurtado26Artifact}.  The frozen snapshot
 used for the present certificate is GitHub release
-\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e}.  The release
+\texttt{v1.0.0-paper}, attached to commit \texttt{c57f53e} and identified
+additionally by the verifier and log SHA-256 values below.  The release
 contains the manuscript snapshot and the computational evidence used to
 certify Proposition~\ref{prop:cert}.  Subsequent changes to the repository's
 default branch are not part of the trust base of this certificate.
@@ -3389,8 +3407,23 @@ Graduate Texts in Mathematics, Vol.~169, Springer, 1997.
 Anthropic,
 \emph{formal-math: zeta23 Lean 4 formalisation},
 GitHub repository \texttt{anthropics/formal-math},
+\url{https://github.com/anthropics/formal-math},
 pinned by the present verification at commit
 \texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844} (2026).
+
+\bibitem{Ojha26}
+V.~Ojha,
+\emph{Certified lower-bound candidate for simple zeros of the Riemann zeta
+function},
+research repository \texttt{trmdy/zeta-simple-zeros-673137}, 2026,
+\url{https://github.com/trmdy/zeta-simple-zeros-673137}.
+
+\bibitem{Devine26}
+M.~Devine,
+\emph{An Unconditional 67.3399\% Bound and Conditional Advances Beyond
+67.92\% for Simple Critical Zeros of the Riemann Zeta Function},
+Zenodo, version 1.0.3, 23 August 2026,
+DOI: 10.5281/zenodo.22066689.
 
 \bibitem{BGSTB24}
 S.~A.~C.~Baluyot, D.~A.~Goldston, A.~I.~Suriajaya, and
