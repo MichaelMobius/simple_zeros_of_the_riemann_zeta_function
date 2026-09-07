@@ -60,7 +60,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            texlive-latex-base texlive-latex-recommended \
+            lmodern texlive-latex-base texlive-latex-recommended \
             texlive-fonts-recommended texlive-latex-extra
 
       - name: Compile manuscript twice
