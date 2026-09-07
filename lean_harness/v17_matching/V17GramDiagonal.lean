@@ -19,10 +19,13 @@ column. -/
 theorem v17_gram_diag_re_eq_column_norm_sq
     (V : Matrix row col ℂ) (z : col) :
     ((V.conjTranspose * V) z z).re = ∑ k, ‖V k z‖ ^ 2 := by
-  rw [Matrix.mul_apply, map_sum]
+  classical
+  rw [Matrix.mul_apply]
+  simp only [Matrix.conjTranspose_apply]
+  rw [map_sum]
   apply Finset.sum_congr rfl
   intro k hk
-  simp only [Matrix.conjTranspose_apply, RCLike.star_def, RCLike.conj_mul]
+  simp only [RCLike.star_def, RCLike.conj_mul]
   exact RCLike.re_ofReal_pow (K := ℂ) (‖V k z‖) 2
 
 /-- Column norm at most one implies the real Gram diagonal is at most one. -/
