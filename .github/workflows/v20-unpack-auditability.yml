@@ -1,0 +1,287 @@
+name: V20 unpack Lean sources for auditability
+
+on:
+  push:
+    branches: [v20-public-auditability]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct canonical browseable Lean source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f lean_src/HurtadoZeta23/V17FinalAssembly.lean ] && ! compgen -G 'lean_harness/v17_adj/part*.b64' >/dev/null && ! compgen -G 'lean_harness/v17_analytic/part*.b64' >/dev/null; then
+            echo 'V20 source tree already materialized; nothing to do.'
+            exit 0
+          fi
+
+          rm -rf /tmp/hurtado-v20
+          mkdir -p /tmp/hurtado-v20
+
+          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-v20/core.tar.gz
+          tar -xzf /tmp/hurtado-v20/core.tar.gz -C /tmp/hurtado-v20
+          cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-v20/analytic.tar.gz
+          tar -xzf /tmp/hurtado-v20/analytic.tar.gz -C /tmp/hurtado-v20
+
+          test -d /tmp/hurtado-v20/HurtadoZeta23
+          rm -rf lean_src/HurtadoZeta23
+          mkdir -p lean_src/HurtadoZeta23
+          cp /tmp/hurtado-v20/HurtadoZeta23/*.lean lean_src/HurtadoZeta23/
+
+          for d in frozen v17_scalar v17_weighted v17_adj v17_matching v17_threshold v17_energy v17_strong v17_concrete v17_endgame v17_global; do
+            if compgen -G "lean_harness/$d/*.lean" > /dev/null; then
+              cp lean_harness/$d/*.lean lean_src/HurtadoZeta23/
+            fi
+          done
+
+          test -f lean_src/HurtadoZeta23/V17FinalAssembly.lean
+
+      - name: Add canonical overlay installer and closure manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p scripts lean_src
+          cat > scripts/install_hurtado_overlay.sh <<'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if [ "$#" -ne 1 ]; then
+            echo "usage: $0 <zeta23-root>" >&2
+            exit 2
+          fi
+          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+          TARGET="$1"
+          mkdir -p "$TARGET/HurtadoZeta23"
+          cp "$REPO_ROOT"/lean_src/HurtadoZeta23/*.lean "$TARGET/HurtadoZeta23/"
+          EOF
+          chmod +x scripts/install_hurtado_overlay.sh
+
+          cat > lean_src/README.md <<'EOF'
+          # Canonical browseable Lean sources
+
+          This directory is the canonical human-browseable source tree for the
+          Hurtado v17 formalization. Every `HurtadoZeta23` module used by the
+          published final closure is stored here as ordinary `.lean` source.
+
+          The historical stage-specific files under `lean_harness/` are retained
+          only where they are useful for provenance or CI organization. CI installs
+          the canonical source tree with `scripts/install_hurtado_overlay.sh` on top
+          of the pinned Anthropic `formal-math/zeta23` checkout.
+
+          `V17_FINAL_CLOSURE.txt` lists the exact transitive `HurtadoZeta23` import
+          closure of `HurtadoZeta23.V17FinalAssembly` in this source tree.
+          EOF
+
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('lean_src')
+          todo = ['HurtadoZeta23.V17FinalAssembly']
+          seen = set()
+          missing = []
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = root / (mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  s = line.strip()
+                  if not s.startswith('import '):
+                      continue
+                  for dep in s[len('import '):].split():
+                      if dep.startswith('HurtadoZeta23.'):
+                          dpath = root / (dep.replace('.', '/') + '.lean')
+                          if dpath.exists():
+                              todo.append(dep)
+                          else:
+                              missing.append((dep, mod))
+          if missing:
+              for dep, parent in missing:
+                  print('MISSING', parent, '->', dep)
+              raise SystemExit(1)
+          modules = sorted(seen)
+          out = [
+              '# Exact Hurtado v17 final import closure',
+              '# Root: HurtadoZeta23.V17FinalAssembly',
+              f'# Modules: {len(modules)}',
+              ''
+          ] + modules
+          Path('lean_src/V17_FINAL_CLOSURE.txt').write_text('\n'.join(out) + '\n', encoding='utf-8')
+          print('FINAL_CLOSURE_MODULES', len(modules))
+          PY
+
+      - name: Retarget CI from encoded tar parts to ordinary Lean sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          wfdir = Path('.github/workflows')
+          for p in wfdir.glob('*.yml'):
+              if p.name == 'v20-unpack-auditability.yml':
+                  continue
+              s = p.read_text(encoding='utf-8')
+              old = s
+
+              pairs = [
+                  (
+                      '          cat harness/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz\n'
+                      '          tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23\n',
+                      '          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23\n'
+                  ),
+                  (
+                      '          cat harness/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz\n'
+                      '          tar -xzf /tmp/hurtado-analytic.tar.gz -C upstream/zeta23\n',
+                      '          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23\n'
+                  ),
+              ]
+              for a, b in pairs:
+                  s = s.replace(a, b)
+
+              if p.name == 'v17-inspect.yml':
+                  start = s.find('      - name: Reconstruct current Hurtado source tree\n')
+                  stop = s.find('      - name: Compute exact final import closure\n', start)
+                  if start < 0 or stop < 0:
+                      raise SystemExit('Could not locate reconstruct step in v17-inspect.yml')
+                  replacement = '''      - name: Reconstruct current Hurtado source tree\n        shell: bash\n        run: |\n          set -euo pipefail\n          rm -rf /tmp/zeta\n          mkdir -p /tmp/zeta\n          cp -R lean_src/HurtadoZeta23 /tmp/zeta/\n\n'''
+                  s = s[:start] + replacement + s[stop:]
+
+              # Collapse harmless duplicate installer calls if both historical tar
+              # layers occurred consecutively in one workflow.
+              dup = ('          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23\n'
+                     '          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23\n')
+              s = s.replace(dup, '          bash harness/scripts/install_hurtado_overlay.sh upstream/zeta23\n')
+
+              if s != old:
+                  p.write_text(s, encoding='utf-8')
+
+          refs = []
+          for p in wfdir.glob('*.yml'):
+              if p.name == 'v20-unpack-auditability.yml':
+                  continue
+              text = p.read_text(encoding='utf-8')
+              if '.b64' in text or 'base64 -d' in text:
+                  refs.append(str(p))
+          if refs:
+              print('ENCODED_SOURCE_REFERENCES_REMAIN', refs)
+              raise SystemExit(1)
+          PY
+
+      - name: Remove encoded source fragments
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm lean_harness/v17_adj/part*.b64
+          git rm lean_harness/v17_analytic/part*.b64
+
+      - name: Harden README and document v20
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('README.md')
+          s = p.read_text(encoding='utf-8')
+
+          marker = 'by **Michael Hurtado**.\n'
+          status = '''\n> **Current default-branch manuscript:** publication-hardened v19  \
+> **Mathematical theorem:** v17  \
+> **Current bound:** `0.6731175265883904388095857434...`  \
+> **Latest frozen theorem release:** `v1.2.0-paper`\n\n'''
+          if status.strip() not in s:
+              if marker not in s:
+                  raise SystemExit('README author marker not found')
+              s = s.replace(marker, marker + status, 1)
+
+          s = s.replace(
+              '├── lean_harness/\n│   ├── frozen/\n│   ├── v17_weighted/\n│   ├── v17_energy/\n│   ├── v17_strong/\n│   ├── v17_global/\n│   └── ...\n',
+              '├── lean_src/\n│   ├── HurtadoZeta23/        # canonical browseable .lean sources\n│   └── V17_FINAL_CLOSURE.txt\n├── lean_harness/             # historical/stage-specific harness files\n├── scripts/\n│   └── install_hurtado_overlay.sh\n'
+          )
+
+          old = '''### `lean_harness/`\n\nContains the Lean adaptation and the exact CI overlay used to compile the v17\nproof against the pinned upstream `formal-math` source tree.\n'''
+          new = '''### `lean_src/` and `lean_harness/`\n\n`lean_src/HurtadoZeta23/` is the canonical human-browseable Lean source tree:\nevery Hurtado module in the published v17 final closure is stored as an ordinary\n`.lean` file and can be inspected directly in GitHub.\n`lean_src/V17_FINAL_CLOSURE.txt` records the exact transitive closure of\n`HurtadoZeta23.V17FinalAssembly`. CI installs these sources on top of the pinned\nupstream `formal-math/zeta23` tree using `scripts/install_hurtado_overlay.sh`.\nThe stage-specific `lean_harness/` directories remain for provenance and CI\norganization; encoded base64/tar source fragments are no longer used.\n'''
+          if old in s:
+              s = s.replace(old, new, 1)
+
+          trust_anchor = '''The exact final CI closure currently contains **127 Hurtado modules** and\nbuilds successfully against\n'''
+          trust_insert = '''More explicitly, the formal stack is **Mathlib + the pinned Anthropic\n`formal-math/zeta23` formalization + the browseable `HurtadoZeta23` v17 source\ntree**, with exactly two external numerical certificate propositions at the\nfinal theorem boundary.\n\n'''
+          if trust_insert.strip() not in s and trust_anchor in s:
+              s = s.replace(trust_anchor, trust_insert + trust_anchor, 1)
+
+          s = s.replace(
+              'The upstream work of **Sunghyeon Jo** introduced the relevant reproducible',
+              'The upstream work of **[Sunghyeon Jo (`ainta`)](https://github.com/ainta/zeta-simple-zeros)** introduced the relevant reproducible'
+          )
+          s = s.replace(
+              'A subsequent reproducible refinement by **Lea Rademacher** strengthened',
+              'A subsequent reproducible refinement by **[Lea Rademacher](https://github.com/learademacher/ai-refines-ai-zeta-bound)** strengthened'
+          )
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          cat > docs/V20_PUBLIC_AUDITABILITY.md <<'EOF'
+          # v20 public-auditability cleanup
+
+          This maintenance revision changes no mathematical statement, numerical
+          constant, certificate proposition, or Lean theorem. Its purpose is to make
+          the existing v17 formalization easier to audit in a web browser.
+
+          Changes:
+
+          - materialize the complete `HurtadoZeta23` source tree as ordinary `.lean`
+            files under `lean_src/HurtadoZeta23/`;
+          - remove the base64-split tar fragments formerly used to transport part of
+            the source tree;
+          - retarget CI to install the canonical browseable source tree directly;
+          - publish `lean_src/V17_FINAL_CLOSURE.txt`, the exact transitive Hurtado
+            import closure of `HurtadoZeta23.V17FinalAssembly`;
+          - clarify in the README that the formal stack is Mathlib + pinned Anthropic
+            `formal-math/zeta23` + HurtadoZeta23, conditional on exactly two explicit
+            external numerical certificate propositions;
+          - add direct public links for the Jo and Rademacher predecessor artifacts.
+
+          The mathematical bound remains
+
+          `0.6731175265883904388095857434...`.
+          EOF
+
+      - name: Audit browseability conversion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f lean_src/HurtadoZeta23/V17FinalAssembly.lean
+          test -f lean_src/V17_FINAL_CLOSURE.txt
+          ! find lean_harness -type f -name '*.b64' -print -quit | grep -q .
+          ! grep -R --include='*.yml' -nE 'part\*\.b64|base64 -d' .github/workflows | grep -v 'v20-unpack-auditability.yml'
+          grep -q '^# Modules: 127$' lean_src/V17_FINAL_CLOSURE.txt
+
+      - name: Commit materialized sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet && git diff --cached --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m 'Materialize Lean sources for public auditability'
+          git push origin HEAD:v20-public-auditability
