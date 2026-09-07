@@ -1,0 +1,97 @@
+name: v19 publication hardening retry
+
+on:
+  push:
+    branches:
+      - v19-publication-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  harden:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: v19-publication-hardening
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Repair strict appendix-title matcher
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/v19_publication_hardening.py')
+          s = p.read_text(encoding='utf-8')
+          old = '''        f"Independent proof of Input {roman}",
+                  f"Self-contained derivation of Input {roman}",'''
+          new = '''        f"\\\\section{{Independent proof of Input {roman}:",
+                  f"\\\\section{{Self-contained derivation of Input {roman}:",'''
+          if old not in s:
+              raise SystemExit('appendix matcher repair anchor missing')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Apply v19 source patch
+        run: python scripts/v19_publication_hardening.py
+
+      - name: Syntax-check certificate verifier
+        run: python -m py_compile certification/arb_256/certify_nonuniform_3900_v1_1.py
+
+      - name: Check exact unbounded-domain cutoff
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-flint==0.9.0
+          python certification/arb_256/certify_nonuniform_3900_v1_1.py --check-cutoff-only
+
+      - name: Re-run exact v17 arithmetic verifier
+        run: python certification/v17/verify_improved_bound.py --output /tmp/v17-verification.json
+
+      - name: Adversarial source gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q 'Independent proof of Input' paper/main.tex
+          ! grep -q 'Theorem~D of Alpöge--Furman' paper/main.tex
+          grep -q 'Montgomery--Taylor clause of Theorem~A' paper/main.tex
+          grep -q 'block-defect-uniform-error' paper/main.tex
+          grep -q '9}{500000000}' paper/main.tex
+          grep -q 'pressure_cutoff_margin' certification/arb_256/certify_nonuniform_3900_v1_1.py
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+
+      - name: Build manuscript twice
+        working-directory: paper
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+          ! grep -E 'LaTeX Warning: (Reference|Citation).*undefined|There were undefined references|There were undefined citations' main.log
+
+      - name: Clean temporary build and hardening files
+        run: |
+          rm -f paper/main.aux paper/main.log paper/main.out paper/main.toc
+          rm -f scripts/v19_publication_hardening.py
+          rm -f .github/workflows/v19-publication-hardening.yml
+          rm -f .github/workflows/v19-publication-hardening-2.yml
+
+      - name: Commit hardened publication state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git status --short
+          git commit -m 'Harden v19 for publication review'
+          git push origin HEAD:v19-publication-hardening
