@@ -75,7 +75,7 @@ theorem v17_Gram450_kernel_pair_energy_lower_offDiagonal
     (s : ℕ)
     (hs : s + 450 ≤ articleRetainedCard T) :
     globalPairEnergyNat 450 (limitingWeightOnPoints (v17Y450 T s hs)) -
-        404100 * articleCompactError T M
+        404100 * v17ArticleCompactError T M
       ≤
     offDiagonalEnergy (v17Gram450 T s hs) := by
   have h :=
@@ -83,7 +83,7 @@ theorem v17_Gram450_kernel_pair_energy_lower_offDiagonal
       hPois hnorm hl hwL hsmall hM1 hM2 hkk s hs
   change
     globalPairEnergyNat 450 (limitingWeightOnPoints (v17Y450 T s hs)) -
-        404100 * articleCompactError T M
+        404100 * v17ArticleCompactError T M
       ≤
     globalPairEnergyNat 450
       (v17MatrixNormSqNat450 (v17Gram450 T s hs)) at h
