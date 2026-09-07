@@ -52,7 +52,7 @@ theorem v17Gram450_diag_re_le_one
   unfold v17Gram450
   rw [principalGramBlock_apply]
   have habs :=
-    articleGlobalSimpleGram_re_abs_le_one
+    v17_articleGlobalSimpleGram_re_abs_le_one
       T hPois hnorm
       (v17SimpleColumn450 T s hs i)
       (v17SimpleColumn450 T s hs i)
@@ -89,7 +89,7 @@ theorem v17_actual_strong_block_450_of_interfaces
         limitingWeightOnPoints (v17Y450 T s hs) q (q + 1) +
           v17t * beta *
             (v17Y450 T s hs (q + 1) - v17Y450 T s hs q)) :
-    v17A - 404100 * articleCompactError T M ≤
+    v17A - 404100 * v17ArticleCompactError T M ≤
       gramSpectralDefect
           (v17Gram450 T s hs)
           (v17Gram450_posSemidef T s hs) +
@@ -97,7 +97,7 @@ theorem v17_actual_strong_block_450_of_interfaces
   let y : ℕ → ℝ := v17Y450 T s hs
   let w : ℕ → ℕ → ℝ := limitingWeightOnPoints y
   let G : Matrix (Fin 450) (Fin 450) ℂ := v17Gram450 T s hs
-  let eps : ℝ := articleCompactError T M
+  let eps : ℝ := v17ArticleCompactError T M
 
   have hG : G.PosSemidef := by
     dsimp [G]
@@ -109,7 +109,7 @@ theorem v17_actual_strong_block_450_of_interfaces
 
   have heps : 0 ≤ eps := by
     dsimp [eps]
-    exact articleCompactError_nonneg hl M
+    exact v17ArticleCompactError_nonneg hl M
 
   have hw : ∀ a b, 0 ≤ w a b := by
     intro a b
