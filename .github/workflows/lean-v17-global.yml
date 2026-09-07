@@ -1,10 +1,11 @@
-name: Lean v17 exact shifted pressure
+name: Lean v17 exact shifted assembly
 
 on:
   push:
     branches: [lean-v17-adaptation]
     paths:
       - "lean_harness/v17_global/**"
+      - "lean_harness/v17_endgame/**"
       - "lean_harness/v17_weighted/**"
       - "lean_harness/v17_scalar/**"
       - "lean_harness/v17_adj/part*.b64"
@@ -29,7 +30,7 @@ jobs:
           ref: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
           path: upstream
 
-      - name: Overlay v17 exact-pressure sources
+      - name: Overlay v17 exact-assembly sources
         shell: bash
         run: |
           set -euxo pipefail
@@ -37,7 +38,9 @@ jobs:
           tar -xzf /tmp/hurtado.tar.gz -C upstream/zeta23
           cp harness/lean_harness/v17_scalar/V17StrongBlockScalar.lean upstream/zeta23/HurtadoZeta23/V17StrongBlockScalar.lean
           cp harness/lean_harness/v17_weighted/V17WeightedPressure.lean upstream/zeta23/HurtadoZeta23/V17WeightedPressure.lean
+          cp harness/lean_harness/v17_endgame/V17Endgame.lean upstream/zeta23/HurtadoZeta23/V17Endgame.lean
           cp harness/lean_harness/v17_global/V17ShiftedPressure450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedPressure450.lean
+          cp harness/lean_harness/v17_global/V17ShiftedAssembly450.lean upstream/zeta23/HurtadoZeta23/V17ShiftedAssembly450.lean
 
       - name: Register exact Hurtado import closure
         working-directory: upstream/zeta23
@@ -46,7 +49,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          todo = ["HurtadoZeta23.V17ShiftedPressure450"]
+          todo = ["HurtadoZeta23.V17ShiftedAssembly450"]
           seen = set()
           missing = []
           while todo:
@@ -99,7 +102,7 @@ jobs:
         shell: bash
         run: lake exe cache get
 
-      - name: Build exact shifted pressure
+      - name: Build exact shifted assembly
         working-directory: upstream/zeta23
         shell: bash
         run: lake build HurtadoZeta23V17Global
