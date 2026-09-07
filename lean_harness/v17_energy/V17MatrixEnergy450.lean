@@ -7,6 +7,8 @@ noncomputable section
 open Matrix Finset
 open scoped BigOperators ComplexOrder
 
+set_option linter.constructorNameAsVariable false
+
 namespace HurtadoZeta23
 
 /-!
