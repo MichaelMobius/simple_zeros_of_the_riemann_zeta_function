@@ -22,7 +22,8 @@ lemma v17ActualBlockDefect450_of_fit
     (T : ℝ) (s : ℕ)
     (hs : s + 450 ≤ articleRetainedCard T) :
     v17ActualBlockDefect450 T s = v17BlockDefect450 T s hs := by
-  simp [v17ActualBlockDefect450, hs]
+  unfold v17ActualBlockDefect450
+  rw [dif_pos hs]
 
 /-- The concrete strong-block theorem rewritten in the global shifted-block
 coordinates used by the finite assembly. -/
@@ -78,13 +79,6 @@ theorem v17_sum_actual_blockDefect450_le_stable
       have hs := s.2
       omega
     rw [v17ActualBlockDefect450_of_fit T s.1 hfit]
-    unfold v17BlockDefect450
-    exact gramSpectralDefect_eq_of_matrix_eq
-      (v17RetainedGramFinBlock450_posSemidef T s.1 hfit)
-      (v17RetainedGramFinBlock450_posSemidef T s.1 (by
-        have hs := s.2
-        omega))
-      rfl
   rw [heq]
   exact hfin
 
