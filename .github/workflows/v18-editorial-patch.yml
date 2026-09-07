@@ -4,7 +4,7 @@ on:
   push:
     branches: [v18-editorial-provenance-audit]
     paths:
-      - "scripts/apply_v18_editorial_patch_v4.py"
+      - "scripts/apply_v18_editorial_patch_v5.py"
       - ".github/workflows/v18-editorial-patch.yml"
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Apply adversarial editorial patch
-        run: python3 scripts/apply_v18_editorial_patch_v4.py
+        run: python3 scripts/apply_v18_editorial_patch_v5.py
 
       - name: Check resulting diff
         shell: bash
