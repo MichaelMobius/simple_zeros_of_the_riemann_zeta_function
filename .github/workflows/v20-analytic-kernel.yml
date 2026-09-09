@@ -51,10 +51,10 @@ jobs:
       - name: Locate inherited native_decide and trial kernel-reducible replacement
         run: |
           cd /tmp/formal-math/zeta23
-          mapfile -t matches < <(grep -R -l 'v17_pairMultiplicitySumNat_450' HurtadoZeta23 || true)
+          mapfile -t matches < <(grep -R -l -E '^[[:space:]]*theorem[[:space:]]+v17_pairMultiplicitySumNat_450([[:space:]:]|$)' HurtadoZeta23 || true)
           if [ "${#matches[@]}" -ne 1 ]; then
-            printf 'Expected exactly one source file, found %s\n' "${#matches[@]}" >&2
-            printf '%s\n' "${matches[@]}" >&2
+            printf 'Expected exactly one theorem declaration source file, found %s\n' "${#matches[@]}" >&2
+            grep -R -n 'v17_pairMultiplicitySumNat_450' HurtadoZeta23 || true
             exit 1
           fi
           target="${matches[0]}"
@@ -89,6 +89,7 @@ jobs:
             | tee /tmp/v20-native-decide-patched-context.txt
 
       - name: Upload native_decide diagnostic sources
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: v20-native-decide-diagnostic
@@ -98,7 +99,7 @@ jobs:
             /tmp/v20-native-decide-patched-context.txt
             /tmp/v20-native-decide-original.lean
             /tmp/v20-native-decide-patched.lean
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Fetch mathlib cache
         run: |
