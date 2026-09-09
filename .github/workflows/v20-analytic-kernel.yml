@@ -45,6 +45,11 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
       - name: Build analytic certificate
         run: |
           cd /tmp/formal-math/zeta23
