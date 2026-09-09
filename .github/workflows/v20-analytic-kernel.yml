@@ -63,6 +63,18 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
+      - name: Print transitive theorem axioms
+        run: |
+          cd /tmp/formal-math/zeta23
+          cat > /tmp/V20AxiomAudit.lean <<'EOF'
+          import HurtadoZeta23.V20FinalAssembly
+          #print axioms HurtadoZeta23.v20_kernel_signed_89_100
+          #print axioms HurtadoZeta23.v20_kernel_signed_claim
+          #print axioms HurtadoZeta23.v20_published_eps_form
+          EOF
+          lake env lean /tmp/V20AxiomAudit.lean | tee /tmp/v20-axioms.txt
+          ! grep -n 'sorryAx' /tmp/v20-axioms.txt
+
       - name: Reject Lean placeholders
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
