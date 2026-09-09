@@ -63,14 +63,21 @@ jobs:
           block = text[start:end]
           if 'native_decide' in block:
               raise SystemExit('v17_pairMultiplicitySumNat_450 regressed to native_decide')
-          if '\n  decide\n' not in block:
-              raise SystemExit('expected kernel-reducible decide proof was not found')
+          if '\n  decide\n' in block:
+              raise SystemExit('v17_pairMultiplicitySumNat_450 must use a symbolic kernel proof, not brute-force decide')
+          if 'Finset.sum_range_reflect' not in block or 'Finset.sum_range_id' not in block:
+              raise SystemExit('expected symbolic finite-sum proof was not found')
           PY
 
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
+
+      - name: Build repaired v17 pair-count bridge
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V17KernelBridge450
 
       - name: Build analytic kernel theorem
         run: |
