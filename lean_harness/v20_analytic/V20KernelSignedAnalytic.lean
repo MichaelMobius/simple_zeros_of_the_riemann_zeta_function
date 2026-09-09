@@ -6,7 +6,7 @@ import Mathlib.Tactic
 
 noncomputable section
 
-open Filter Finset
+open Filter Finset Real intervalIntegral
 open scoped BigOperators Topology
 
 namespace HurtadoZeta23
@@ -282,20 +282,135 @@ private lemma v20_rational_margin :
           (88280819 / 116121600 : ℝ) * (3387379 / 10000000 : ℝ) := by
   norm_num
 
-/-- Closed-form target for the normalized Montgomery--Taylor kernel. -/
-def v20ClosedKernel (x : ℝ) : ℝ :=
-  (Real.cos (Real.pi * x)
-    - Real.sqrt 2 * Real.pi * x *
-        (Real.cos ((Real.sqrt 2)⁻¹) / Real.sin ((Real.sqrt 2)⁻¹)) *
-        Real.sin (Real.pi * x)) /
-  (1 - 2 * (Real.pi * x)^2)
+/-- Elementary symmetric integral used to evaluate the kernel exactly. -/
+private lemma v20_integral_cos_symm {c : ℝ} (hc : c ≠ 0) :
+    (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos (c * t)) =
+      2 * Real.sin (c / 2) / c := by
+  rw [intervalIntegral.integral_comp_mul_left Real.cos hc, integral_cos, smul_eq_mul]
+  rw [show c * (-(1 : ℝ) / 2) = -(c / 2) by ring,
+      show c * (1 / 2 : ℝ) = c / 2 by ring, Real.sin_neg]
+  field_simp [hc]
+  ring
 
-/-- The integral definition used by v17 agrees with its elementary closed form. -/
-theorem v20_limitingk_closed_form
-    {x : ℝ}
-    (hden : 1 - 2 * (Real.pi * x)^2 ≠ 0) :
-    limitingk x = v20ClosedKernel x := by
-  sorry
+/-- Product-to-sum evaluation on the symmetric unit interval. -/
+private lemma v20_integral_cos_product {a b : ℝ}
+    (hm : a - b ≠ 0) (hp : a + b ≠ 0) :
+    (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos (a * t) * Real.cos (b * t)) =
+      Real.sin ((a - b) / 2) / (a - b) +
+        Real.sin ((a + b) / 2) / (a + b) := by
+  calc
+    (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos (a * t) * Real.cos (b * t)) =
+        ∫ t in (-(1 : ℝ) / 2)..(1 / 2),
+          (Real.cos ((a - b) * t) + Real.cos ((a + b) * t)) / 2 := by
+      apply intervalIntegral.integral_congr
+      intro t ht
+      have h := Real.two_mul_cos_mul_cos (a * t) (b * t)
+      rw [show a * t - b * t = (a - b) * t by ring,
+          show a * t + b * t = (a + b) * t by ring] at h
+      linarith
+    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +
+          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by
+      rw [intervalIntegral.integral_div, intervalIntegral.integral_add] <;> fun_prop
+    _ = Real.sin ((a - b) / 2) / (a - b) +
+          Real.sin ((a + b) / 2) / (a + b) := by
+      rw [v20_integral_cos_symm hm, v20_integral_cos_symm hp]
+      ring
+
+private lemma v20_sqrt_two_half : Real.sqrt 2 / 2 = v20A := by
+  have h := Zeta23.ThmD.sqrt2_mul_half (lam := (1 : ℝ))
+  rw [Zeta23.ThmD.theta_one] at h
+  unfold v20A
+  nlinarith
+
+private lemma v20_B_eq_pi_sub_theta : v20B = Real.pi - v20Theta := by
+  unfold v20B v20Theta
+  ring
+
+/-- Exact elementary formula for the unnormalised overlap at `x = 89/100`. -/
+private lemma v20_limitingK_point_formula :
+    limitingK (89 / 100 : ℝ) =
+      (v20A * Real.sin v20A * Real.cos v20Theta +
+          v20B * Real.cos v20A * Real.sin v20Theta) /
+        (v20B ^ 2 - v20A ^ 2) := by
+  have hBpos : 0 < v20B := by
+    unfold v20B
+    positivity
+  have hBgt2 : (2 : ℝ) < v20B := by
+    nlinarith [v20_B_lower]
+  have hs2lt2 : Real.sqrt 2 < 2 := by
+    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2), Real.sqrt_nonneg 2]
+  have hm : Real.sqrt 2 - 2 * v20B ≠ 0 := by
+    nlinarith
+  have hp : Real.sqrt 2 + 2 * v20B ≠ 0 := by
+    positivity
+  have hprod := v20_integral_cos_product
+    (a := Real.sqrt 2) (b := 2 * v20B) hm hp
+  have hraw :
+      limitingK (89 / 100 : ℝ) =
+        Real.sin ((Real.sqrt 2 - 2 * v20B) / 2) / (Real.sqrt 2 - 2 * v20B) +
+          Real.sin ((Real.sqrt 2 + 2 * v20B) / 2) / (Real.sqrt 2 + 2 * v20B) := by
+    unfold limitingK Zeta23.ThmD.vStar
+    simp only [mul_one]
+    calc
+      (∫ t in (-(1 : ℝ) / 2)..(1 / 2),
+          Real.cos (Real.sqrt 2 * t) * Real.cos (2 * Real.pi * (89 / 100 : ℝ) * t)) =
+          ∫ t in (-(1 : ℝ) / 2)..(1 / 2),
+            Real.cos (Real.sqrt 2 * t) * Real.cos ((2 * v20B) * t) := by
+        apply intervalIntegral.integral_congr
+        intro t ht
+        congr 2
+        unfold v20B
+        ring
+      _ = _ := hprod
+  have hminusHalf : (Real.sqrt 2 - 2 * v20B) / 2 = v20A - v20B := by
+    nlinarith [v20_sqrt_two_half]
+  have hplusHalf : (Real.sqrt 2 + 2 * v20B) / 2 = v20A + v20B := by
+    nlinarith [v20_sqrt_two_half]
+  have hminusDen : Real.sqrt 2 - 2 * v20B = 2 * (v20A - v20B) := by
+    nlinarith [v20_sqrt_two_half]
+  have hplusDen : Real.sqrt 2 + 2 * v20B = 2 * (v20A + v20B) := by
+    nlinarith [v20_sqrt_two_half]
+  have hAmB : v20A - v20B ≠ 0 := by
+    nlinarith [v20_A_le_one, hBgt2]
+  have hApB : v20A + v20B ≠ 0 := by
+    positivity
+  have hBA : v20A < v20B := by
+    nlinarith [v20_A_le_one, hBgt2]
+  have hdenpos : 0 < v20B ^ 2 - v20A ^ 2 := by
+    have hp' := mul_pos (sub_pos.mpr hBA) (add_pos hBpos v20_A_pos)
+    nlinarith
+  have hsinB : Real.sin v20B = Real.sin v20Theta := by
+    rw [v20_B_eq_pi_sub_theta, Real.sin_pi_sub]
+  have hcosB : Real.cos v20B = -Real.cos v20Theta := by
+    rw [v20_B_eq_pi_sub_theta, Real.cos_pi_sub]
+  rw [hraw, hminusHalf, hplusHalf, hminusDen, hplusDen,
+      Real.sin_sub, Real.sin_add, hsinB, hcosB]
+  field_simp [hAmB, hApB, hdenpos.ne']
+  ring
+
+private lemma v20_limitingK_zero_sinc :
+    limitingK 0 = Real.sin v20A / v20A := by
+  rw [limitingK_zero_closed]
+  unfold v20A
+  rw [div_inv]
+  ring
+
+/-- Exact normalized formula arranged in the direction used by the rational certificate. -/
+private lemma v20_limitingk_point_formula :
+    limitingk (89 / 100 : ℝ) =
+      ((1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta +
+          v20B * Real.cos v20A * Real.sin v20Theta) /
+        ((v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A)) := by
+  unfold limitingk
+  rw [v20_limitingK_point_formula, v20_limitingK_zero_sinc, div_div]
+  have hcore :
+      v20A * Real.sin v20A = (1 / 2 : ℝ) * (Real.sin v20A / v20A) := by
+    calc
+      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by
+        field_simp [v20_A_pos.ne']
+        ring
+      _ = (1 / 2 : ℝ) * (Real.sin v20A / v20A) := by rw [v20_A_sq]
+  rw [hcore, v20_A_sq]
 
 /-- Analytic numerical theorem at the exact point used by v17. -/
 theorem v20_kernel_signed_89_100 :
