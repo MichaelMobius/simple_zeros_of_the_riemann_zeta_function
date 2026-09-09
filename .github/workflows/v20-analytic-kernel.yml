@@ -19,71 +19,28 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           p = Path('lean_harness/v20_analytic/V20KernelSignedAnalytic.lean')
           s = p.read_text()
-
-          replacements = [
-          ('''    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +
-          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by
-      rw [intervalIntegral.integral_div, intervalIntegral.integral_add] <;> fun_prop
-''', '''    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +
-          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by
-      rw [intervalIntegral.integral_div]
-      rw [intervalIntegral.integral_add]
-      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a - b) * t))).intervalIntegrable _ _
-      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a + b) * t))).intervalIntegrable _ _
-'''),
-          ('''        unfold v20B
-        ring
-      _ = _ := hprod
-''', '''        unfold v20B
-        ring_nf
-      _ = _ := hprod
-'''),
-          ('''  have hApB : v20A + v20B ≠ 0 := by
-    positivity
-''', '''  have hApB : v20A + v20B ≠ 0 := by
-    exact ne_of_gt (add_pos v20_A_pos hBpos)
-'''),
-          ('''  field_simp [hAmB, hApB, hdenpos.ne']
-  ring
-
-private lemma v20_limitingK_zero_sinc :
-    limitingK 0 = Real.sin v20A / v20A := by
-  rw [limitingK_zero_closed]
-  unfold v20A
-  rw [div_inv]
-  ring
-''', '''  field_simp [hAmB, hApB, hdenpos.ne']
-  ring_nf
-
-private lemma v20_limitingK_zero_sinc :
-    limitingK 0 = Real.sin v20A / v20A := by
-  rw [limitingK_zero_closed]
-  rw [show (Real.sqrt 2)⁻¹ = v20A by rfl]
-  apply (eq_div_iff v20_A_pos.ne').2
-  have hs2A : Real.sqrt 2 * v20A = 1 := by
-    unfold v20A
-    exact mul_inv_cancel₀ (by positivity)
-  calc
-    Real.sqrt 2 * Real.sin v20A * v20A =
-        (Real.sqrt 2 * v20A) * Real.sin v20A := by ring
-    _ = Real.sin v20A := by rw [hs2A, one_mul]
-'''),
-          ('''      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by
-        field_simp [v20_A_pos.ne']
-        ring
-''', '''      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by
-        field_simp [v20_A_pos.ne']
-''')
-          ]
-
-          for old, new in replacements:
+          reps = []
+          reps.append((
+              "    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +\n          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by\n      rw [intervalIntegral.integral_div, intervalIntegral.integral_add] <;> fun_prop\n",
+              "    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +\n          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by\n      rw [intervalIntegral.integral_div]\n      rw [intervalIntegral.integral_add]\n      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a - b) * t))).intervalIntegrable _ _\n      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a + b) * t))).intervalIntegrable _ _\n"))
+          reps.append((
+              "        unfold v20B\n        ring\n      _ = _ := hprod\n",
+              "        unfold v20B\n        ring_nf\n      _ = _ := hprod\n"))
+          reps.append((
+              "  have hApB : v20A + v20B ≠ 0 := by\n    positivity\n",
+              "  have hApB : v20A + v20B ≠ 0 := by\n    exact ne_of_gt (add_pos v20_A_pos hBpos)\n"))
+          reps.append((
+              "  field_simp [hAmB, hApB, hdenpos.ne']\n  ring\n\nprivate lemma v20_limitingK_zero_sinc :\n    limitingK 0 = Real.sin v20A / v20A := by\n  rw [limitingK_zero_closed]\n  unfold v20A\n  rw [div_inv]\n  ring\n",
+              "  field_simp [hAmB, hApB, hdenpos.ne']\n  ring_nf\n\nprivate lemma v20_limitingK_zero_sinc :\n    limitingK 0 = Real.sin v20A / v20A := by\n  rw [limitingK_zero_closed]\n  rw [show (Real.sqrt 2)⁻¹ = v20A by rfl]\n  apply (eq_div_iff v20_A_pos.ne').2\n  have hs2A : Real.sqrt 2 * v20A = 1 := by\n    unfold v20A\n    exact mul_inv_cancel₀ (by positivity)\n  calc\n    Real.sqrt 2 * Real.sin v20A * v20A =\n        (Real.sqrt 2 * v20A) * Real.sin v20A := by ring\n    _ = Real.sin v20A := by rw [hs2A, one_mul]\n"))
+          reps.append((
+              "      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by\n        field_simp [v20_A_pos.ne']\n        ring\n",
+              "      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by\n        field_simp [v20_A_pos.ne']\n"))
+          for old, new in reps:
               if old not in s:
                   raise SystemExit('expected source fragment not found')
               s = s.replace(old, new, 1)
-
           p.write_text(s)
           PY
 
