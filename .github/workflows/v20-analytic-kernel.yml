@@ -48,6 +48,58 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
+      - name: Locate inherited native_decide and trial kernel-reducible replacement
+        run: |
+          cd /tmp/formal-math/zeta23
+          mapfile -t matches < <(grep -R -l 'v17_pairMultiplicitySumNat_450' HurtadoZeta23 || true)
+          if [ "${#matches[@]}" -ne 1 ]; then
+            printf 'Expected exactly one source file, found %s\n' "${#matches[@]}" >&2
+            printf '%s\n' "${matches[@]}" >&2
+            exit 1
+          fi
+          target="${matches[0]}"
+          printf '%s\n' "$target" | tee /tmp/v20-native-decide-file.txt
+          cp "$target" /tmp/v20-native-decide-original.lean
+          grep -n -B 25 -A 25 'v17_pairMultiplicitySumNat_450' "$target" \
+            | tee /tmp/v20-native-decide-context.txt
+          python3 - "$target" <<'PY'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          text = path.read_text()
+          marker = 'theorem v17_pairMultiplicitySumNat_450'
+          start = text.find(marker)
+          if start < 0:
+              raise SystemExit('target theorem marker not found')
+          next_decl_candidates = [
+              p for token in ('\ntheorem ', '\nlemma ', '\ndef ', '\nnoncomputable def ')
+              if (p := text.find(token, start + len(marker))) >= 0
+          ]
+          end = min(next_decl_candidates) if next_decl_candidates else len(text)
+          block = text[start:end]
+          count = block.count('native_decide')
+          if count != 1:
+              raise SystemExit(f'expected exactly one native_decide in theorem block, found {count}')
+          text = text[:start] + block.replace('native_decide', 'decide', 1) + text[end:]
+          path.write_text(text)
+          PY
+          cp "$target" /tmp/v20-native-decide-patched.lean
+          grep -n -B 25 -A 25 'v17_pairMultiplicitySumNat_450' "$target" \
+            | tee /tmp/v20-native-decide-patched-context.txt
+
+      - name: Upload native_decide diagnostic sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: v20-native-decide-diagnostic
+          path: |
+            /tmp/v20-native-decide-file.txt
+            /tmp/v20-native-decide-context.txt
+            /tmp/v20-native-decide-patched-context.txt
+            /tmp/v20-native-decide-original.lean
+            /tmp/v20-native-decide-patched.lean
+          if-no-files-found: error
+
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
@@ -74,6 +126,7 @@ jobs:
           EOF
           lake env lean /tmp/V20AxiomAudit.lean | tee /tmp/v20-axioms.txt
           ! grep -n 'sorryAx' /tmp/v20-axioms.txt
+          ! grep -n '_native\.native_decide\.ax_' /tmp/v20-axioms.txt
 
       - name: Reject Lean placeholders
         run: |
