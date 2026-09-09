@@ -38,6 +38,12 @@ jobs:
             cp "$f" "HurtadoZeta23/$(basename "$f")"
           done
           cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
 
       - name: Build analytic certificate
         run: |
