@@ -10,7 +10,7 @@ open scoped BigOperators
 /-- There are `binom 450 2 = 101025` unordered pairs in a 450-point block. -/
 lemma v17_pairMultiplicitySumNat_450 :
     (∑ x ∈ Finset.range 449, (450 - (1 + x))) = 101025 := by
-  native_decide
+  decide
 
 lemma v17_pairMultiplicitySum_450 :
     (∑ x ∈ Finset.range 449,
