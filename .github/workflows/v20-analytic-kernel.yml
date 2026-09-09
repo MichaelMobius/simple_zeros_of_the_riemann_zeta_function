@@ -63,7 +63,7 @@ jobs:
           sed -n '1,260p' "$report"
 
       - name: Commit temporary diagnostic report
-        if: github.event_name == 'push' && github.event.head_commit.message == 'v20: capture inherited native_decide source context'
+        if: "${{ github.event_name == 'push' && github.event.head_commit.message == 'v20: fix diagnostic workflow conditions' }}"
         run: |
           cd "$GITHUB_WORKSPACE"
           git config user.name 'github-actions[bot]'
@@ -75,25 +75,25 @@ jobs:
           fi
 
       - name: Fetch mathlib cache
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
       - name: Build analytic kernel theorem
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20KernelSignedAnalytic
 
       - name: Build final v20 assembly
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
       - name: Print transitive theorem axioms
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           cat > /tmp/V20AxiomAudit.lean <<'EOF'
@@ -107,19 +107,19 @@ jobs:
           ! grep -n '_native\.native_decide\.ax_' /tmp/v20-axioms.txt
 
       - name: Reject Lean placeholders
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
             | xargs -0 grep -nE '\bsorry\b|\badmit\b'
 
       - name: Reject new trusted or unsafe declarations
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
             | xargs -0 grep -nE '^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]'
 
       - name: Guard analytic dependency direction
-        if: github.event.head_commit.message != 'v20: capture inherited native_decide source context' && github.event.head_commit.message != 'v20: record inherited native_decide source context'
+        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! grep -nE 'V17KernelSignedCertPointClaim|ArchivedSevenPointClaim|V17FinalAssembly|ExternalCertificateFrontier' \
             "$GITHUB_WORKSPACE/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean"
