@@ -1,4 +1,4 @@
-import HurtadoZeta23.V17KernelMonotonicity
+import HurtadoZeta23.LimitingKernel
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.Real.Pi.Bounds
@@ -16,7 +16,9 @@ namespace HurtadoZeta23
 
 The target is the strict inequality
 `171389 / 1000000 < limitingk (89/100)`.
-No interval oracle is used in the intended final proof.
+No interval oracle is used in the intended final proof.  A separate tiny bridge
+will translate this theorem into `V17KernelSignedCertPointClaim` after the
+analytic module is closed.
 -/
 
 private def sinTerm (x : ℝ) (n : ℕ) : ℝ :=
@@ -107,9 +109,9 @@ theorem v20_limitingk_closed_form
     limitingk x = v20ClosedKernel x := by
   sorry
 
-/-- Exact point needed by the published v17 argument. -/
-theorem v20_kernel_signed_cert_point :
-    (171389 / 1000000 : ℝ) < limitingk v17KernelCertPoint := by
+/-- Analytic numerical theorem at the exact point used by v17. -/
+theorem v20_kernel_signed_89_100 :
+    (171389 / 1000000 : ℝ) < limitingk (89 / 100 : ℝ) := by
   sorry
 
 end HurtadoZeta23
