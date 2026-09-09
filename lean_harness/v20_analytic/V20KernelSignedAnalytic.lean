@@ -16,9 +16,8 @@ namespace HurtadoZeta23
 
 The target is the strict inequality
 `171389 / 1000000 < limitingk (89/100)`.
-No interval oracle is used in the intended final proof.  A separate tiny bridge
-will translate this theorem into `V17KernelSignedCertPointClaim` after the
-analytic module is closed.
+No interval oracle is used in this proof. `V20FinalAssembly` translates this
+analytic theorem into the historical v17 signed-kernel claim.
 -/
 
 private def sinTerm (x : ℝ) (n : ℕ) : ℝ :=
@@ -361,7 +360,6 @@ private lemma v20_limitingK_point_formula :
             Real.cos (Real.sqrt 2 * t) * Real.cos ((2 * v20B) * t) := by
         apply intervalIntegral.integral_congr
         intro t ht
-        congr 2
         unfold v20B
         ring_nf
       _ = _ := hprod
