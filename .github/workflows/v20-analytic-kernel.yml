@@ -67,3 +67,13 @@ jobs:
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
             | xargs -0 grep -nE '\bsorry\b|\badmit\b'
+
+      - name: Reject new trusted or unsafe declarations
+        run: |
+          ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
+            | xargs -0 grep -nE '^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]'
+
+      - name: Guard analytic dependency direction
+        run: |
+          ! grep -nE 'V17KernelSignedCertPointClaim|ArchivedSevenPointClaim|V17FinalAssembly|ExternalCertificateFrontier' \
+            "$GITHUB_WORKSPACE/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean"
