@@ -1,1 +1,1 @@
-Draft branch only; do not merge until the analytic theorem is sorry-free and CI-green.
+Analytic theorem and v20 final assembly both compile successfully on the pinned formal-math/zeta23 base. The v20 Lean sources are placeholder-free. PR #11 remains draft only for final adversarial review and documentation cleanup before any merge decision.
