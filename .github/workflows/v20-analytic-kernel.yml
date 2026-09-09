@@ -63,6 +63,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
-      - name: Reject placeholders
+      - name: Reject Lean placeholders
         run: |
-          ! grep -RInE '\bsorry\b|\badmit\b' "$GITHUB_WORKSPACE"/lean_harness/v20_analytic
+          ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
+            | xargs -0 grep -nE '\bsorry\b|\badmit\b'
