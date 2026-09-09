@@ -7,7 +7,7 @@ import Mathlib.Tactic
 noncomputable section
 
 open Filter Finset
-open scoped BigOperators
+open scoped BigOperators Topology
 
 namespace HurtadoZeta23
 
@@ -22,28 +22,44 @@ analytic module is closed.
 -/
 
 private def sinTerm (x : ℝ) (n : ℕ) : ℝ :=
-  x ^ (2 * n + 1) / ((2 * n + 1)! : ℝ)
+  x ^ (2 * n + 1) / ((2 * n + 1).factorial : ℝ)
 
 private def cosTerm (x : ℝ) (n : ℕ) : ℝ :=
-  x ^ (2 * n) / ((2 * n)! : ℝ)
+  x ^ (2 * n) / ((2 * n).factorial : ℝ)
 
 private lemma sinTerm_antitone {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     Antitone (sinTerm x) := by
   refine antitone_nat_of_succ_le ?_
   intro n
   unfold sinTerm
-  gcongr
-  · exact pow_le_pow_of_le_one hx0 hx1 (by omega)
-  · exact_mod_cast Nat.factorial_le (by omega : 2 * n + 1 ≤ 2 * (n + 1) + 1)
+  have hpow : x ^ (2 * (n + 1) + 1) ≤ x ^ (2 * n + 1) :=
+    pow_le_pow_of_le_one hx0 hx1 (by omega)
+  have hden :
+      ((2 * n + 1).factorial : ℝ) ≤ ((2 * (n + 1) + 1).factorial : ℝ) := by
+    exact_mod_cast Nat.factorial_le (by omega : 2 * n + 1 ≤ 2 * (n + 1) + 1)
+  calc
+    x ^ (2 * (n + 1) + 1) / ((2 * (n + 1) + 1).factorial : ℝ)
+        ≤ x ^ (2 * n + 1) / ((2 * (n + 1) + 1).factorial : ℝ) :=
+      div_le_div_of_nonneg_right hpow (by positivity)
+    _ ≤ x ^ (2 * n + 1) / ((2 * n + 1).factorial : ℝ) :=
+      div_le_div_of_nonneg_left (pow_nonneg hx0 _) (by positivity) hden
 
 private lemma cosTerm_antitone {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     Antitone (cosTerm x) := by
   refine antitone_nat_of_succ_le ?_
   intro n
   unfold cosTerm
-  gcongr
-  · exact pow_le_pow_of_le_one hx0 hx1 (by omega)
-  · exact_mod_cast Nat.factorial_le (by omega : 2 * n ≤ 2 * (n + 1))
+  have hpow : x ^ (2 * (n + 1)) ≤ x ^ (2 * n) :=
+    pow_le_pow_of_le_one hx0 hx1 (by omega)
+  have hden :
+      ((2 * n).factorial : ℝ) ≤ ((2 * (n + 1)).factorial : ℝ) := by
+    exact_mod_cast Nat.factorial_le (by omega : 2 * n ≤ 2 * (n + 1))
+  calc
+    x ^ (2 * (n + 1)) / ((2 * (n + 1)).factorial : ℝ)
+        ≤ x ^ (2 * n) / ((2 * (n + 1)).factorial : ℝ) :=
+      div_le_div_of_nonneg_right hpow (by positivity)
+    _ ≤ x ^ (2 * n) / ((2 * n).factorial : ℝ) :=
+      div_le_div_of_nonneg_left (pow_nonneg hx0 _) (by positivity) hden
 
 /-- Four-term alternating Taylor lower bound for sine on `[0,1]`. -/
 lemma v20_sin_lower7 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
@@ -111,7 +127,7 @@ private lemma v20_A_pos : 0 < v20A := by
   positivity
 
 private lemma v20_A_le_one : v20A ≤ 1 := by
-  exact (le_of_lt Zeta23.ThmD.sqrt_two_inv_lt_one)
+  exact le_of_lt Zeta23.ThmD.sqrt_two_inv_lt_one
 
 private lemma v20_A_sq : v20A ^ 2 = (1 / 2 : ℝ) := by
   unfold v20A
