@@ -310,7 +310,10 @@ private lemma v20_integral_cos_product {a b : ℝ}
       linarith
     _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +
           (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by
-      rw [intervalIntegral.integral_div, intervalIntegral.integral_add] <;> fun_prop
+      rw [intervalIntegral.integral_div]
+      rw [intervalIntegral.integral_add]
+      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a - b) * t))).intervalIntegrable _ _
+      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a + b) * t))).intervalIntegrable _ _
     _ = Real.sin ((a - b) / 2) / (a - b) +
           Real.sin ((a + b) / 2) / (a + b) := by
       rw [v20_integral_cos_symm hm, v20_integral_cos_symm hp]
@@ -360,7 +363,7 @@ private lemma v20_limitingK_point_formula :
         intro t ht
         congr 2
         unfold v20B
-        ring
+        ring_nf
       _ = _ := hprod
   have hminusHalf : (Real.sqrt 2 - 2 * v20B) / 2 = v20A - v20B := by
     nlinarith [v20_sqrt_two_half]
@@ -373,7 +376,7 @@ private lemma v20_limitingK_point_formula :
   have hAmB : v20A - v20B ≠ 0 := by
     nlinarith [v20_A_le_one, hBgt2]
   have hApB : v20A + v20B ≠ 0 := by
-    positivity
+    exact ne_of_gt (add_pos v20_A_pos hBpos)
   have hBA : v20A < v20B := by
     nlinarith [v20_A_le_one, hBgt2]
   have hdenpos : 0 < v20B ^ 2 - v20A ^ 2 := by
@@ -386,14 +389,20 @@ private lemma v20_limitingK_point_formula :
   rw [hraw, hminusHalf, hplusHalf, hminusDen, hplusDen,
       Real.sin_sub, Real.sin_add, hsinB, hcosB]
   field_simp [hAmB, hApB, hdenpos.ne']
-  ring
+  ring_nf
 
 private lemma v20_limitingK_zero_sinc :
     limitingK 0 = Real.sin v20A / v20A := by
   rw [limitingK_zero_closed]
-  unfold v20A
-  rw [div_inv]
-  ring
+  rw [show (Real.sqrt 2)⁻¹ = v20A by rfl]
+  apply (eq_div_iff v20_A_pos.ne').2
+  have hs2A : Real.sqrt 2 * v20A = 1 := by
+    unfold v20A
+    exact mul_inv_cancel₀ (by positivity)
+  calc
+    Real.sqrt 2 * Real.sin v20A * v20A =
+        (Real.sqrt 2 * v20A) * Real.sin v20A := by ring
+    _ = Real.sin v20A := by rw [hs2A, one_mul]
 
 /-- Exact normalized formula arranged in the direction used by the rational certificate. -/
 private lemma v20_limitingk_point_formula :
@@ -408,13 +417,99 @@ private lemma v20_limitingk_point_formula :
     calc
       v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by
         field_simp [v20_A_pos.ne']
-        ring
       _ = (1 / 2 : ℝ) * (Real.sin v20A / v20A) := by rw [v20_A_sq]
   rw [hcore, v20_A_sq]
 
 /-- Analytic numerical theorem at the exact point used by v17. -/
 theorem v20_kernel_signed_89_100 :
     (171389 / 1000000 : ℝ) < limitingk (89 / 100 : ℝ) := by
-  sorry
+  rw [v20_limitingk_point_formula]
+  have hSpos : 0 < Real.sin v20A / v20A := by
+    nlinarith [v20_sincA_lower]
+  have hCTpos : 0 < Real.cos v20Theta := by
+    nlinarith [v20_cosTheta_lower]
+  have hCApos : 0 < Real.cos v20A := by
+    nlinarith [v20_cosA_lower]
+  have hSTpos : 0 < Real.sin v20Theta := by
+    nlinarith [v20_sinTheta_lower]
+  have hBpos : 0 < v20B := by
+    nlinarith [v20_B_lower]
+  have hBgt1 : (1 : ℝ) < v20B := by
+    nlinarith [v20_B_lower]
+  have hBsq :
+      v20B ^ 2 < (2796017503 / 1000000000 : ℝ) ^ 2 := by
+    exact pow_lt_pow_left₀ v20_B_upper hBpos.le (by norm_num)
+  have hdenfacpos : 0 < v20B ^ 2 - (1 / 2 : ℝ) := by
+    have hsq1 : (1 : ℝ) ^ 2 < v20B ^ 2 := by
+      exact pow_lt_pow_left₀ hBgt1 (by norm_num) (by norm_num)
+    nlinarith
+  have hupperfacpos :
+      0 < (2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2 := by
+    norm_num
+  have hdenpos :
+      0 < (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) :=
+    mul_pos hdenfacpos hSpos
+  have hdenUpper :
+      (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) ≤
+        ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *
+          (5334193 / 5806080 : ℝ) := by
+    calc
+      (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) ≤
+          ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *
+            (Real.sin v20A / v20A) := by
+        exact mul_le_mul_of_nonneg_right (by nlinarith [hBsq]) hSpos.le
+      _ ≤ ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *
+            (5334193 / 5806080 : ℝ) := by
+        exact mul_le_mul_of_nonneg_left v20_sincA_upper hupperfacpos.le
+  have hnum1 :
+      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) <
+        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta := by
+    calc
+      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) <
+          (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * Real.cos v20Theta := by
+        exact mul_lt_mul_of_pos_left v20_cosTheta_lower (by norm_num)
+      _ ≤ (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta := by
+        exact mul_le_mul_of_nonneg_right
+          (mul_le_mul_of_nonneg_left v20_sincA_lower (by norm_num)) hCTpos.le
+  have hnum2 :
+      (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *
+          (3387379 / 10000000 : ℝ) <
+        v20B * Real.cos v20A * Real.sin v20Theta := by
+    calc
+      (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *
+          (3387379 / 10000000 : ℝ) <
+          (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *
+            Real.sin v20Theta := by
+        exact mul_lt_mul_of_pos_left v20_sinTheta_lower (by norm_num)
+      _ ≤ (1398008707 / 500000000 : ℝ) * Real.cos v20A *
+            Real.sin v20Theta := by
+        exact mul_le_mul_of_nonneg_right
+          (mul_le_mul_of_nonneg_left v20_cosA_lower (by norm_num)) hSTpos.le
+      _ < v20B * Real.cos v20A * Real.sin v20Theta := by
+        have hprodpos : 0 < Real.cos v20A * Real.sin v20Theta :=
+          mul_pos hCApos hSTpos
+        simpa [mul_assoc] using
+          (mul_lt_mul_of_pos_right v20_B_lower hprodpos)
+  have hnumLower :
+      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) +
+          (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *
+            (3387379 / 10000000 : ℝ) <
+        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta +
+          v20B * Real.cos v20A * Real.sin v20Theta :=
+    add_lt_add hnum1 hnum2
+  have hscaledDen :
+      (171389 / 1000000 : ℝ) *
+          ((v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A)) ≤
+        (171389 / 1000000 : ℝ) *
+          (((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *
+            (5334193 / 5806080 : ℝ)) := by
+    exact mul_le_mul_of_nonneg_left hdenUpper (by norm_num)
+  have hcross :
+      (171389 / 1000000 : ℝ) *
+          ((v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A)) <
+        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta +
+          v20B * Real.cos v20A * Real.sin v20Theta :=
+    hscaledDen.trans_lt (v20_rational_margin.trans hnumLower)
+  exact (lt_div_iff₀ hdenpos).2 hcross
 
 end HurtadoZeta23
