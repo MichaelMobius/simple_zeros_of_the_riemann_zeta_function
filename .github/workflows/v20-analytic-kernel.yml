@@ -48,7 +48,7 @@ jobs:
       - name: Build analytic certificate
         run: |
           cd /tmp/formal-math/zeta23
-          lake env lean HurtadoZeta23/V20KernelSignedAnalytic.lean
+          lake build HurtadoZeta23.V20KernelSignedAnalytic
 
       - name: Reject placeholders
         run: |
