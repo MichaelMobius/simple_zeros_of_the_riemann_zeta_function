@@ -106,30 +106,41 @@ The affected lemma is the finite counting identity
 ```lean
 lemma v17_pairMultiplicitySumNat_450 :
     (∑ x ∈ Finset.range 449, (450 - (1 + x))) = 101025 := by
-  decide
+  calc
+    (∑ x ∈ Finset.range 449, (450 - (1 + x)))
+        = ∑ x ∈ Finset.range 449, ((449 - 1 - x) + 1) := by
+            apply Finset.sum_congr rfl
+            intro x hx
+            have hxlt : x < 449 := Finset.mem_range.mp hx
+            omega
+    _ = ∑ x ∈ Finset.range 449, (x + 1) := by
+          exact Finset.sum_range_reflect (fun i : ℕ => i + 1) 449
+    _ = 101025 := by
+          rw [Finset.sum_add_distrib, Finset.sum_range_id]
+          norm_num
 ```
 
-The previous proof used `native_decide`; it has been replaced by ordinary `decide`, so the proposition is reduced to a kernel-checkable proof term rather than importing the native evaluation trust primitive.
+The original `native_decide` proof was first tested with ordinary `decide`; that trial did not survive the full v20 assembly build and was discarded. The final repair is symbolic: `omega` normalizes the bounded natural subtraction pointwise, `Finset.sum_range_reflect` reverses the finite sequence, and `Finset.sum_range_id` applies Gauss' summation formula. No native evaluator or brute-force `decide` remains in this lemma.
 
 The reconstruction order matters for provenance: the workflow first extracts the historical `v17_analytic` and `v17_adj` tarballs and then copies the visible `.lean` sources into `HurtadoZeta23/`. Therefore the repaired visible `V17KernelBridge450.lean` is the source that is actually compiled by v20. This change does **not** assert that every historical `.b64` payload has been editorially normalized or that every v17 module is globally free of `native_decide`.
 
-CI now treats the axiom closure itself as an allowlisted interface. For each of
+GitHub Actions run `34409711688`, on commit `d656cc5e5218dd09fe7b40d4f2d58c5e1f589e94`, rebuilt the reconstructed overlay against the pinned Anthropic base and passed all of the following:
+
+- `HurtadoZeta23.V17KernelBridge450`;
+- `HurtadoZeta23.V20KernelSignedAnalytic`;
+- `HurtadoZeta23.V20FinalAssembly`;
+- the exact transitive axiom allowlist;
+- the placeholder, trusted-declaration, and dependency-direction guards.
+
+For the three published v20 targets, the verified `#print axioms` output in that run is exactly
 
 ```text
-HurtadoZeta23.v20_kernel_signed_89_100
-HurtadoZeta23.v20_kernel_signed_claim
-HurtadoZeta23.v20_published_eps_form
+'HurtadoZeta23.v20_kernel_signed_89_100' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HurtadoZeta23.v20_kernel_signed_claim' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HurtadoZeta23.v20_published_eps_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
-the accepted closure is exactly
-
-```text
-propext
-Classical.choice
-Quot.sound
-```
-
-Any additional axiom, including `sorryAx` or a `_native.native_decide.ax_...` primitive, makes the workflow fail. This is stronger than merely grepping the source for new declarations.
+CI treats these closures as allowlisted interfaces. It additionally audits `v17_pairMultiplicitySumNat_450` directly and requires its axiom closure to be empty. Any additional axiom, including `sorryAx` or a `_native.native_decide.ax_...` primitive, makes the workflow fail. This is stronger than merely grepping the source for new declarations.
 
 ### 7. Quantitative theorem unchanged
 
