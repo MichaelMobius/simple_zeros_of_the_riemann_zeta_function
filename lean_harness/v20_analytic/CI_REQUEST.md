@@ -1,1 +1,0 @@
-Analytic kernel CI should build V20KernelSignedAnalytic.lean and reject placeholders.

@@ -1,1 +1,0 @@
-CI trigger note for the analytic kernel branch.
