@@ -5,12 +5,14 @@ on:
     branches: [v20-analytic-kernel-cert]
   pull_request:
     paths:
+      - 'lean_harness/v17_energy/V17KernelBridge450.lean'
       - 'lean_harness/v20_analytic/**'
+      - 'docs/V20_ADVERSARIAL_AUDIT.md'
       - '.github/workflows/v20-analytic-kernel.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   analytic-kernel:
@@ -48,52 +50,39 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
-      - name: Capture inherited native_decide source diagnostic
+      - name: Guard repaired pair multiplicity proof
         run: |
           cd /tmp/formal-math/zeta23
-          report="$GITHUB_WORKSPACE/docs/V20_NATIVE_DECIDE_DIAGNOSTIC.txt"
-          {
-            printf 'Reconstructed against Anthropic commit: %s\n\n' 'fbdc36bbf17d20af3fd0447c6d1a8a02773c9844'
-            printf '=== all references to v17_pairMultiplicitySumNat_450 ===\n'
-            grep -R -n -B 30 -A 30 'v17_pairMultiplicitySumNat_450' HurtadoZeta23 || true
-            printf '\n=== all native_decide occurrences in reconstructed HurtadoZeta23 ===\n'
-            grep -R -n -B 8 -A 8 'native_decide' HurtadoZeta23 || true
-          } > "$report"
-          test -s "$report"
-          sed -n '1,260p' "$report"
+          python3 - <<'PY'
+          from pathlib import Path
 
-      - name: Commit temporary diagnostic report
-        if: "${{ github.event_name == 'push' && github.event.head_commit.message == 'v20: fix diagnostic workflow conditions' }}"
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/V20_NATIVE_DECIDE_DIAGNOSTIC.txt
-          if ! git diff --cached --quiet; then
-            git commit -m 'v20: record inherited native_decide source context'
-            git push origin HEAD:v20-analytic-kernel-cert
-          fi
+          path = Path('HurtadoZeta23/V17KernelBridge450.lean')
+          text = path.read_text()
+          start = text.index('lemma v17_pairMultiplicitySumNat_450')
+          end = text.index('lemma v17_pairMultiplicitySum_450', start)
+          block = text[start:end]
+          if 'native_decide' in block:
+              raise SystemExit('v17_pairMultiplicitySumNat_450 regressed to native_decide')
+          if '\n  decide\n' not in block:
+              raise SystemExit('expected kernel-reducible decide proof was not found')
+          PY
 
       - name: Fetch mathlib cache
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
       - name: Build analytic kernel theorem
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20KernelSignedAnalytic
 
       - name: Build final v20 assembly
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
-      - name: Print transitive theorem axioms
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
+      - name: Enforce exact transitive axiom allowlist
         run: |
           cd /tmp/formal-math/zeta23
           cat > /tmp/V20AxiomAudit.lean <<'EOF'
@@ -103,23 +92,50 @@ jobs:
           #print axioms HurtadoZeta23.v20_published_eps_form
           EOF
           lake env lean /tmp/V20AxiomAudit.lean | tee /tmp/v20-axioms.txt
-          ! grep -n 'sorryAx' /tmp/v20-axioms.txt
-          ! grep -n '_native\.native_decide\.ax_' /tmp/v20-axioms.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          text = Path('/tmp/v20-axioms.txt').read_text()
+          expected = {'propext', 'Classical.choice', 'Quot.sound'}
+          targets = [
+              'HurtadoZeta23.v20_kernel_signed_89_100',
+              'HurtadoZeta23.v20_kernel_signed_claim',
+              'HurtadoZeta23.v20_published_eps_form',
+          ]
+
+          for theorem in targets:
+              match = re.search(
+                  rf"'{re.escape(theorem)}' depends on axioms:\s*\[(.*?)\]",
+                  text,
+                  re.S,
+              )
+              if match is None:
+                  raise SystemExit(f'could not parse #print axioms output for {theorem}')
+              actual = {item.strip() for item in match.group(1).split(',') if item.strip()}
+              if actual != expected:
+                  raise SystemExit(
+                      f'unexpected axiom closure for {theorem}: '
+                      f'expected {sorted(expected)}, got {sorted(actual)}'
+                  )
+
+          forbidden = ('sorryAx', '_native.native_decide.ax_')
+          for marker in forbidden:
+              if marker in text:
+                  raise SystemExit(f'forbidden trust primitive in axiom audit: {marker}')
+          PY
 
       - name: Reject Lean placeholders
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
             | xargs -0 grep -nE '\bsorry\b|\badmit\b'
 
       - name: Reject new trusted or unsafe declarations
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
             | xargs -0 grep -nE '^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]'
 
       - name: Guard analytic dependency direction
-        if: "${{ github.event.head_commit.message != 'v20: fix diagnostic workflow conditions' && github.event.head_commit.message != 'v20: record inherited native_decide source context' }}"
         run: |
           ! grep -nE 'V17KernelSignedCertPointClaim|ArchivedSevenPointClaim|V17FinalAssembly|ExternalCertificateFrontier' \
             "$GITHUB_WORKSPACE/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean"
