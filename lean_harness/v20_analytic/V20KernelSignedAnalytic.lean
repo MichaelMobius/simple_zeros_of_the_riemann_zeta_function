@@ -68,7 +68,7 @@ lemma v20_sin_lower7 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
       Tendsto
         (fun n : ℕ => ∑ i ∈ range n, (-1 : ℝ)^i * sinTerm x i)
         atTop (𝓝 (Real.sin x)) := by
-    simpa [sinTerm] using (Real.hasSum_sin x).tendsto_sum_nat
+    simpa [sinTerm, mul_div_assoc] using (Real.hasSum_sin x).tendsto_sum_nat
   have h := (sinTerm_antitone hx0 hx1).alternating_series_le_tendsto ht 2
   norm_num [sinTerm, sum_range_succ, Nat.factorial] at h ⊢
   linarith
@@ -80,7 +80,7 @@ lemma v20_cos_lower6 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
       Tendsto
         (fun n : ℕ => ∑ i ∈ range n, (-1 : ℝ)^i * cosTerm x i)
         atTop (𝓝 (Real.cos x)) := by
-    simpa [cosTerm] using (Real.hasSum_cos x).tendsto_sum_nat
+    simpa [cosTerm, mul_div_assoc] using (Real.hasSum_cos x).tendsto_sum_nat
   have h := (cosTerm_antitone hx0 hx1).alternating_series_le_tendsto ht 2
   norm_num [cosTerm, sum_range_succ, Nat.factorial] at h ⊢
   linarith
@@ -93,7 +93,7 @@ lemma v20_cos_lower10 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
       Tendsto
         (fun n : ℕ => ∑ i ∈ range n, (-1 : ℝ)^i * cosTerm x i)
         atTop (𝓝 (Real.cos x)) := by
-    simpa [cosTerm] using (Real.hasSum_cos x).tendsto_sum_nat
+    simpa [cosTerm, mul_div_assoc] using (Real.hasSum_cos x).tendsto_sum_nat
   have h := (cosTerm_antitone hx0 hx1).alternating_series_le_tendsto ht 3
   norm_num [cosTerm, sum_range_succ, Nat.factorial] at h ⊢
   linarith
@@ -105,7 +105,7 @@ lemma v20_sin_upper9 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
       Tendsto
         (fun n : ℕ => ∑ i ∈ range n, (-1 : ℝ)^i * sinTerm x i)
         atTop (𝓝 (Real.sin x)) := by
-    simpa [sinTerm] using (Real.hasSum_sin x).tendsto_sum_nat
+    simpa [sinTerm, mul_div_assoc] using (Real.hasSum_sin x).tendsto_sum_nat
   have h := (sinTerm_antitone hx0 hx1).tendsto_le_alternating_series ht 2
   norm_num [sinTerm, sum_range_succ, Nat.factorial] at h ⊢
   linarith
