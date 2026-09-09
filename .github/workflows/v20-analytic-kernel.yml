@@ -10,48 +10,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   analytic-kernel:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Apply verified analytic-kernel proof patch
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('lean_harness/v20_analytic/V20KernelSignedAnalytic.lean')
-          s = p.read_text()
-          reps = []
-          reps.append((
-              "    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +\n          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by\n      rw [intervalIntegral.integral_div, intervalIntegral.integral_add] <;> fun_prop\n",
-              "    _ = ((∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a - b) * t)) +\n          (∫ t in (-(1 : ℝ) / 2)..(1 / 2), Real.cos ((a + b) * t))) / 2 := by\n      rw [intervalIntegral.integral_div]\n      rw [intervalIntegral.integral_add]\n      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a - b) * t))).intervalIntegrable _ _\n      · exact (by fun_prop : Continuous (fun t : ℝ => Real.cos ((a + b) * t))).intervalIntegrable _ _\n"))
-          reps.append((
-              "        unfold v20B\n        ring\n      _ = _ := hprod\n",
-              "        unfold v20B\n        ring_nf\n      _ = _ := hprod\n"))
-          reps.append((
-              "  have hApB : v20A + v20B ≠ 0 := by\n    positivity\n",
-              "  have hApB : v20A + v20B ≠ 0 := by\n    exact ne_of_gt (add_pos v20_A_pos hBpos)\n"))
-          reps.append((
-              "  field_simp [hAmB, hApB, hdenpos.ne']\n  ring\n\nprivate lemma v20_limitingK_zero_sinc :\n    limitingK 0 = Real.sin v20A / v20A := by\n  rw [limitingK_zero_closed]\n  unfold v20A\n  rw [div_inv]\n  ring\n",
-              "  field_simp [hAmB, hApB, hdenpos.ne']\n  ring_nf\n\nprivate lemma v20_limitingK_zero_sinc :\n    limitingK 0 = Real.sin v20A / v20A := by\n  rw [limitingK_zero_closed]\n  rw [show (Real.sqrt 2)⁻¹ = v20A by rfl]\n  apply (eq_div_iff v20_A_pos.ne').2\n  have hs2A : Real.sqrt 2 * v20A = 1 := by\n    unfold v20A\n    exact mul_inv_cancel₀ (by positivity)\n  calc\n    Real.sqrt 2 * Real.sin v20A * v20A =\n        (Real.sqrt 2 * v20A) * Real.sin v20A := by ring\n    _ = Real.sin v20A := by rw [hs2A, one_mul]\n"))
-          reps.append((
-              "      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by\n        field_simp [v20_A_pos.ne']\n        ring\n",
-              "      v20A * Real.sin v20A = v20A ^ 2 * (Real.sin v20A / v20A) := by\n        field_simp [v20_A_pos.ne']\n"))
-          reps.append((
-              "theorem v20_kernel_signed_89_100 :\n    (171389 / 1000000 : ℝ) < limitingk (89 / 100 : ℝ) := by\n  sorry\n",
-              "theorem v20_kernel_signed_89_100 :\n    (171389 / 1000000 : ℝ) < limitingk (89 / 100 : ℝ) := by\n  rw [v20_limitingk_point_formula]\n  have hSpos : 0 < Real.sin v20A / v20A := by\n    nlinarith [v20_sincA_lower]\n  have hCTpos : 0 < Real.cos v20Theta := by\n    nlinarith [v20_cosTheta_lower]\n  have hCApos : 0 < Real.cos v20A := by\n    nlinarith [v20_cosA_lower]\n  have hSTpos : 0 < Real.sin v20Theta := by\n    nlinarith [v20_sinTheta_lower]\n  have hBpos : 0 < v20B := by\n    nlinarith [v20_B_lower]\n  have hBgt1 : (1 : ℝ) < v20B := by\n    nlinarith [v20_B_lower]\n  have hBsq :\n      v20B ^ 2 < (2796017503 / 1000000000 : ℝ) ^ 2 := by\n    exact pow_lt_pow_left₀ v20_B_upper hBpos.le (by norm_num)\n  have hdenfacpos : 0 < v20B ^ 2 - (1 / 2 : ℝ) := by\n    have hsq1 : (1 : ℝ) ^ 2 < v20B ^ 2 := by\n      exact pow_lt_pow_left₀ hBgt1 (by norm_num) (by norm_num)\n    nlinarith\n  have hupperfacpos :\n      0 < (2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2 := by\n    norm_num\n  have hdenpos :\n      0 < (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) :=\n    mul_pos hdenfacpos hSpos\n  have hdenUpper :\n      (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) ≤\n        ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *\n          (5334193 / 5806080 : ℝ) := by\n    calc\n      (v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A) ≤\n          ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *\n            (Real.sin v20A / v20A) := by\n        exact mul_le_mul_of_nonneg_right (by nlinarith [hBsq]) hSpos.le\n      _ ≤ ((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *\n            (5334193 / 5806080 : ℝ) := by\n        exact mul_le_mul_of_nonneg_left v20_sincA_upper hupperfacpos.le\n  have hnum1 :\n      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) <\n        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta := by\n    calc\n      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) <\n          (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * Real.cos v20Theta := by\n        exact mul_lt_mul_of_pos_left v20_cosTheta_lower (by norm_num)\n      _ ≤ (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta := by\n        exact mul_le_mul_of_nonneg_right\n          (mul_le_mul_of_nonneg_left v20_sincA_lower (by norm_num)) hCTpos.le\n  have hnum2 :\n      (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *\n          (3387379 / 10000000 : ℝ) <\n        v20B * Real.cos v20A * Real.sin v20Theta := by\n    calc\n      (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *\n          (3387379 / 10000000 : ℝ) <\n          (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *\n            Real.sin v20Theta := by\n        exact mul_lt_mul_of_pos_left v20_sinTheta_lower (by norm_num)\n      _ ≤ (1398008707 / 500000000 : ℝ) * Real.cos v20A *\n            Real.sin v20Theta := by\n        exact mul_le_mul_of_nonneg_right\n          (mul_le_mul_of_nonneg_left v20_cosA_lower (by norm_num)) hSTpos.le\n      _ < v20B * Real.cos v20A * Real.sin v20Theta := by\n        have hprodpos : 0 < Real.cos v20A * Real.sin v20Theta :=\n          mul_pos hCApos hSTpos\n        simpa [mul_assoc] using\n          (mul_lt_mul_of_pos_right v20_B_lower hprodpos)\n  have hnumLower :\n      (1 / 2 : ℝ) * (37043 / 40320 : ℝ) * (9408807 / 10000000 : ℝ) +\n          (1398008707 / 500000000 : ℝ) * (88280819 / 116121600 : ℝ) *\n            (3387379 / 10000000 : ℝ) <\n        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta +\n          v20B * Real.cos v20A * Real.sin v20Theta :=\n    add_lt_add hnum1 hnum2\n  have hscaledDen :\n      (171389 / 1000000 : ℝ) *\n          ((v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A)) ≤\n        (171389 / 1000000 : ℝ) *\n          (((2796017503 / 1000000000 : ℝ) ^ 2 - 1 / 2) *\n            (5334193 / 5806080 : ℝ)) := by\n    exact mul_le_mul_of_nonneg_left hdenUpper (by norm_num)\n  have hcross :\n      (171389 / 1000000 : ℝ) *\n          ((v20B ^ 2 - 1 / 2) * (Real.sin v20A / v20A)) <\n        (1 / 2 : ℝ) * (Real.sin v20A / v20A) * Real.cos v20Theta +\n          v20B * Real.cos v20A * Real.sin v20Theta :=\n    hscaledDen.trans_lt (v20_rational_margin.trans hnumLower)\n  exact (lt_div_iff₀ hdenpos).2 hcross\n"))
-          for old, new in reps:
-              if old in s:
-                  s = s.replace(old, new, 1)
-              elif new in s:
-                  pass
-              else:
-                  raise SystemExit('expected source fragment not found in either state')
-          p.write_text(s)
-          PY
 
       - name: Install elan
         run: |
@@ -75,7 +40,7 @@ jobs:
           find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -print0 | while IFS= read -r -d '' f; do
             cp "$f" "HurtadoZeta23/$(basename "$f")"
           done
-          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
           cat >> lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -88,22 +53,16 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Build analytic certificate
+      - name: Build analytic kernel theorem
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20KernelSignedAnalytic
 
+      - name: Build final v20 assembly
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V20FinalAssembly
+
       - name: Reject placeholders
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b' "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean
-
-      - name: Persist verified source on branch push
-        if: github.event_name == 'push'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lean_harness/v20_analytic/V20KernelSignedAnalytic.lean
-          if ! git diff --cached --quiet; then
-            git commit -m "v20: close analytic signed kernel certificate"
-            git push origin HEAD:v20-analytic-kernel-cert
-          fi
+          ! grep -RInE '\bsorry\b|\badmit\b' "$GITHUB_WORKSPACE"/lean_harness/v20_analytic
