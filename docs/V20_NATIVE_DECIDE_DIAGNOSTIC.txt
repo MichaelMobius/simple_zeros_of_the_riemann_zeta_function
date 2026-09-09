@@ -1,0 +1,88 @@
+Reconstructed against Anthropic commit: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+=== all references to v17_pairMultiplicitySumNat_450 ===
+HurtadoZeta23/V17KernelBridge450.lean-1-import HurtadoZeta23.DirectRedistribution
+HurtadoZeta23/V17KernelBridge450.lean-2-import Mathlib.Tactic
+HurtadoZeta23/V17KernelBridge450.lean-3-
+HurtadoZeta23/V17KernelBridge450.lean-4-noncomputable section
+HurtadoZeta23/V17KernelBridge450.lean-5-
+HurtadoZeta23/V17KernelBridge450.lean-6-namespace HurtadoZeta23
+HurtadoZeta23/V17KernelBridge450.lean-7-
+HurtadoZeta23/V17KernelBridge450.lean-8-open scoped BigOperators
+HurtadoZeta23/V17KernelBridge450.lean-9-
+HurtadoZeta23/V17KernelBridge450.lean-10-/-- There are `binom 450 2 = 101025` unordered pairs in a 450-point block. -/
+HurtadoZeta23/V17KernelBridge450.lean:11:lemma v17_pairMultiplicitySumNat_450 :
+HurtadoZeta23/V17KernelBridge450.lean-12-    (∑ x ∈ Finset.range 449, (450 - (1 + x))) = 101025 := by
+HurtadoZeta23/V17KernelBridge450.lean-13-  native_decide
+HurtadoZeta23/V17KernelBridge450.lean-14-
+HurtadoZeta23/V17KernelBridge450.lean-15-lemma v17_pairMultiplicitySum_450 :
+HurtadoZeta23/V17KernelBridge450.lean-16-    (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-17-      ((450 - (1 + x) : ℕ) : ℝ)) = 101025 := by
+HurtadoZeta23/V17KernelBridge450.lean:18:  exact_mod_cast v17_pairMultiplicitySumNat_450
+HurtadoZeta23/V17KernelBridge450.lean-19-
+HurtadoZeta23/V17KernelBridge450.lean-20-/-- Subtracting a uniform per-unordered-pair error `eta` from a 450-point
+HurtadoZeta23/V17KernelBridge450.lean-21-kernel costs exactly `202050 * eta` in the directed pair energy. -/
+HurtadoZeta23/V17KernelBridge450.lean-22-lemma v17_globalPairEnergyNat_sub_uniform_450
+HurtadoZeta23/V17KernelBridge450.lean-23-    (w : ℕ → ℕ → ℝ)
+HurtadoZeta23/V17KernelBridge450.lean-24-    (eta : ℝ) :
+HurtadoZeta23/V17KernelBridge450.lean-25-    globalPairEnergyNat 450 (fun a b => w a b - eta)
+HurtadoZeta23/V17KernelBridge450.lean-26-      = globalPairEnergyNat 450 w - 202050 * eta := by
+HurtadoZeta23/V17KernelBridge450.lean-27-  unfold globalPairEnergyNat pairBandEnergy
+HurtadoZeta23/V17KernelBridge450.lean-28-  norm_num
+HurtadoZeta23/V17KernelBridge450.lean-29-  have hsum :
+HurtadoZeta23/V17KernelBridge450.lean-30-      (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-31-        ((450 - (x + 1) : ℕ) : ℝ)) = 101025 := by
+HurtadoZeta23/V17KernelBridge450.lean-32-    simpa [Nat.add_comm] using v17_pairMultiplicitySum_450
+HurtadoZeta23/V17KernelBridge450.lean-33-  have hcount :
+HurtadoZeta23/V17KernelBridge450.lean-34-      (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-35-        ((450 - (x + 1) : ℕ) : ℝ) * eta) = 101025 * eta := by
+HurtadoZeta23/V17KernelBridge450.lean-36-    calc
+HurtadoZeta23/V17KernelBridge450.lean-37-      (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-38-        ((450 - (x + 1) : ℕ) : ℝ) * eta)
+HurtadoZeta23/V17KernelBridge450.lean-39-          = (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-40-              ((450 - (x + 1) : ℕ) : ℝ)) * eta := by
+HurtadoZeta23/V17KernelBridge450.lean-41-              rw [← Finset.sum_mul]
+HurtadoZeta23/V17KernelBridge450.lean-42-      _ = 101025 * eta := by rw [hsum]
+HurtadoZeta23/V17KernelBridge450.lean-43-  rw [hcount]
+HurtadoZeta23/V17KernelBridge450.lean-44-  ring
+HurtadoZeta23/V17KernelBridge450.lean-45-
+HurtadoZeta23/V17KernelBridge450.lean-46-/-- Uniform squared-entry lower approximation aggregated over 450 points.
+HurtadoZeta23/V17KernelBridge450.lean-47-Only pairs that actually occur inside the 450-point block are required. -/
+HurtadoZeta23/V17KernelBridge450.lean-48-theorem v17_aggregate_kernel_lower_450
+
+=== all native_decide occurrences in reconstructed HurtadoZeta23 ===
+HurtadoZeta23/KernelBridge.lean-27-  · norm_num
+HurtadoZeta23/KernelBridge.lean-28-
+HurtadoZeta23/KernelBridge.lean-29-/--
+HurtadoZeta23/KernelBridge.lean-30-For the fixed block length 262, the total number of unordered pairs in the
+HurtadoZeta23/KernelBridge.lean-31-diagonal parametrization is 34191.
+HurtadoZeta23/KernelBridge.lean-32--/
+HurtadoZeta23/KernelBridge.lean-33-lemma pairMultiplicitySumNat_262 :
+HurtadoZeta23/KernelBridge.lean-34-    (∑ x ∈ Finset.range 261, (262 - (1 + x))) = 34191 := by
+HurtadoZeta23/KernelBridge.lean:35:  native_decide
+HurtadoZeta23/KernelBridge.lean-36-
+HurtadoZeta23/KernelBridge.lean-37-/--
+HurtadoZeta23/KernelBridge.lean-38-The real-valued version of the same finite counting identity.
+HurtadoZeta23/KernelBridge.lean-39--/
+HurtadoZeta23/KernelBridge.lean-40-lemma pairMultiplicitySum_262 :
+HurtadoZeta23/KernelBridge.lean-41-    (∑ x ∈ Finset.range 261,
+HurtadoZeta23/KernelBridge.lean-42-      ((262 - (1 + x) : ℕ) : ℝ)) = 34191 := by
+HurtadoZeta23/KernelBridge.lean-43-  exact_mod_cast pairMultiplicitySumNat_262
+--
+HurtadoZeta23/V17KernelBridge450.lean-5-
+HurtadoZeta23/V17KernelBridge450.lean-6-namespace HurtadoZeta23
+HurtadoZeta23/V17KernelBridge450.lean-7-
+HurtadoZeta23/V17KernelBridge450.lean-8-open scoped BigOperators
+HurtadoZeta23/V17KernelBridge450.lean-9-
+HurtadoZeta23/V17KernelBridge450.lean-10-/-- There are `binom 450 2 = 101025` unordered pairs in a 450-point block. -/
+HurtadoZeta23/V17KernelBridge450.lean-11-lemma v17_pairMultiplicitySumNat_450 :
+HurtadoZeta23/V17KernelBridge450.lean-12-    (∑ x ∈ Finset.range 449, (450 - (1 + x))) = 101025 := by
+HurtadoZeta23/V17KernelBridge450.lean:13:  native_decide
+HurtadoZeta23/V17KernelBridge450.lean-14-
+HurtadoZeta23/V17KernelBridge450.lean-15-lemma v17_pairMultiplicitySum_450 :
+HurtadoZeta23/V17KernelBridge450.lean-16-    (∑ x ∈ Finset.range 449,
+HurtadoZeta23/V17KernelBridge450.lean-17-      ((450 - (1 + x) : ℕ) : ℝ)) = 101025 := by
+HurtadoZeta23/V17KernelBridge450.lean-18-  exact_mod_cast v17_pairMultiplicitySumNat_450
+HurtadoZeta23/V17KernelBridge450.lean-19-
+HurtadoZeta23/V17KernelBridge450.lean-20-/-- Subtracting a uniform per-unordered-pair error `eta` from a 450-point
+HurtadoZeta23/V17KernelBridge450.lean-21-kernel costs exactly `202050 * eta` in the directed pair energy. -/
