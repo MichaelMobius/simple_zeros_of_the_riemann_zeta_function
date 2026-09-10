@@ -1,0 +1,34 @@
+name: v21 interface inspect
+
+on:
+  push:
+    branches: [v21-analytic-seven-point]
+    paths:
+      - '.github/workflows/v21-interface-inspect.yml'
+      - 'lean_harness/v21_analytic/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct archived Lean sources
+        run: |
+          mkdir -p /tmp/v21src/HurtadoZeta23
+          cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/a.tar.gz
+          tar -xzf /tmp/a.tar.gz -C /tmp/v21src
+          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/b.tar.gz
+          tar -xzf /tmp/b.tar.gz -C /tmp/v21src
+      - name: Print exact seven-point interface
+        run: |
+          cd /tmp/v21src
+          echo '=== ArticleSevenPointInequality ==='
+          grep -R -n -B 12 -A 30 'ArticleSevenPointInequality' . | head -n 220 || true
+          echo '=== localFp definitions ==='
+          grep -R -n -B 8 -A 32 -E 'def localFp|abbrev localFp|localFp ' . | head -n 260 || true
+          echo '=== pressure / delta definitions ==='
+          grep -R -n -B 8 -A 30 -E 'def pressure|def delta|def beta|PositionWeights|2714|3733|3553' . | head -n 320 || true
