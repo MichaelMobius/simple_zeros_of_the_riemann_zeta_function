@@ -6,7 +6,7 @@ This release freezes the v20 formal-provenance hardening of
 
 by **Michael Hurtado**.
 
-The mathematical bound and manuscript are unchanged from `v1.2.0-paper`. The purpose of this release is narrower: one numerical certificate that was an explicit external input in v17 is now proved analytically inside Lean, and the resulting trust boundary is audited explicitly.
+The mathematical theorem, numerical bound, and underlying v17 argument are unchanged from `v1.2.0-paper`; the manuscript itself subsequently received v18/v19 provenance and publication-hardening revisions, and the present v20 revision aligns its formal-verification discussion with the analytic Lean certificate. One numerical certificate that was an explicit external input in v17 is now proved analytically inside Lean, and the resulting trust boundary is audited explicitly.
 
 ## Main result
 
