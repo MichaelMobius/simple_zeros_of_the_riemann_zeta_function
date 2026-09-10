@@ -140,7 +140,32 @@ For the three published v20 targets, the verified `#print axioms` output in that
 'HurtadoZeta23.v20_published_eps_form' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
-CI treats these closures as allowlisted interfaces. It additionally audits `v17_pairMultiplicitySumNat_450` directly and requires its axiom closure to be empty. Any additional axiom, including `sorryAx` or a `_native.native_decide.ax_...` primitive, makes the workflow fail. This is stronger than merely grepping the source for new declarations.
+A follow-up direct audit in GitHub Actions run `34411586854` confirmed that the repaired finite-count lemma itself has the same standard Mathlib closure:
+
+```text
+'HurtadoZeta23.v17_pairMultiplicitySumNat_450' depends on axioms: [propext, Classical.choice, Quot.sound]
+```
+
+That follow-up run failed only because an intermediate CI guard incorrectly demanded an empty axiom closure for the lemma. The direct output shows that the relevant trust improvement is removal of the native-evaluation primitive, not elimination of Mathlib's standard logical axioms. The guard is therefore defined against the exact observed standard closure rather than against `[]`.
+
+CI now treats the four closures as allowlisted interfaces. For each of
+
+```text
+HurtadoZeta23.v17_pairMultiplicitySumNat_450
+HurtadoZeta23.v20_kernel_signed_89_100
+HurtadoZeta23.v20_kernel_signed_claim
+HurtadoZeta23.v20_published_eps_form
+```
+
+the accepted closure is exactly
+
+```text
+propext
+Classical.choice
+Quot.sound
+```
+
+Any additional axiom, including `sorryAx` or a `_native.native_decide.ax_...` primitive, makes the workflow fail. This is stronger than merely grepping the source for new declarations. In particular, "kernel-checkable" here means that the proof is elaborated to a Lean proof term checked by the kernel under this explicit standard axiom boundary; it does not mean that the theorem is constructively axiom-free.
 
 ### 7. Quantitative theorem unchanged
 

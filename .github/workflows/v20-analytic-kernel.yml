@@ -105,26 +105,9 @@ jobs:
           import re
 
           text = Path('/tmp/v20-axioms.txt').read_text()
-
-          pair_theorem = 'HurtadoZeta23.v17_pairMultiplicitySumNat_450'
-          pair_match = re.search(
-              rf"'{re.escape(pair_theorem)}' depends on axioms:\s*\[(.*?)\]",
-              text,
-              re.S,
-          )
-          if pair_match is not None:
-              pair_actual = {
-                  item.strip() for item in pair_match.group(1).split(',') if item.strip()
-              }
-              if pair_actual:
-                  raise SystemExit(
-                      f'{pair_theorem} must have empty axiom closure, got {sorted(pair_actual)}'
-                  )
-          elif f"'{pair_theorem}' does not depend on any axioms" not in text:
-              raise SystemExit(f'could not verify empty axiom closure for {pair_theorem}')
-
           expected = {'propext', 'Classical.choice', 'Quot.sound'}
           targets = [
+              'HurtadoZeta23.v17_pairMultiplicitySumNat_450',
               'HurtadoZeta23.v20_kernel_signed_89_100',
               'HurtadoZeta23.v20_kernel_signed_claim',
               'HurtadoZeta23.v20_published_eps_form',
