@@ -1,0 +1,150 @@
+name: v20 analytic kernel certificate
+
+on:
+  push:
+    branches: [v20-analytic-kernel-cert]
+  pull_request:
+    paths:
+      - 'lean_harness/v17_energy/V17KernelBridge450.lean'
+      - 'lean_harness/v20_analytic/**'
+      - 'docs/V20_ADVERSARIAL_AUDIT.md'
+      - '.github/workflows/v20-analytic-kernel.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analytic-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Guard repaired pair multiplicity proof
+        run: |
+          cd /tmp/formal-math/zeta23
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('HurtadoZeta23/V17KernelBridge450.lean')
+          text = path.read_text()
+          start = text.index('lemma v17_pairMultiplicitySumNat_450')
+          end = text.index('lemma v17_pairMultiplicitySum_450', start)
+          block = text[start:end]
+          if 'native_decide' in block:
+              raise SystemExit('v17_pairMultiplicitySumNat_450 regressed to native_decide')
+          if '\n  decide\n' in block:
+              raise SystemExit('v17_pairMultiplicitySumNat_450 must use a symbolic kernel proof, not brute-force decide')
+          if 'Finset.sum_range_reflect' not in block or 'Finset.sum_range_id' not in block:
+              raise SystemExit('expected symbolic finite-sum proof was not found')
+          PY
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Build repaired v17 pair-count bridge
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V17KernelBridge450
+
+      - name: Build analytic kernel theorem
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V20KernelSignedAnalytic
+
+      - name: Build final v20 assembly
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V20FinalAssembly
+
+      - name: Enforce exact axiom closures
+        run: |
+          cd /tmp/formal-math/zeta23
+          cat > /tmp/V20AxiomAudit.lean <<'EOF'
+          import HurtadoZeta23.V20FinalAssembly
+          #print axioms HurtadoZeta23.v17_pairMultiplicitySumNat_450
+          #print axioms HurtadoZeta23.v20_kernel_signed_89_100
+          #print axioms HurtadoZeta23.v20_kernel_signed_claim
+          #print axioms HurtadoZeta23.v20_published_eps_form
+          EOF
+          lake env lean /tmp/V20AxiomAudit.lean | tee /tmp/v20-axioms.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          text = Path('/tmp/v20-axioms.txt').read_text()
+          expected = {'propext', 'Classical.choice', 'Quot.sound'}
+          targets = [
+              'HurtadoZeta23.v17_pairMultiplicitySumNat_450',
+              'HurtadoZeta23.v20_kernel_signed_89_100',
+              'HurtadoZeta23.v20_kernel_signed_claim',
+              'HurtadoZeta23.v20_published_eps_form',
+          ]
+
+          for theorem in targets:
+              match = re.search(
+                  rf"'{re.escape(theorem)}' depends on axioms:\s*\[(.*?)\]",
+                  text,
+                  re.S,
+              )
+              if match is None:
+                  raise SystemExit(f'could not parse #print axioms output for {theorem}')
+              actual = {item.strip() for item in match.group(1).split(',') if item.strip()}
+              if actual != expected:
+                  raise SystemExit(
+                      f'unexpected axiom closure for {theorem}: '
+                      f'expected {sorted(expected)}, got {sorted(actual)}'
+                  )
+
+          forbidden = ('sorryAx', '_native.native_decide.ax_')
+          for marker in forbidden:
+              if marker in text:
+                  raise SystemExit(f'forbidden trust primitive in axiom audit: {marker}')
+          PY
+
+      - name: Reject Lean placeholders
+        run: |
+          ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
+            | xargs -0 grep -nE '\bsorry\b|\badmit\b'
+
+      - name: Reject new trusted or unsafe declarations
+        run: |
+          ! find "$GITHUB_WORKSPACE/lean_harness/v20_analytic" -name '*.lean' -print0 \
+            | xargs -0 grep -nE '^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]'
+
+      - name: Guard analytic dependency direction
+        run: |
+          ! grep -nE 'V17KernelSignedCertPointClaim|ArchivedSevenPointClaim|V17FinalAssembly|ExternalCertificateFrontier' \
+            "$GITHUB_WORKSPACE/lean_harness/v20_analytic/V20KernelSignedAnalytic.lean"
