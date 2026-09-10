@@ -1,0 +1,40 @@
+name: v20 PSD notation cleanup
+
+on:
+  push:
+    branches:
+      - v20-manuscript-alignment
+    paths:
+      - .github/workflows/v20-psd-notation-cleanup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v20-manuscript-alignment
+          fetch-depth: 0
+      - name: Apply notation cleanup
+        run: python3 scripts/fix_v20_psd_notation.py
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Rebuild PDF
+        run: |
+          cd paper
+          latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+          test -s main.pdf
+      - name: Commit cleanup
+        run: |
+          rm -f .github/workflows/v20-psd-notation-cleanup.yml scripts/fix_v20_psd_notation.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A paper/main.tex paper/main.pdf .github/workflows/v20-psd-notation-cleanup.yml scripts/fix_v20_psd_notation.py
+          git diff --cached --check
+          git commit -m 'v20: disambiguate kernel normalization notation'
+          git push origin HEAD:v20-manuscript-alignment
