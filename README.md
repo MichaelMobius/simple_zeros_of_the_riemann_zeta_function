@@ -1,10 +1,8 @@
 # Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function
 
-This repository contains the manuscript, formalization, and reproducibility
-artifacts for
+This repository contains the manuscript, formalization, and reproducibility artifacts for
 
-> **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta
-> Function**
+> **Pressure-Preserving Refinements for Simple Zeros of the Riemann Zeta Function**
 
 by **Michael Hurtado**.
 
@@ -17,12 +15,9 @@ $$
 0.6731175265883904388096\ldots
 $$
 
-for the proportion of simple zeros of the Riemann zeta function on the
-critical line.
+for the proportion of simple zeros of the Riemann zeta function on the critical line.
 
-The new ingredients are **exact pressure-preserving shifted-block accounting**
-and an **adjacent-pair pinching refinement**, built on the existing nonuniform
-seven-point certificate.
+The mathematical bound is the v17 result. The current v20 formalization hardens its proof provenance by replacing the signed limiting-kernel certificate at `g = 0.89` with an analytic Lean proof, without changing the numerical constant or the manuscript.
 
 ---
 
@@ -34,7 +29,7 @@ $$
 H_{\rm MT}=\frac32-\frac1{\sqrt2}\cot\left(\frac1{\sqrt2}\right).
 $$
 
-The v17 bound is
+The bound is
 
 $$
 \boxed{
@@ -51,8 +46,7 @@ $$
 0.6731175265883904388095857434\ldots.
 $$
 
-The computer-assisted seven-point component uses the position-dependent
-pressure vector
+The computer-assisted seven-point component uses the position-dependent pressure vector
 
 $$
 p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
@@ -65,8 +59,7 @@ $$
 F_{6,\mathrm{nonuniform}}\ge\frac{39}{10000}=0.0039.
 $$
 
-The refined global argument preserves this positional pressure and uses
-adjacent-pair pinching with block length
+The refined global argument preserves this positional pressure and uses adjacent-pair pinching with block length
 
 $$
 m=450.
@@ -89,22 +82,7 @@ $$
 │
 ├── certification/
 │   ├── arb_256/
-│   │   ├── README.md
-│   │   ├── certify_nonuniform_3900_v1_1.py
-│   │   ├── run_certificate_256.ps1
-│   │   ├── run_certificate_256.sh
-│   │   ├── arb-certificate-256.log
-│   │   ├── certificate-summary.json
-│   │   ├── environment-256.txt
-│   │   ├── requirements-lock-256.txt
-│   │   ├── verifier-sha256-256.txt
-│   │   ├── certificate-log-sha256-256.txt
-│   │   └── SHA256SUMS.txt
-│   │
 │   └── v17/
-│       ├── verify_improved_bound.py
-│       ├── verification.json
-│       └── verification.generated.json
 │
 ├── lean_harness/
 │   ├── frozen/
@@ -112,84 +90,81 @@ $$
 │   ├── v17_energy/
 │   ├── v17_strong/
 │   ├── v17_global/
+│   ├── v20_analytic/
 │   └── ...
 │
 └── docs/
-    └── RELEASE_v1.2.0-paper.md
+    ├── RELEASE_v1.2.0-paper.md
+    ├── RELEASE_v1.3.0-lean-analytic.md
+    ├── V20_ADVERSARIAL_AUDIT.md
+    └── V20_ANALYTIC_KERNEL_PLAN.md
 ```
 
 ### `paper/`
 
-Contains the submission-ready LaTeX source and compiled manuscript.
+Contains the submission-ready LaTeX source and compiled manuscript. The manuscript remains the v17 mathematical revision; v20 changes formal provenance, not the paper's quantitative theorem.
 
 ### `certification/arb_256/`
 
-Contains the archived 256-bit Arb/FLINT proof artifact for the nonuniform
-seven-point certificate, including the execution log, environment record,
-reproduction scripts, and SHA-256 manifest.
+Contains the archived 256-bit Arb/FLINT proof artifact for the nonuniform seven-point certificate, including the execution log, environment record, reproduction scripts, and SHA-256 manifest.
 
 ### `certification/v17/`
 
-Contains a Python-standard-library exact-arithmetic verifier for the new v17
-scalar kernel enclosure, pressure accounting, contradiction margin, and final
-constant. It does **not** rerun the historical seven-point branch-and-bound
-certificate.
+Contains the historical exact-arithmetic verifier for the v17 signed scalar kernel enclosure, pressure accounting, contradiction margin, and final constant. These files remain reproducibility artifacts. In v20 the signed kernel inequality is no longer an explicit mathematical input to the published Lean wrapper.
 
-### `lean_harness/`
+### `lean_harness/v20_analytic/`
 
-Contains the Lean adaptation and the exact CI overlay used to compile the v17
-proof against the pinned upstream `formal-math` source tree.
+Contains the v20 analytic Lean proof of the signed limiting-kernel point and the final wrapper that feeds it into the existing v17 global assembly.
 
 ---
 
 ## Reproducibility releases
 
-The current frozen manuscript release is:
+### Current formal-provenance release
 
-### Current frozen v17 manuscript
+**`v1.3.0-lean-analytic`** freezes the v20 formalization in which the signed limiting-kernel certificate is proved analytically in Lean. Its canonical release notes are in
 
-**`v1.2.0-paper`** freezes the current v17 manuscript, formalization, and v17
-exact-arithmetic certificate. Its canonical release notes are in
-`docs/RELEASE_v1.2.0-paper.md`.
+```text
+docs/RELEASE_v1.3.0-lean-analytic.md
+```
 
-### Previous frozen manuscript
+The numerical lower bound and v17 manuscript are unchanged.
 
-**`v1.1.0-paper`** freezes the preceding submission-ready manuscript.
+### Frozen v17 manuscript release
 
-### Frozen computational artifact
+**`v1.2.0-paper`** freezes the v17 manuscript, v17 formalization state, and v17 exact-arithmetic certificate. Its canonical release notes are in
 
-**`v1.0.0-paper @ c57f53e`** freezes the earlier Arb/FLINT computational
-artifact reused by v17.
+```text
+docs/RELEASE_v1.2.0-paper.md
+```
+
+### Previous releases
+
+- **`v1.1.0-paper`** — preceding submission-ready manuscript.
+- **`v1.0.0-paper @ c57f53e`** — frozen historical Arb/FLINT computational artifact reused unchanged by later revisions.
 
 The separation is intentional:
 
 ```text
+v1.3.0-lean-analytic
+    │
+    └── v20 Lean provenance hardening
+             │
+             ├── same v17 mathematical bound
+             ├── same v17 manuscript
+             ├── signed kernel point proved inside Lean
+             └── one explicit external mathematical certificate frontier
+                      │
+                      ▼
 v1.2.0-paper
     │
-    └── v17 manuscript + Lean formalization + v17 scalar certificate
-             │
-             ├── reuses v1.0.0-paper historical Arb/FLINT certificate
-             │
-             ▼
-v1.1.0-paper
-    │
-    └── preceding frozen manuscript
+    └── v17 manuscript + two-frontier Lean wrapper
              │
              ▼
 v1.0.0-paper @ c57f53e
     │
-    └── frozen Arb/FLINT certificate
-             │
-             ▼
-      256-bit verification
-             │
-             ▼
- F6_nonuniform >= 39/10000
+    └── frozen 256-bit Arb/FLINT seven-point certificate
 ```
-
-The v17 refinement reuses that seven-point certificate unchanged and adds a
-separate exact-arithmetic scalar certificate plus a Lean-checked global
-assembly.
 
 ---
 
@@ -257,12 +232,11 @@ cd certification/arb_256
 .\run_certificate_256.ps1
 ```
 
-A successful execution must terminate with `verified=true`. The verifier
-should not be modified between hash verification and execution.
+A successful execution must terminate with `verified=true`.
 
 ---
 
-## v17 exact-arithmetic certificate
+## Historical v17 exact-arithmetic signed-kernel verifier
 
 The v17 verifier is
 
@@ -277,130 +251,133 @@ python certification/v17/verify_improved_bound.py \
   --output certification/v17/verification.generated.json
 ```
 
-The key additional signed enclosure consumed by the formal v17 route is
+Among other checks, it certifies the signed enclosure
 
 $$
 \frac{171389}{1000000}<k\!\left(\frac{89}{100}\right).
 $$
 
-The verifier also checks, using exact rational arithmetic and rigorous
-transcendental enclosures, that
-
-$$
-\left(\frac{171389}{1000000}\right)^2
->\frac{2937}{100000},
-$$
-
-together with the v17 pressure mass, contradiction margin, and the exact final
-constant
-
-$$
-\frac{1125000H_{\rm MT}-2220}{1120671}.
-$$
-
-CI replays this verifier and compares its machine-readable output
-semantically with the frozen `verification.json`.
-
----
-
-## Lean formalization status
-
-The v17 implication from the two explicit external certificate propositions to
-the published epsilon-form theorem is kernel-checked in Lean.
-
-The exact CI root is
+In the historical v17 wrapper this enclosure was represented by the explicit external proposition
 
 ```text
-HurtadoZeta23.V17FinalAssembly
-```
-
-and the final public theorem is
-
-```text
-HurtadoZeta23.v17_published_eps_form_of_certificates
-```
-
-Its explicit external arguments are exactly
-
-```text
-ArchivedSevenPointClaim
 V17KernelSignedCertPointClaim
 ```
 
-The universal scalar-pressure inequality is **not** an additional external
-assumption: it is derived inside Lean from the signed kernel certificate using
-the proved monotonicity of the limiting kernel on the relevant interval.
+In v20 the same inequality is instead proved analytically inside Lean. The verifier and frozen JSON remain in the repository for provenance, reproducibility, and independent cross-checking; they are not an explicit mathematical argument of the v20 published wrapper.
 
-The exact final CI closure currently contains **127 Hurtado modules** and
-builds successfully against
+---
+
+## v20 Lean formalization status
+
+The v20 analytic theorem is
+
+```text
+HurtadoZeta23.v20_kernel_signed_89_100
+```
+
+in
+
+```text
+HurtadoZeta23.V20KernelSignedAnalytic
+```
+
+and proves
+
+```text
+(171389 / 1000000 : ℝ) < limitingk (89 / 100 : ℝ)
+```
+
+from exact integral identities, rational Taylor bounds for sine and cosine, Mathlib's proved bounds for `π`, and exact rational arithmetic.
+
+The final CI root is
+
+```text
+HurtadoZeta23.V20FinalAssembly
+```
+
+and the public epsilon-form theorem is
+
+```text
+HurtadoZeta23.v20_published_eps_form
+```
+
+Its only explicit external mathematical certificate argument is
+
+```text
+ArchivedSevenPointClaim
+```
+
+The v20 CI builds against the pinned upstream source base
 
 ```text
 formal-math commit: fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
-Lean:               4.33.0-rc2
-mathlib commit:     51e6992efd06126df61a496bebf8f49482a4e129
 ```
 
-The successful full build reaches
+The final audited pre-merge run was
 
 ```text
-Built HurtadoZeta23.V17ConcreteShiftedAssembly450
-Built HurtadoZeta23.V17FinalAssembly
-Build completed successfully (8964 jobs).
+GitHub Actions run: 34428159178
+Audited branch HEAD: ebf11ae228638e32d4e77a99e78f405ee1600dea
 ```
 
-A separate CI audit checks the exact final import closure for `sorry`, `admit`,
-explicit `axiom` declarations, and `unsafe` declarations; it also verifies the
-final theorem signature and the provenance of both external certificate
-frontiers.
+and the audited implementation was merged into `main` as
 
-The critical post-merge build and trust/provenance audit also run directly on
-`main` and have completed successfully for the v17 published state.
+```text
+fe2eef5516c9eb3443c0d2a7f22b73a5f2afb986
+```
+
+The workflow directly builds the repaired v17 bridge, the v20 analytic theorem, and the final v20 assembly; it also enforces the exact audited axiom closure and dependency/trust guards.
+
+---
+
+## Axiom and native-evaluator audit
+
+A transitive adversarial audit found that the inherited finite pair-count lemma
+
+```text
+HurtadoZeta23.v17_pairMultiplicitySumNat_450
+```
+
+had previously used `native_decide`, which exposed a native-evaluator primitive in the final theorem's axiom report.
+
+That lemma is now proved symbolically. The v20 CI audits the following four targets:
+
+```text
+HurtadoZeta23.v17_pairMultiplicitySumNat_450
+HurtadoZeta23.v20_kernel_signed_89_100
+HurtadoZeta23.v20_kernel_signed_claim
+HurtadoZeta23.v20_published_eps_form
+```
+
+and requires the exact standard Mathlib axiom set
+
+```text
+[propext, Classical.choice, Quot.sound]
+```
+
+for all four. The workflow rejects `sorryAx`, `_native.native_decide.ax_`, placeholders in the v20 sources, new trusted/unsafe declarations there, and circular dependencies back to the historical signed-certificate frontier.
+
+Thus “kernel-checked” here means that Lean checks the proof terms under this explicit standard Mathlib axiom boundary; it does not mean constructively axiom-free.
 
 ---
 
 ## Trust model
 
-There are **two explicit external certificate frontiers** in v17.
+The v20 published wrapper has **one explicit external mathematical certificate frontier**.
 
-1. **Historical seven-point Arb/FLINT certificate.**
-   `ArchivedSevenPointClaim` names the exact mathematical proposition supported
-   by the frozen 256-bit branch-and-bound run. Its trust base includes the
-   frozen verifier, `python-flint`, FLINT/Arb, the recorded environment, and the
-   correctness of directed interval arithmetic in those libraries.
+1. **Historical seven-point Arb/FLINT certificate.** `ArchivedSevenPointClaim` names the proposition supported by the frozen 256-bit branch-and-bound run. Its computational trust base includes the frozen verifier, `python-flint`, FLINT/Arb, the recorded environment, and the correctness of directed interval arithmetic in those libraries.
 
-2. **Signed limiting-kernel certificate at `g = 0.89`.**
-   `V17KernelSignedCertPointClaim` names the rigorous numerical enclosure
-   produced by `certification/v17/verify_improved_bound.py`. This verifier uses
-   Python standard-library integer/rational arithmetic; transcendental values
-   are bounded by explicit rational series/enclosures.
+The signed limiting-kernel point at `g = 0.89` is no longer an external mathematical certificate in v20: it is proved inside Lean and converted internally to the historical `V17KernelSignedCertPointClaim` interface required by the v17 assembly.
 
-Neither external execution is silently promoted to a Lean theorem or declared
-as an axiom. Instead, the final Lean theorem takes the two propositions above as
-explicit arguments and kernel-checks the complete mathematical implication
-from them to the published v17 bound.
+This reduction in the mathematical certificate frontier does **not** imply clean-room software independence. The implementation still builds on the pinned Anthropic `formal-math/zeta23` source base above; that dependency is software provenance rather than an extra theorem parameter.
 
-Accordingly, the statement
-
-> **the v17 Lean closure is end-to-end kernel-checked**
-
-means that the implication from the two named external certificate propositions
-to the final epsilon theorem is formally checked. It does **not** mean that the
-Arb/FLINT execution or the Python transcendental enclosure has itself been
-reimplemented inside the Lean kernel.
-
-The archived 128-bit and 256-bit Arb executions are replications of the same
-verification algorithm at different working precisions; they should not be
-interpreted as algorithmically independent proof implementations.
+The archived 128-bit and 256-bit Arb executions are replications of the same verification algorithm at different working precisions and should not be interpreted as algorithmically independent proof implementations.
 
 ---
 
 ## Relation to previous work
 
-The manuscript distinguishes the present contribution from the immediately
-preceding reproducible artifacts.
-
-The upstream work of **Sunghyeon Jo** introduced the relevant reproducible
-seven-point stability framework with uniform pressure and certified
+The upstream work of **Sunghyeon Jo** introduced the relevant reproducible seven-point stability framework with uniform pressure and certified
 
 $$
 \frac{19}{5000}=0.0038,
@@ -412,8 +389,7 @@ $$
 0.6730085279277797\ldots.
 $$
 
-A subsequent reproducible refinement by **Lea Rademacher** strengthened the
-uniform seven-point certificate to
+A subsequent reproducible refinement by **Lea Rademacher** strengthened the uniform seven-point certificate to
 
 $$
 \frac{191}{50000}=0.00382,
@@ -425,70 +401,56 @@ $$
 0.6730213619501665\ldots.
 $$
 
-The present work keeps the same total pressure
+The present mathematical refinement keeps the same total pressure
 
 $$
 \sum_jp_j=\frac1{500},
 $$
 
-but allows its distribution among the six gap positions to vary. The certified
-nonuniform vector raises the local value to
+but allows its distribution among the six gap positions to vary. The certified nonuniform vector raises the local value to
 
 $$
 \frac{39}{10000}=0.0039.
 $$
 
-The v17 shifted-block and adjacent-pair argument then raises the resulting
-global lower bound to
+The v17 shifted-block and adjacent-pair argument then raises the resulting global lower bound to
 
 $$
 0.6731175265883904388095857434\ldots.
 $$
 
-The precise mathematical and bibliographic comparison is given in the
-manuscript.
+v20 leaves this quantitative result unchanged and hardens the formal provenance of the signed-kernel step.
 
 ---
 
 ## AI provenance
 
-Recent upstream computational artifacts relevant to this project report the use
-of AI systems during their development.
+Recent upstream computational artifacts relevant to this project report the use of AI systems during their development.
 
-The present repository treats AI use as **research provenance rather than
-mathematical authorship**.
+The present repository treats AI use as **research provenance rather than mathematical authorship**.
 
-All mathematical claims in the manuscript are intended to be supported by
-explicit arguments, cited external results, reproducible computational
-certificates, or kernel-checked formal proofs. The computer-assisted components
-are accompanied by source code, execution records, cryptographic hashes,
-machine-readable parameters, and reproduction instructions so that they can be
-independently inspected.
+Mathematical claims are intended to be supported by explicit arguments, cited external results, reproducible computational certificates, or kernel-checked formal proofs. Computer-assisted components are accompanied by source code, execution records, cryptographic hashes, machine-readable parameters, and reproduction instructions for independent inspection.
 
 ---
 
 ## Citation
 
-If you use the mathematical result, please cite the accompanying manuscript.
-If you use or reproduce the computational artifact, please also cite the
-repository/release.
+If you use the mathematical result, please cite the accompanying manuscript. If you use or reproduce the computational or formal artifacts, please also cite the relevant repository release.
 
 Citation metadata is provided in `CITATION.cff`.
 
-The v17 revision is frozen in `v1.2.0-paper`. The preceding submission-ready
-manuscript is frozen in `v1.1.0-paper`, and the historical computational
-artifact is frozen in `v1.0.0-paper @ c57f53e`.
+- `v1.3.0-lean-analytic` freezes the v20 formal-provenance hardening.
+- `v1.2.0-paper` freezes the v17 manuscript state.
+- `v1.1.0-paper` freezes the preceding submission-ready manuscript.
+- `v1.0.0-paper @ c57f53e` freezes the historical Arb/FLINT computational artifact.
 
 ---
 
 ## License
 
-Source code, including the certificate verifiers and reproduction scripts, is
-released under the **MIT License** unless otherwise stated. See `LICENSE-CODE`.
+Source code, including certificate verifiers and reproduction scripts, is released under the **MIT License** unless otherwise stated. See `LICENSE-CODE`.
 
-The manuscript, documentation, certificate metadata, execution logs, and other
-non-software material are released under **CC BY 4.0**. See
-`LICENSE-CONTENT`.
+The manuscript, documentation, certificate metadata, execution logs, and other non-software material are released under **CC BY 4.0**. See `LICENSE-CONTENT`.
 
 Third-party software and dependencies retain their respective licenses.
 
@@ -505,13 +467,15 @@ Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_f
 ## Status
 
 - **Current manuscript:** v17
-- **Current frozen release:** `v1.2.0-paper`
+- **Current formalization:** v20 analytic signed-kernel hardening
+- **Current frozen formal-provenance release:** `v1.3.0-lean-analytic`
+- **Historical frozen manuscript release:** `v1.2.0-paper`
 - **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
 - **Certified seven-point local bound:** `39/10000`
-- **v17 signed kernel claim:** `171389/1000000 < k(89/100)`
-- **Lean final assembly:** green against the exact pinned upstream closure
-- **Lean post-merge validation on `main`:** green
-- **Lean explicit external frontiers:** two
+- **Signed kernel inequality:** `171389/1000000 < k(89/100)`, proved analytically in Lean in v20
+- **Lean final assembly:** `HurtadoZeta23.V20FinalAssembly`
+- **Lean explicit external mathematical frontiers:** one (`ArchivedSevenPointClaim`)
+- **Audited axiom closure:** `[propext, Classical.choice, Quot.sound]`
 - **Resulting unconditional bound:**
 
 $$
