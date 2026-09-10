@@ -120,9 +120,9 @@ Contains the v20 analytic Lean proof of the signed limiting-kernel point and the
 
 ## Reproducibility releases
 
-### Current formal-provenance release
+### Current formal-provenance publication target
 
-**`v1.3.0-lean-analytic`** freezes the v20 formalization in which the signed limiting-kernel certificate is proved analytically in Lean. Its canonical release notes are in
+**`v1.3.0-lean-analytic`** is the publication target for the v20 formalization in which the signed limiting-kernel certificate is proved analytically in Lean. Its canonical release notes are prepared in
 
 ```text
 docs/RELEASE_v1.3.0-lean-analytic.md
@@ -146,7 +146,7 @@ docs/RELEASE_v1.2.0-paper.md
 The separation is intentional:
 
 ```text
-v1.3.0-lean-analytic
+v1.3.0-lean-analytic  (publication target)
     │
     └── v20 Lean provenance hardening
              │
@@ -395,7 +395,7 @@ $$
 \frac{191}{50000}=0.00382,
 $$
 
-leading to
+leading to the bound
 
 $$
 0.6730213619501665\ldots.
@@ -439,7 +439,7 @@ If you use the mathematical result, please cite the accompanying manuscript. If 
 
 Citation metadata is provided in `CITATION.cff`.
 
-- `v1.3.0-lean-analytic` freezes the v20 formal-provenance hardening.
+- `v1.3.0-lean-analytic` is the v20 formal-provenance publication target.
 - `v1.2.0-paper` freezes the v17 manuscript state.
 - `v1.1.0-paper` freezes the preceding submission-ready manuscript.
 - `v1.0.0-paper @ c57f53e` freezes the historical Arb/FLINT computational artifact.
@@ -468,7 +468,7 @@ Repository: `https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_f
 
 - **Current manuscript:** v17
 - **Current formalization:** v20 analytic signed-kernel hardening
-- **Current frozen formal-provenance release:** `v1.3.0-lean-analytic`
+- **Current formal-provenance publication target:** `v1.3.0-lean-analytic`
 - **Historical frozen manuscript release:** `v1.2.0-paper`
 - **Historical Arb/FLINT certificate:** `verified=true`, 256 bits
 - **Certified seven-point local bound:** `39/10000`
