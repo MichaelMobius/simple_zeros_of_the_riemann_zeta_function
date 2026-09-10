@@ -1,0 +1,76 @@
+name: v21 analytic seven-point
+
+on:
+  push:
+    branches: [v21-analytic-seven-point]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analytic-seven-point:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          if compgen -G "$GITHUB_WORKSPACE/lean_harness/v21_analytic/*.lean" > /dev/null; then
+            cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          fi
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Inspect archived seven-point interface
+        run: |
+          cd /tmp/formal-math/zeta23
+          echo '=== ArchivedSevenPointClaim definition / uses ==='
+          grep -R -n -B 5 -A 18 'ArchivedSevenPointClaim' HurtadoZeta23 | head -n 240
+          echo '=== candidate seven-point constants ==='
+          grep -R -n -E '39[[:space:]]*/[[:space:]]*10000|2714|3733|3553' HurtadoZeta23 | head -n 240
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Build existing v20 closure
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V20FinalAssembly
+
+      - name: Build v21 modules when present
+        run: |
+          cd /tmp/formal-math/zeta23
+          if [ -f HurtadoZeta23/V21SevenPointAnalytic.lean ]; then
+            lake build HurtadoZeta23.V21SevenPointAnalytic
+          fi
+          if [ -f HurtadoZeta23/V21FinalAssembly.lean ]; then
+            lake build HurtadoZeta23.V21FinalAssembly
+          fi
