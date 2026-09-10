@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  align-manuscript:
+  align:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -21,235 +21,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply fail-closed manuscript edits
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
+        run: python3 scripts/v20_manuscript_align.py
 
-          paper_path = Path('paper/main.tex')
-          release_path = Path('docs/RELEASE_v1.3.0-lean-analytic.md')
-          text = paper_path.read_text()
-
-          def rep(old: str, new: str, label: str):
-              global text
-              n = text.count(old)
-              if n != 1:
-                  raise SystemExit(f'{label}: expected exactly one match, found {n}')
-              text = text.replace(old, new, 1)
-
-          def between(start: str, end: str, new: str, label: str):
-              global text
-              i = text.find(start)
-              if i < 0:
-                  raise SystemExit(f'{label}: start marker not found')
-              j = text.find(end, i + len(start))
-              if j < 0:
-                  raise SystemExit(f'{label}: end marker not found')
-              if text.find(start, i + 1) >= 0:
-                  raise SystemExit(f'{label}: start marker is not unique')
-              text = text[:i] + new + text[j:]
-
-          rep(
-              '% Manuscript version v18: v17 mathematics with adversarial provenance and trust-boundary revisions.',
-              '% Manuscript revision v20: v17 quantitative theorem with v20 analytic Lean certification and publication/trust-boundary hardening.',
-              'version header')
-          rep('\\date{September 7, 2026}', '\\date{September 9, 2026}', 'manuscript date')
-
-          between(
-              'The only new numerical input is the rigorous signed enclosure',
-              '\\end{abstract}',
-              r'''The additional signed kernel inequality
-\[
- \frac{171389}{1000000}<k(89/100)
-\]
-is proved analytically in Lean from exact integral identities, directed Taylor
-bounds for sine and cosine, certified bounds for \(\pi\) already available in
-Mathlib, and exact rational arithmetic.  Positivity and monotonicity then give
-\(w(89/100)>2937/100000\).  The accompanying exact-arithmetic verifier is
-retained as an independent reproducibility check of the scalar inequality,
-the pressure mass, the contradiction margin, and the final constant.  The v20
-Lean wrapper kernel-checks the published epsilon-form theorem from a single
-explicit external certificate proposition, the archived seven-point claim;
-the signed scalar claim is discharged internally.  The written mathematical
-derivation below does not invoke the recent Alpöge--Furman theorem as a premise;
-the software provenance and exact formal trust boundary are stated separately
-in Section~\ref{sec:trust}.
-''',
-              'abstract trust-boundary tail')
-
-          rep(
-              'Several contemporaneous public computational artifacts report numerically\nlarger values.',
-              'As of 9 September 2026, several contemporaneous public computational artifacts report numerically\nlarger values.',
-              'dated comparison scope')
-
-          rep(
-              'Together\nwith one rigorously enclosed scalar value of the Montgomery--Taylor kernel,\nthis permits \\(m=450\\) and yields Theorem~\\ref{thm:main}.',
-              'Together\nwith a scalar Montgomery--Taylor kernel inequality now proved analytically in\nLean, this permits \\(m=450\\) and yields Theorem~\\ref{thm:main}.',
-              'introduction scalar provenance')
-
-          rep(
-              'Exact pressure preservation, adjacent-pair pinching, scalar enclosure and\n\\(m=450\\) assembly & Present paper\\\\',
-              'Exact pressure preservation, adjacent-pair pinching, scalar kernel argument and\n\\(m=450\\) assembly & Present paper\\\\',
-              'provenance table mathematical row')
-
-          rep(
-              'Lean v17 refinement layer & \\texttt{HurtadoZeta23} modules in the present\nrepository\\\\',
-              'Lean v17 refinement layer and v20 analytic signed-kernel wrapper &\n\\texttt{HurtadoZeta23} modules in the present repository; v20 discharges the\nprevious signed-kernel certificate input internally\\\\',
-              'provenance table Lean row')
-
-          rep(
-              r'''Let \(K=(k(y_i-y_j))_{1\le i,j\le m}\) be a limiting Gram matrix.  Then
-\(K\succeq0\), \(K_{ii}=1\), and
-\begin{equation}\label{eq:Em-trace}''',
-              r'''Let \(K=(k(y_i-y_j))_{1\le i,j\le m}\) be a limiting Gram matrix.  Its
-positive semidefiniteness follows directly from the integral representation:
-for every \(c\in\mathbb C^m\),
-\[
- \sum_{i,j=1}^m \overline{c_i}c_j k(y_i-y_j)
- =\frac1{K(0)}\int_{-1/2}^{1/2}\cos(\sqrt2\,u)
-   \left|\sum_{j=1}^m c_j e^{-2\pi i y_j u}\right|^2du\ge0,
-\]
-because \(\cos(\sqrt2\,u)>0\) on \([-1/2,1/2]\).  Hence
-\(K\succeq0\), \(K_{ii}=1\), and
-\begin{equation}\label{eq:Em-trace}''',
-              'kernel PSD justification')
-
-          rep(
-              r'''The remaining \(m-1\) eigenvalues have sum \(m-1-a\), hence average
-\(1-a/(m-1)\).  Since \(\Psi\) is convex,''',
-              r'''The remaining \(m-1\) eigenvalues have sum \(m-1-a\), hence average
-\(1-a/(m-1)\).  Their nonnegativity implies \(a\le m-1\), so this
-average lies in \([0,1)\).  Since \(\Psi\) is convex,''',
-              'spectral threshold domain')
-
-          between(
-              'The exact-arithmetic verifier accompanying this version certifies the signed',
-              'In particular \\(k(g_0)>0\\),',
-              r'''The v20 Lean development proves the signed
-bound
-\begin{equation}\label{eq:k089-signed}
- \frac{171389}{1000000}
- <
- k\!\left(\frac{89}{100}\right).
-\end{equation}
-This proof does not import the historical interval enclosure.  Writing
-\[
- A=\frac1{\sqrt2},\qquad B=\frac{89\pi}{100},\qquad
- \theta=\frac{11\pi}{100},
-\]
-Lean first derives the exact identity
-\[
- K(0.89)=
- \frac{A\sin A\cos\theta+B\cos A\sin\theta}{B^2-A^2},
-\]
-then obtains directed rational bounds for the elementary transcendental terms
-from alternating Taylor estimates and certified bounds for \(\pi\), proves the
-denominator positive, and closes the resulting strict rational inequality.
-As an independent non-Lean reproducibility check,
-\texttt{verify\_improved\_bound.py} certifies the same signed inequality by
-exact rational comparisons and rigorous enclosures.
-''',
-              'scalar Lean certification')
-
-          rep(
-              'Moreover the same exact-rational verification gives',
-              'Moreover exact rational arithmetic gives',
-              'w089 provenance wording')
-
-          between(
-              'The refinement from the previous constant to Theorem~\\ref{thm:main} introduces',
-              'The pressure vector \\eqref{eq:p} is an explicit certified improvement',
-              r'''The refinement from the previous constant to Theorem~\ref{thm:main} introduces
-no new seven-point branch-and-bound certificate.  The historical
-\texttt{verify\_improved\_bound.py} calculation remains useful as an independent
-reproducibility check for the scalar value, contradiction margin, and displayed
-decimals, but the signed inequality
-\[
- \frac{171389}{1000000}<k(89/100)
-\]
-is no longer an external mathematical trust input in v20.
-
-The v20 formalization has one explicit external certificate proposition in its
-published wrapper.  The Lean root \texttt{HurtadoZeta23.V20FinalAssembly}
-contains
-\texttt{v20\_published\_eps\_form}, whose sole certificate argument is
-\texttt{ArchivedSevenPointClaim}.  The previous
-\texttt{V17KernelSignedCertPointClaim} is derived internally from
-\texttt{HurtadoZeta23.v20\_kernel\_signed\_89\_100}, proved analytically in
-\texttt{V20KernelSignedAnalytic}.  Thus the archived seven-point finite
-inequality remains the only explicit external mathematical certificate
-frontier of the v20 wrapper.  A theorem parameter such as
-\texttt{ArchivedSevenPointClaim} is a mathematical hypothesis of that wrapper,
-not a Lean kernel axiom.
-
-The transitive axiom audit is also explicit.  For
-\texttt{v17\_pairMultiplicitySumNat\_450},
-\texttt{v20\_kernel\_signed\_89\_100},
-\texttt{v20\_kernel\_signed\_claim}, and
-\texttt{v20\_published\_eps\_form}, the accepted \texttt{\#print axioms}
-closure is exactly
-\[
- \{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
-\]
-The CI rejects any additional axiom, including \texttt{sorryAx} or a
-\texttt{\_native.native\_decide.ax\_...} primitive.  During this audit an
-inherited \texttt{native\_decide} proof of the finite identity
-\(\sum_{x<449}(450-(1+x))=101025\) was found in the effective v17 overlay and
-replaced by a symbolic proof using bounded natural arithmetic,
-\texttt{Finset.sum\_range\_reflect}, and \texttt{Finset.sum\_range\_id}.  This
-statement concerns the audited v20 closure; it is not a claim that every
-historical module in the repository is globally free of \texttt{native\_decide}.
-
-The v20 \texttt{HurtadoZeta23} modules retain a distinct software provenance:
-they compile as an overlay on the pinned Anthropic
-\texttt{formal-math/zeta23} source tree at commit
-\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
-together with the pinned Lean/Mathlib toolchain recorded in the repository.
-Consequently the manuscript's logical derivation without importing the
-Alpöge--Furman theorem as a premise must not be conflated with clean-room
-software independence of the formalization.
-
-''',
-              'v20 trust-boundary section')
-
-          rep(
-              'The accompanying script \\texttt{verify\\_improved\\_bound.py} verifies these\nidentities and rigorously encloses the transcendental quantities entering the\nfinal decimal bound.',
-              'As an independent non-Lean reproducibility check, the accompanying script\n\\texttt{verify\\_improved\\_bound.py} verifies these identities and rigorously\nencloses the transcendental quantities entering the final decimal bound; the\nsigned kernel inequality itself is also proved analytically in Lean v20.',
-              'certificate metadata scalar status')
-
-          paper_path.write_text(text)
-
-          release = release_path.read_text()
-          old = 'The mathematical bound and manuscript are unchanged from `v1.2.0-paper`. The purpose of this release is narrower: one numerical certificate that was an explicit external input in v17 is now proved analytically inside Lean, and the resulting trust boundary is audited explicitly.'
-          new = 'The mathematical theorem, numerical bound, and underlying v17 argument are unchanged from `v1.2.0-paper`; the manuscript itself subsequently received v18/v19 provenance and publication-hardening revisions, and the present v20 revision aligns its formal-verification discussion with the analytic Lean certificate. One numerical certificate that was an explicit external input in v17 is now proved analytically inside Lean, and the resulting trust boundary is audited explicitly.'
-          if release.count(old) != 1:
-              raise SystemExit(f'release wording: expected exactly one match, found {release.count(old)}')
-          release_path.write_text(release.replace(old, new, 1))
-
-          Path('docs/V20_MANUSCRIPT_ALIGNMENT.md').write_text(r'''# v20 manuscript alignment
-
-Date: 9 September 2026
-
-This revision aligns the paper with the already-audited v20 Lean formalization. It does not change the main theorem, the numerical constant, the seven-point certificate, or the historical `v1.2.0-paper` release.
-
-Changes made:
-
-- update manuscript version/date metadata to v20;
-- state in the abstract that the signed kernel inequality at `89/100` is proved analytically in Lean;
-- retain `verify_improved_bound.py` as an independent non-Lean reproducibility check rather than an external v20 theorem input;
-- update the provenance table to include the v20 signed-kernel wrapper;
-- add a direct positive-semidefiniteness justification for the limiting kernel Gram matrix;
-- make the domain used in the spectral-threshold Jensen step explicit;
-- summarize the exact analytic Lean route for `k(89/100)`;
-- replace the obsolete two-certificate v17 trust-boundary description by the v20 one-certificate interface;
-- record the audited standard axiom closure `[propext, Classical.choice, Quot.sound]` and the symbolic repair of the inherited finite pair-count lemma;
-- correct the `v1.3.0-lean-analytic` release notes so they distinguish an unchanged theorem/bound from the later v18/v19 manuscript hardening.
-
-The sole explicit external mathematical certificate argument of the v20 published wrapper remains `ArchivedSevenPointClaim`. Software provenance remains an overlay on the pinned Anthropic `formal-math/zeta23` commit `fbdc36bbf17d20af3fd0447c6d1a8a02773c9844`; no clean-room claim is made.
-''')
-          PY
-
-      - name: Fail closed on stale v17 wording
+      - name: Audit v20 wording
         shell: bash
         run: |
           grep -F '% Manuscript revision v20:' paper/main.tex
@@ -257,29 +31,26 @@ The sole explicit external mathematical certificate argument of the v20 publishe
           grep -F 'v20\_published\_eps\_form' paper/main.tex
           grep -F 'ArchivedSevenPointClaim' paper/main.tex
           ! grep -F 'The only new numerical input is the rigorous signed enclosure' paper/main.tex
-          ! grep -F 'exactly two \emph{explicit external certificate propositions}' paper/main.tex
           ! grep -F 'The mathematical bound and manuscript are unchanged from `v1.2.0-paper`' docs/RELEASE_v1.3.0-lean-analytic.md
 
       - name: Install LaTeX toolchain
-        shell: bash
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended lmodern
 
       - name: Rebuild manuscript PDF
-        shell: bash
         run: |
           cd paper
           latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
           test -s main.pdf
 
-      - name: Commit aligned manuscript and remove staging workflow
+      - name: Commit aligned manuscript
         shell: bash
         run: |
-          rm -f .github/workflows/v20-manuscript-alignment.yml
+          rm -f .github/workflows/v20-manuscript-alignment.yml scripts/v20_manuscript_align.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A paper/main.tex paper/main.pdf docs/RELEASE_v1.3.0-lean-analytic.md docs/V20_MANUSCRIPT_ALIGNMENT.md .github/workflows/v20-manuscript-alignment.yml
+          git add -A paper/main.tex paper/main.pdf docs/RELEASE_v1.3.0-lean-analytic.md docs/V20_MANUSCRIPT_ALIGNMENT.md .github/workflows/v20-manuscript-alignment.yml scripts/v20_manuscript_align.py
           git diff --cached --check
           git diff --cached --quiet && { echo 'No staged changes'; exit 1; }
           git commit -m 'v20: align manuscript with analytic Lean trust boundary'
