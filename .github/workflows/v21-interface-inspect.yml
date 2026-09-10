@@ -16,19 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Reconstruct archived Lean sources
+      - name: Reconstruct effective Lean overlay
         run: |
           mkdir -p /tmp/v21src/HurtadoZeta23
           cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/a.tar.gz
           tar -xzf /tmp/a.tar.gz -C /tmp/v21src
           cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/b.tar.gz
           tar -xzf /tmp/b.tar.gz -C /tmp/v21src
+          find "$GITHUB_WORKSPACE/lean_harness" -name '*.lean' \
+            -not -path '*/v20_analytic/*' \
+            -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+              cp "$f" "/tmp/v21src/HurtadoZeta23/$(basename "$f")"
+          done
       - name: Print exact seven-point interface
         run: |
           cd /tmp/v21src
           echo '=== ArticleSevenPointInequality ==='
-          grep -R -n -B 12 -A 30 'ArticleSevenPointInequality' . | head -n 220 || true
-          echo '=== localFp definitions ==='
-          grep -R -n -B 8 -A 32 -E 'def localFp|abbrev localFp|localFp ' . | head -n 260 || true
-          echo '=== pressure / delta definitions ==='
-          grep -R -n -B 8 -A 30 -E 'def pressure|def delta|def beta|PositionWeights|2714|3733|3553' . | head -n 320 || true
+          grep -R -n -B 16 -A 50 'ArticleSevenPointInequality' HurtadoZeta23 | head -n 320 || true
+          echo '=== local functional / gaps / pressure ==='
+          grep -R -n -B 12 -A 50 -E 'def localFp|def localPairEnergy|def localPressure|def windowGap|def SevenPointCertificate' HurtadoZeta23 | head -n 520 || true
+          echo '=== constants / weights ==='
+          grep -R -n -B 8 -A 32 -E 'def pressure|def delta|def beta|2714|3733|3553' HurtadoZeta23 | head -n 360 || true
