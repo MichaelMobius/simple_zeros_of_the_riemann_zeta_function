@@ -31,22 +31,25 @@ theorem v21_negk_at_120_lower :
   have hratioRaw :=
     v21_ratio_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hratio :
-      (2700829 / 10000000 : ℝ) ≤ v21B x / v21D x := by
+      (2749305 / 10000000 : ℝ) ≤ v21B x / v21D x := by
     have hrat :
-        (2700829 / 10000000 : ℝ) ≤
+        (2749305 / 10000000 : ℝ) ≤
           bU / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hratioRaw)
 
   have hrecipRaw :=
     v21_recip_factor_lower (b := bL) (u := v21B x) hbL1 hbL
+  have hrecipRaw' :
+      1 / v21D x ≤ 1 / (bL ^ 2 - (1 / 2 : ℝ)) := by
+    simpa [v21D] using hrecipRaw
   have hrecip :
-      1 / v21D x ≤ (732199 / 10000000 : ℝ) := by
+      1 / v21D x ≤ (729276 / 10000000 : ℝ) := by
     have hrat :
         1 / (bL ^ 2 - (1 / 2 : ℝ)) ≤
-          (732199 / 10000000 : ℝ) := by
+          (729276 / 10000000 : ℝ) := by
       norm_num [bL]
-    exact (by simpa [v21D] using hrecipRaw).trans hrat
+    exact hrecipRaw'.trans hrat
 
   have hC : (8274992 / 10000000 : ℝ) ≤ v21C := by
     nlinarith [v21_C_lower]
@@ -84,18 +87,18 @@ theorem v21_negk_at_120_lower :
   have hsinTaylor := v21_sin_upper9 (x := tU) htU0 htU1
   have hsinRat :
       tU - tU ^ 3 / 6 + tU ^ 5 / 120 - tU ^ 7 / 5040 +
-          tU ^ 9 / 362880 ≤ (8090170 / 10000000 : ℝ) := by
+          tU ^ 9 / 362880 ≤ (8090171 / 10000000 : ℝ) := by
     norm_num [tU]
   have hsinMono : Real.sin u ≤ Real.sin tU := by
     apply Real.sin_le_sin_of_le_of_le_pi_div_two
     · nlinarith [Real.pi_pos, hu0]
     · nlinarith [Real.pi_gt_three, htU1]
     · exact hu_tU
-  have hsin : Real.sin u ≤ (8090170 / 10000000 : ℝ) :=
+  have hsin : Real.sin u ≤ (8090171 / 10000000 : ℝ) :=
     hsinMono.trans (hsinTaylor.trans hsinRat)
 
   have hC0 : (0 : ℝ) ≤ 8274992 / 10000000 := by norm_num
-  have hratio0 : (0 : ℝ) ≤ 2700829 / 10000000 := by norm_num
+  have hratio0 : (0 : ℝ) ≤ 2749305 / 10000000 := by norm_num
   have hcos0 : (0 : ℝ) ≤ 5877852 / 10000000 := by norm_num
   have hrecip0 : 0 ≤ 1 / v21D x := by
     exact le_of_lt (one_div_pos.mpr (v21_D_pos hxA))
@@ -105,32 +108,31 @@ theorem v21_negk_at_120_lower :
   have hratioNonneg : 0 ≤ v21B x / v21D x := hratio0.trans hratio
 
   have hterm1 :
-      (8274992 / 10000000 : ℝ) * (2700829 / 10000000 : ℝ) *
+      (8274992 / 10000000 : ℝ) * (2749305 / 10000000 : ℝ) *
           (5877852 / 10000000 : ℝ) ≤
         v21C * (v21B x / v21D x) * Real.cos u := by
     have hprod :
-        (8274992 / 10000000 : ℝ) * (2700829 / 10000000 : ℝ) ≤
+        (8274992 / 10000000 : ℝ) * (2749305 / 10000000 : ℝ) ≤
           v21C * (v21B x / v21D x) :=
       mul_le_mul hC hratio hratio0 hCnonneg
     exact mul_le_mul hprod hcos hcos0 (mul_nonneg hCnonneg hratioNonneg)
 
   have hhalfrecip :
       (1 / 2 : ℝ) * (1 / v21D x) ≤
-        (1 / 2 : ℝ) * (732199 / 10000000 : ℝ) :=
+        (1 / 2 : ℝ) * (729276 / 10000000 : ℝ) :=
     mul_le_mul_of_nonneg_left hrecip (by norm_num)
   have hterm2 :
       (1 / 2 : ℝ) * (1 / v21D x) * Real.sin u ≤
-        (1 / 2 : ℝ) * (732199 / 10000000 : ℝ) *
-          (8090170 / 10000000 : ℝ) := by
-    exact mul_le_mul hhalfrecip hsin hsinu0
-      (mul_nonneg (by norm_num) hrecip0)
+        (1 / 2 : ℝ) * (729276 / 10000000 : ℝ) *
+          (8090171 / 10000000 : ℝ) := by
+    exact mul_le_mul hhalfrecip hsin hsinu0 (by norm_num)
 
   have hratFinal :
       (521 / 5000 : ℝ) <
-        (8274992 / 10000000 : ℝ) * (2700829 / 10000000 : ℝ) *
+        (8274992 / 10000000 : ℝ) * (2749305 / 10000000 : ℝ) *
             (5877852 / 10000000 : ℝ) -
-          (1 / 2 : ℝ) * (732199 / 10000000 : ℝ) *
-            (8090170 / 10000000 : ℝ) := by
+          (1 / 2 : ℝ) * (729276 / 10000000 : ℝ) *
+            (8090171 / 10000000 : ℝ) := by
     norm_num
 
   rw [v21_negk_phase15 hxA, hphase, Real.cos_neg, Real.sin_neg]
@@ -214,7 +216,7 @@ theorem v21_negk_at_179_lower :
 
   have hsinTaylor := v21_sin_lower7 (x := tL) htL0 htL1
   have hsinRat :
-      (7901550 / 10000000 : ℝ) <
+      (7901538 / 10000000 : ℝ) <
         tL - tL ^ 3 / 6 + tL ^ 5 / 120 - tL ^ 7 / 5040 := by
     norm_num [tL]
   have hsinMono : Real.sin tL ≤ Real.sin u := by
@@ -223,14 +225,14 @@ theorem v21_negk_at_179_lower :
     · dsimp [u]
       nlinarith [Real.pi_pos]
     · exact htL_u
-  have hsin : (7901550 / 10000000 : ℝ) ≤ Real.sin u := by
+  have hsin : (7901538 / 10000000 : ℝ) ≤ Real.sin u := by
     exact le_of_lt (hsinRat.trans_le (hsinTaylor.trans hsinMono))
 
   have hC0 : (0 : ℝ) ≤ 8274992 / 10000000 := by norm_num
   have hratio0 : (0 : ℝ) ≤ 1806514 / 10000000 := by norm_num
   have hrecip0 : (0 : ℝ) ≤ 321267 / 10000000 := by norm_num
   have hcos0 : (0 : ℝ) ≤ 6129070 / 10000000 := by norm_num
-  have hsin0 : (0 : ℝ) ≤ 7901550 / 10000000 := by norm_num
+  have hsin0 : (0 : ℝ) ≤ 7901538 / 10000000 := by norm_num
   have hCnonneg : 0 ≤ v21C := hC0.trans hC
   have hratioNonneg : 0 ≤ v21B x / v21D x := hratio0.trans hratio
   have hrecipNonneg : 0 ≤ 1 / v21D x := hrecip0.trans hrecip
@@ -247,7 +249,7 @@ theorem v21_negk_at_179_lower :
 
   have hterm2 :
       (1 / 2 : ℝ) * (321267 / 10000000 : ℝ) *
-          (7901550 / 10000000 : ℝ) ≤
+          (7901538 / 10000000 : ℝ) ≤
         (1 / 2 : ℝ) * (1 / v21D x) * Real.sin u := by
     have hhalf :
         (1 / 2 : ℝ) * (321267 / 10000000 : ℝ) ≤
@@ -260,7 +262,7 @@ theorem v21_negk_at_179_lower :
         (8274992 / 10000000 : ℝ) * (1806514 / 10000000 : ℝ) *
             (6129070 / 10000000 : ℝ) +
           (1 / 2 : ℝ) * (321267 / 10000000 : ℝ) *
-            (7901550 / 10000000 : ℝ) := by
+            (7901538 / 10000000 : ℝ) := by
     norm_num
 
   rw [v21_negk_phase15 hxA, hphase]
