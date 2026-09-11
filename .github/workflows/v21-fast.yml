@@ -44,9 +44,12 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build v21 seven-point module
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21SevenPointAnalytic
+      - name: Build v21 seven-point modules
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V21SevenPointAnalytic
+          lake build HurtadoZeta23.V21GapFunctional
       - name: Reject placeholders and trusted declarations
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21SevenPointAnalytic.lean"
+          ! grep -R -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic" --include='*.lean'
