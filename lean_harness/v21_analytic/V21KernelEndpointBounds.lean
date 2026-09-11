@@ -7,7 +7,7 @@ namespace HurtadoZeta23
 
 /-- A rational lower certificate for the right endpoint of the first
 hard-core exclusion interval.  The proof uses only rational π bounds,
-Taylor inequalities already proved in v20, and the elementary antitonicity
+Taylor inequalities proved internally in the v21 kernel layer, and the elementary antitonicity
 of the two denominator factors. -/
 theorem v21_k_at_095_lower :
     (523 / 5000 : ℝ) < limitingk (19 / 20 : ℝ) := by
@@ -55,7 +55,7 @@ theorem v21_k_at_095_lower :
   have hphaseL : tL ≤ v21Phase1 x := by
     dsimp [tL, x, v21Phase1]
     nlinarith [v21_pi_lower]
-  have hsinTaylor := v20_sin_lower7 (x := tL) htL0 htL1
+  have hsinTaylor := v21_sin_lower7 (x := tL) htL0 htL1
   have hsinRat :
       (1564344 / 10000000 : ℝ) <
         tL - tL ^ 3 / 6 + tL ^ 5 / 120 - tL ^ 7 / 5040 := by
@@ -75,7 +75,7 @@ theorem v21_k_at_095_lower :
   have hphaseU : v21Phase1 x ≤ tU := by
     dsimp [tU, x, v21Phase1]
     nlinarith [v21_pi_upper]
-  have hcosTaylor := v20_cos_lower10 (x := tU) htU0 htU1
+  have hcosTaylor := v21_cos_lower10 (x := tU) htU0 htU1
   have hcosRat :
       (9876883 / 10000000 : ℝ) <
         1 - tU ^ 2 / 2 + tU ^ 4 / 24 - tU ^ 6 / 720 +
