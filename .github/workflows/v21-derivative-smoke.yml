@@ -21,6 +21,7 @@ on:
       - 'lean_harness/v21_analytic/V21KernelThirdLobeEndpoints.lean'
       - 'lean_harness/v21_analytic/V21KernelIntervalCurvature.lean'
       - 'lean_harness/v21_analytic/V21UniformGapExclusionsAnalytic.lean'
+      - 'lean_harness/v21_analytic/V21GapBandReduction.lean'
       - '.github/workflows/v21-derivative-smoke.yml'
   workflow_dispatch:
 
@@ -61,6 +62,13 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
+      - name: Restore analytic overlay build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v21-analytic-overlay-${{ runner.os }}-lean433rc2-${{ hashFiles('lean_harness/v21_analytic/*.lean') }}
+          restore-keys: |
+            v21-analytic-overlay-${{ runner.os }}-lean433rc2-
       - name: Build Taylor tools
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21TaylorTools
       - name: Build normalized kernel
@@ -91,6 +99,8 @@ jobs:
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelIntervalCurvature
       - name: Build uniform gap exclusions
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21UniformGapExclusionsAnalytic
+      - name: Build survivor-band reduction
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21GapBandReduction
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
@@ -108,4 +118,5 @@ jobs:
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelHigherEndpointBounds.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelThirdLobeEndpoints.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelIntervalCurvature.lean" \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21UniformGapExclusionsAnalytic.lean"
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21UniformGapExclusionsAnalytic.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21GapBandReduction.lean"
