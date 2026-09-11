@@ -67,6 +67,7 @@ jobs:
           path: /tmp/formal-math/zeta23/.lake/packages
           key: v21-pinned-deps-${{ runner.os }}-lean433rc2-fbdc36bb-mathlib51e6992
       - name: Fetch Mathlib cache
+        if: steps.pinned-deps-cache.outputs.cache-hit != 'true'
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
       - name: Save pinned dependency cache
         if: steps.pinned-deps-cache.outputs.cache-hit != 'true'
