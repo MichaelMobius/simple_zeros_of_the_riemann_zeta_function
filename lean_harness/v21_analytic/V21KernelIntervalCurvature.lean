@@ -40,7 +40,9 @@ theorem v21_kernelX_hasDerivAt {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt v21KernelX (v21KernelXPrime x) x := by
   have hcomp := (v21_kernelB_hasDerivAt hD).comp x (v21_B_hasDerivAt_interval x)
-  simpa [v21KernelX, v21KernelXPrime, Function.comp_apply, mul_comm] using hcomp
+  change HasDerivAt (v21KernelB ∘ v21B)
+    (Real.pi * v21KernelBPrime (v21B x)) x
+  simpa [v21KernelBPrime, mul_comm] using hcomp
 
 /-- Exact second derivative after returning to the physical separation variable. -/
 theorem v21_kernelXPrime_hasDerivAt {x : ℝ}
@@ -54,8 +56,12 @@ theorem v21_kernelXPrime_hasDerivAt {x : ℝ}
           ((v21M2 (v21B x) /
             ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3) * Real.pi)) x := by
     simpa only [Function.comp_apply] using hcomp.const_mul Real.pi
-  simpa [v21KernelXPrime, v21KernelXSecond, Function.comp_apply, pow_two,
-    mul_comm, mul_left_comm, mul_assoc] using hscaled
+  change HasDerivAt
+    (fun y : ℝ => Real.pi * v21KernelBPrime (v21B y))
+    (Real.pi ^ 2 *
+      (v21M2 (v21B x) /
+        ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3)) x
+  simpa [pow_two, mul_comm, mul_left_comm, mul_assoc] using hscaled
 
 lemma v21_kernelXSecond_nonneg_second_band {x : ℝ}
     (hx1 : (6 / 5 : ℝ) ≤ x) (hx2 : x ≤ (179 / 100 : ℝ)) :
