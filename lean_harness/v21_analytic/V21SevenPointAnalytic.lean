@@ -159,7 +159,15 @@ lemma v21_adjacent_weight_le_localPairEnergy
           (∑ i ∈ Finset.range 6,
             limitingWeightOnPoints y (s + i) (s + i + 1)) ≤
         localPairEnergy (limitingWeightOnPoints y) s := by
-    simpa [outerTerm, localPairEnergy] using houterRaw
+    calc
+      (1 / 3 : ℝ) *
+          (∑ i ∈ Finset.range 6,
+            limitingWeightOnPoints y (s + i) (s + i + 1)) =
+        (2 / 6 : ℝ) *
+          (∑ i ∈ Finset.range 6,
+            limitingWeightOnPoints y (s + i) (s + i + 1)) := by ring
+      _ ≤ localPairEnergy (limitingWeightOnPoints y) s := by
+        simpa [outerTerm, localPairEnergy] using houterRaw
   have hscaled :=
     mul_le_mul_of_nonneg_left hinner (show (0 : ℝ) ≤ 1 / 3 by norm_num)
   exact hscaled.trans houter
