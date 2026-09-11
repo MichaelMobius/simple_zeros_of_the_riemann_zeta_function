@@ -27,8 +27,9 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
       HasDerivAt
         (fun t : ℝ => v21C * t ^ 3 - (1 / 2 : ℝ) * v21C * t + t)
         (3 * v21C * b ^ 2 - (1 / 2 : ℝ) * v21C + 1) b := by
-    apply hR0.congr_deriv
-    ring
+    convert hR0 using 1 <;>
+      simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq] <;>
+      ring
 
   have hS0 :=
     (((((hasDerivAt_id b).pow 2).const_mul (-v21C)).add
@@ -40,15 +41,16 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
           -v21C * t ^ 2 + (1 / 2 : ℝ) * t ^ 2 -
             (1 / 2 : ℝ) * v21C - (1 / 4 : ℝ))
         (-2 * v21C * b + b) b := by
-    apply hS0.congr_deriv
-    ring
+    convert hS0 using 1 <;>
+      simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq] <;>
+      ring
 
   have hprod :=
     (hR.mul (Real.hasDerivAt_cos b)).add
       (hS.mul (Real.hasDerivAt_sin b))
   unfold v21M1 v21M1Prime
-  apply hprod.congr_deriv
-  ring
+  convert hprod using 1 <;>
+    simp only [Pi.add_apply, Pi.mul_apply] <;> ring
 
 /-- The algebraic identity responsible for the compact second derivative:
 `M₂ = M₁' D - 4 b M₁`. -/
@@ -64,12 +66,13 @@ theorem v21_kernelBPrime_hasDerivAt {b : ℝ}
     HasDerivAt v21KernelBPrime
       (v21M2 b / (b ^ 2 - (1 / 2 : ℝ)) ^ 3) b := by
   have hm := v21_M1_hasDerivAt b
+  have hdRaw := ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
   have hd :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
         (2 * b) b := by
-    apply (((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)).congr_deriv
-    ring
+    convert hdRaw using 1 <;>
+      simp only [Pi.pow_apply, id_eq] <;> ring
   have hd2 := hd.pow 2
   have hq := hm.div hd2 (pow_ne_zero 2 hD)
   unfold v21KernelBPrime
