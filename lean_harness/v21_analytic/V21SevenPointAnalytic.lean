@@ -89,6 +89,80 @@ lemma v21_pressure_tail_six
   have hmargin := v21_pressure_cutoff_margin
   nlinarith
 
+/-- The kernel part of the local seven-point functional is nonnegative. -/
+lemma v21_localPairEnergy_nonneg (y : ℕ → ℝ) (s : ℕ) :
+    0 ≤ localPairEnergy (limitingWeightOnPoints y) s := by
+  unfold localPairEnergy
+  apply Finset.sum_nonneg
+  intro r0 hr0
+  have hr0lt : r0 < 6 := Finset.mem_range.mp hr0
+  have hdenNat : 0 < 6 - r0 := Nat.sub_pos_of_lt hr0lt
+  have hden : 0 < ((6 - r0 : ℕ) : ℝ) := by
+    exact_mod_cast hdenNat
+  have hinner :
+      0 ≤ ∑ i ∈ Finset.range (6 - r0),
+        limitingWeightOnPoints y (s + i) (s + i + r0 + 1) := by
+    apply Finset.sum_nonneg
+    intro i hi
+    exact limitingWeightOnPoints_nonneg y (s + i) (s + i + r0 + 1)
+  exact mul_nonneg (div_nonneg (by norm_num) hden.le) hinner
+
+/-- The full local functional dominates its linear pressure part. -/
+lemma v21_localPressure_le_localFp (y : ℕ → ℝ) (s : ℕ) :
+    localPressure y s ≤ localFp (limitingWeightOnPoints y) y s := by
+  rw [localFp_eq]
+  linarith [v21_localPairEnergy_nonneg y s]
+
+/-- Literal six-term expansion of the local pressure. -/
+lemma v21_localPressure_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
+    localPressure y s =
+      pressure 0 * (y (s+1) - y s) +
+      pressure 1 * (y (s+2) - y (s+1)) +
+      pressure 2 * (y (s+3) - y (s+2)) +
+      pressure 3 * (y (s+4) - y (s+3)) +
+      pressure 4 * (y (s+5) - y (s+4)) +
+      pressure 5 * (y (s+6) - y (s+5)) := by
+  simp only [localPressure, windowGap]
+  norm_num [Fin.sum_univ_succ]
+  simp [pressure]
+  ring
+
+/-- Direct compact reduction for the article target: any admissible window
+whose total span is at least `14.37` already satisfies the desired bound.
+Thus the remaining six-gap problem may be restricted to total span `< 14.37`. -/
+theorem v21_localFp_of_large_span
+    (y : ℕ → ℝ) (s : ℕ)
+    (hgap : ∀ j : Fin 6, 0 ≤ windowGap y s j)
+    (hspan : (1437 / 100 : ℝ) ≤ y (s+6) - y s) :
+    delta ≤ localFp (limitingWeightOnPoints y) y s := by
+  have h0 : 0 ≤ y (s+1) - y s := by
+    simpa [windowGap] using hgap (0 : Fin 6)
+  have h1 : 0 ≤ y (s+2) - y (s+1) := by
+    simpa [windowGap] using hgap (1 : Fin 6)
+  have h2 : 0 ≤ y (s+3) - y (s+2) := by
+    simpa [windowGap] using hgap (2 : Fin 6)
+  have h3 : 0 ≤ y (s+4) - y (s+3) := by
+    simpa [windowGap] using hgap (3 : Fin 6)
+  have h4 : 0 ≤ y (s+5) - y (s+4) := by
+    simpa [windowGap] using hgap (4 : Fin 6)
+  have h5 : 0 ≤ y (s+6) - y (s+5) := by
+    simpa [windowGap] using hgap (5 : Fin 6)
+  have hsum :
+      (1437 / 100 : ℝ) ≤
+        (y (s+1) - y s) + (y (s+2) - y (s+1)) +
+        (y (s+3) - y (s+2)) + (y (s+4) - y (s+3)) +
+        (y (s+5) - y (s+4)) + (y (s+6) - y (s+5)) := by
+    linarith
+  have htail :=
+    v21_pressure_tail_six
+      (y (s+1) - y s) (y (s+2) - y (s+1))
+      (y (s+3) - y (s+2)) (y (s+4) - y (s+3))
+      (y (s+5) - y (s+4)) (y (s+6) - y (s+5))
+      h0 h1 h2 h3 h4 h5 hsum
+  have hpressure := v21_localPressure_le_localFp y s
+  rw [v21_localPressure_eq_explicit] at hpressure
+  exact (le_of_lt htail).trans hpressure
+
 /-- Exact algebraic expansion of the historical seven-point functional. -/
 theorem v21_localFp_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
     localFp (limitingWeightOnPoints y) y s = v21ExplicitF y s := by
