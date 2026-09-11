@@ -54,6 +54,7 @@ jobs:
           lake build HurtadoZeta23.V21HardCoreGeometry
           lake build HurtadoZeta23.V21KernelClosedForm
           lake build HurtadoZeta23.V21KernelNormalized
+          lake build HurtadoZeta23.V21KernelCellTools
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -R -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
