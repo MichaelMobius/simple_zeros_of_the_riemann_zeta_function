@@ -48,7 +48,7 @@ exactly half of the total pressure mass. -/
 lemma v21_pressure_half_masses :
     pressure 0 + pressure 1 + pressure 2 = (1/1000 : ℝ) ∧
     pressure 3 + pressure 4 + pressure 5 = (1/1000 : ℝ) := by
-  constructor <;> norm_num [pressure]
+  constructor <;> simp [pressure] <;> norm_num
 
 /-- Exact algebraic expansion of the historical seven-point functional. -/
 theorem v21_localFp_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
@@ -56,6 +56,7 @@ theorem v21_localFp_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
   simp only [localFp, localPressure, localPairEnergy, limitingWeightOnPoints,
     windowGap, v21ExplicitF]
   norm_num [Fin.sum_univ_succ, Finset.sum_range_succ]
+  simp [pressure]
   ring
 
 /-- The v21 target is exactly the historical external certificate frontier. -/
