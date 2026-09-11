@@ -14,7 +14,9 @@ lemma v21_D_pos {x : ℝ} (hx : v21A < v21B x) : 0 < v21D x := by
   unfold v21D
   have hBpos : 0 < v21B x := lt_trans v21_A_pos hx
   have hfac := mul_pos (sub_pos.mpr hx) (add_pos hBpos v21_A_pos)
-  rw [v21_A_sq] at hfac
+  have hsq : v21A ^ 2 < (v21B x) ^ 2 := by
+    nlinarith [hfac]
+  rw [v21_A_sq] at hsq
   nlinarith
 
 /-- Correlation-preserving decomposition used by all cell bounds. -/
@@ -27,7 +29,6 @@ theorem v21_limitingk_decomposed {x : ℝ}
   have hD : v21D x ≠ 0 := ne_of_gt (v21_D_pos hx)
   unfold v21D
   field_simp [hD]
-  ring
 
 /-- Phase about the integer centre `1`. -/
 def v21Phase1 (x : ℝ) : ℝ := Real.pi * (1 - x)
@@ -144,16 +145,14 @@ lemma v21_weight_lower_of_k_lower {x q : ℝ}
     (hq0 : 0 ≤ q) (hk : q ≤ limitingk x) :
     q ^ 2 ≤ limitingWeight x := by
   unfold limitingWeight
-  have hk0 : 0 ≤ limitingk x := hq0.trans hk
-  exact pow_le_pow_left₀ hq0 hk (by norm_num)
+  exact pow_le_pow_left₀ hq0 hk 2
 
 /-- The analogous conversion on a negative lobe. -/
 lemma v21_weight_lower_of_negk_lower {x q : ℝ}
     (hq0 : 0 ≤ q) (hk : q ≤ -limitingk x) :
     q ^ 2 ≤ limitingWeight x := by
   unfold limitingWeight
-  have hk0 : 0 ≤ -limitingk x := hq0.trans hk
-  have hs := pow_le_pow_left₀ hq0 hk (by norm_num)
+  have hs := pow_le_pow_left₀ hq0 hk 2
   simpa using hs
 
 end HurtadoZeta23
