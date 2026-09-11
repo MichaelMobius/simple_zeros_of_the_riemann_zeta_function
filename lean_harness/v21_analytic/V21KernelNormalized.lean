@@ -136,6 +136,7 @@ theorem v21_limitingk_normalized {x : ℝ}
         ((v21B x) ^ 2 - (1 / 2 : ℝ)) := by
   unfold limitingk
   rw [v21_limitingK_closed hx, limitingK_zero_closed, v21_A_sq]
+  fold v21A
   rw [← v21_sincA_eq_K0]
   rw [v21_C_eq_cos_div_sinc]
   have hsinc : v21SincA ≠ 0 := ne_of_gt v21_sincA_pos
