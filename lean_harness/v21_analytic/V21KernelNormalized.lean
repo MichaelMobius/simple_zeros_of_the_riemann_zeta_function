@@ -156,7 +156,9 @@ theorem v21_limitingk_normalized {x : ℝ}
   have hden : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0 := by
     have hBpos : 0 < v21B x := lt_trans v21_A_pos hx
     have hfac := mul_pos (sub_pos.mpr hx) (add_pos hBpos v21_A_pos)
-    rw [v21_A_sq] at hfac
+    have hsq : v21A ^ 2 < (v21B x) ^ 2 := by
+      nlinarith [hfac]
+    rw [v21_A_sq] at hsq
     nlinarith
   field_simp [hsqrt, hsin, hden]
   rw [← v21_sqrt_two_half]
