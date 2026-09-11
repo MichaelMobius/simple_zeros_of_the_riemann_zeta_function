@@ -62,19 +62,24 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Restore analytic overlay build cache
-        uses: actions/cache@v4
+      - name: Restore green kernel-base cache
+        id: kernel-base-cache
+        uses: actions/cache/restore@v4
         with:
           path: /tmp/formal-math/zeta23/.lake/build
-          key: v21-analytic-overlay-${{ runner.os }}-lean433rc2-${{ hashFiles('lean_harness/v21_analytic/*.lean') }}
-          restore-keys: |
-            v21-analytic-overlay-${{ runner.os }}-lean433rc2-
+          key: v21-kernel-base-${{ runner.os }}-lean433rc2-${{ hashFiles('lean_harness/v21_analytic/V21TaylorTools.lean', 'lean_harness/v21_analytic/V21KernelClosedForm.lean', 'lean_harness/v21_analytic/V21KernelNormalized.lean', 'lean_harness/v21_analytic/V21KernelCellTools.lean') }}
       - name: Build Taylor tools
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21TaylorTools
       - name: Build normalized kernel
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelNormalized
       - name: Build kernel cell tools
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelCellTools
+      - name: Save green kernel-base cache
+        if: steps.kernel-base-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: ${{ steps.kernel-base-cache.outputs.cache-primary-key }}
       - name: Build first derivative
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelDerivatives
       - name: Build second derivative
