@@ -79,7 +79,7 @@ lemma v21_kernelB_deriv_le_first_band {x : ℝ}
     nlinarith [Real.pi_pos]
 
   have hsinTaylor :=
-    v20_sin_lower7 (x := (3 / 20 : ℝ)) (by norm_num) (by norm_num)
+    v21_sin_lower7 (x := (3 / 20 : ℝ)) (by norm_num) (by norm_num)
   have hsinRat :
       (7 / 50 : ℝ) <
         (3 / 20 : ℝ) - (3 / 20 : ℝ) ^ 3 / 6 +
