@@ -17,6 +17,10 @@ on:
       - 'lean_harness/v21_analytic/V21KernelFirstLobeSign.lean'
       - 'lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean'
       - 'lean_harness/v21_analytic/V21FirstGapExclusion.lean'
+      - 'lean_harness/v21_analytic/V21KernelHigherEndpointBounds.lean'
+      - 'lean_harness/v21_analytic/V21KernelThirdLobeEndpoints.lean'
+      - 'lean_harness/v21_analytic/V21KernelIntervalCurvature.lean'
+      - 'lean_harness/v21_analytic/V21UniformGapExclusionsAnalytic.lean'
       - '.github/workflows/v21-derivative-smoke.yml'
   workflow_dispatch:
 
@@ -79,6 +83,14 @@ jobs:
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelFirstLobeQuantitative
       - name: Build first gap exclusion
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21FirstGapExclusion
+      - name: Build second-lobe endpoints
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelHigherEndpointBounds
+      - name: Build third-lobe endpoints
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelThirdLobeEndpoints
+      - name: Build interval curvature
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelIntervalCurvature
+      - name: Build uniform gap exclusions
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21UniformGapExclusionsAnalytic
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
@@ -92,4 +104,8 @@ jobs:
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeSign.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean" \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21FirstGapExclusion.lean"
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21FirstGapExclusion.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelHigherEndpointBounds.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelThirdLobeEndpoints.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelIntervalCurvature.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21UniformGapExclusionsAnalytic.lean"
