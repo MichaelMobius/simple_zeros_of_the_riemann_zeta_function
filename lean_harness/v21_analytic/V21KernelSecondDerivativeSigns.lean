@@ -96,8 +96,10 @@ lemma v21_Q2_le_two_P2 {b : ℝ} (hb : (47 / 10 : ℝ) ≤ b) :
     dsimp [u, c]
     unfold v21Q2 v21P2
     ring
-  rw [hid]
-  nlinarith
+  have hdiff : v21Q2 b - 2 * v21P2 b ≤ 0 := by
+    rw [hid]
+    nlinarith
+  linarith
 
 /-- On the right half of the third lobe, the stronger comparison `Q ≤ P`
 holds already from the rational threshold `7.4`. -/
@@ -131,7 +133,9 @@ lemma v21_Q2_le_P2 {b : ℝ} (hb : (74 / 10 : ℝ) ≤ b) :
     dsimp [u, c]
     unfold v21Q2 v21P2
     ring
-  rw [hid]
-  nlinarith
+  have hdiff : v21Q2 b - v21P2 b ≤ 0 := by
+    rw [hid]
+    nlinarith
+  linarith
 
 end HurtadoZeta23
