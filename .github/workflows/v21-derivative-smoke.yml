@@ -11,6 +11,7 @@ on:
       - 'lean_harness/v21_analytic/V21KernelDerivatives.lean'
       - 'lean_harness/v21_analytic/V21KernelSecondDerivatives.lean'
       - 'lean_harness/v21_analytic/V21KernelEndpointBounds.lean'
+      - 'lean_harness/v21_analytic/V21KernelFirstLobeSign.lean'
       - '.github/workflows/v21-derivative-smoke.yml'
   workflow_dispatch:
 
@@ -57,9 +58,11 @@ jobs:
           lake build HurtadoZeta23.V21KernelDerivatives
           lake build HurtadoZeta23.V21KernelSecondDerivatives
           lake build HurtadoZeta23.V21KernelEndpointBounds
+          lake build HurtadoZeta23.V21KernelFirstLobeSign
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelDerivatives.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelSecondDerivatives.lean" \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean"
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeSign.lean"
