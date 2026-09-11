@@ -49,6 +49,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21SevenPointAnalytic
           lake build HurtadoZeta23.V21GapFunctional
+          lake build HurtadoZeta23.V21KernelClosedForm
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -R -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
