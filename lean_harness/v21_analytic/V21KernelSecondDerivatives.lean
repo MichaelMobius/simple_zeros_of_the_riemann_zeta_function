@@ -23,38 +23,43 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
     ((((hasDerivAt_id b).pow 3).const_mul v21C).sub
       ((hasDerivAt_id b).const_mul ((1 / 2 : ℝ) * v21C))).add
       (hasDerivAt_id b)
+  have hR0' := hR0.congr_deriv (by ring)
   have hR :
       HasDerivAt
         (fun t : ℝ => v21C * t ^ 3 - (1 / 2 : ℝ) * v21C * t + t)
         (3 * v21C * b ^ 2 - (1 / 2 : ℝ) * v21C + 1) b := by
-    convert hR0 using 1 <;>
-      first
-      | ring
-      | (simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]; ring)
+    refine hR0'.congr_of_eventuallyEq ?_
+    filter_upwards with t
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]
+    ring
 
   have hS0 :=
     (((((hasDerivAt_id b).pow 2).const_mul (-v21C)).add
       (((hasDerivAt_id b).pow 2).const_mul (1 / 2 : ℝ))).sub_const
       ((1 / 2 : ℝ) * v21C + (1 / 4 : ℝ)))
+  have hS0' := hS0.congr_deriv (by ring)
   have hS :
       HasDerivAt
         (fun t : ℝ =>
           -v21C * t ^ 2 + (1 / 2 : ℝ) * t ^ 2 -
             (1 / 2 : ℝ) * v21C - (1 / 4 : ℝ))
         (-2 * v21C * b + b) b := by
-    convert hS0 using 1 <;>
-      first
-      | ring
-      | (simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]; ring)
+    refine hS0'.congr_of_eventuallyEq ?_
+    filter_upwards with t
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]
+    ring
 
   have hprod :=
     (hR.mul (Real.hasDerivAt_cos b)).add
       (hS.mul (Real.hasDerivAt_sin b))
-  unfold v21M1 v21M1Prime
-  convert hprod using 1 <;>
-    first
-    | ring
-    | (simp only [Pi.add_apply, Pi.mul_apply]; ring)
+  have hprod' := hprod.congr_deriv (by
+    unfold v21M1Prime
+    ring)
+  unfold v21M1
+  refine hprod'.congr_of_eventuallyEq ?_
+  filter_upwards with t
+  simp only [Pi.add_apply, Pi.mul_apply]
+  ring
 
 /-- The algebraic identity responsible for the compact second derivative:
 `M₂ = M₁' D - 4 b M₁`. -/
@@ -71,14 +76,14 @@ theorem v21_kernelBPrime_hasDerivAt {b : ℝ}
       (v21M2 b / (b ^ 2 - (1 / 2 : ℝ)) ^ 3) b := by
   have hm := v21_M1_hasDerivAt b
   have hdRaw := ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
+  have hdRaw' := hdRaw.congr_deriv (by ring)
   have hd :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
         (2 * b) b := by
-    convert hdRaw using 1 <;>
-      first
-      | ring
-      | (simp only [Pi.pow_apply, id_eq]; ring)
+    refine hdRaw'.congr_of_eventuallyEq ?_
+    filter_upwards with t
+    simp only [Pi.pow_apply, id_eq]
   have hd2 := hd.pow 2
   have hq := hm.div hd2 (pow_ne_zero 2 hD)
   unfold v21KernelBPrime
