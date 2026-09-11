@@ -50,6 +50,45 @@ lemma v21_pressure_half_masses :
     pressure 3 + pressure 4 + pressure 5 = (1/1000 : ℝ) := by
   constructor <;> simp [pressure] <;> norm_num
 
+/-- Every historical pressure coefficient is at least the endpoint value
+`2714 / 10^7`. -/
+lemma v21_pressure_min (j : Fin 6) :
+    (2714 / 10000000 : ℝ) ≤ pressure j := by
+  fin_cases j <;> norm_num [pressure]
+
+/-- The pressure cutoff used by the historical Arb verifier has the exact
+positive margin `9 / 500000000` above `delta`. -/
+lemma v21_pressure_cutoff_margin :
+    (2714 / 10000000 : ℝ) * (1437 / 100 : ℝ) - delta
+      = (9 / 500000000 : ℝ) := by
+  norm_num [delta]
+
+/-- Replacing every position-dependent pressure coefficient by its minimum
+can only decrease the pressure on six nonnegative gaps. -/
+lemma v21_pressure_floor_six
+    (g0 g1 g2 g3 g4 g5 : ℝ)
+    (h0 : 0 ≤ g0) (h1 : 0 ≤ g1) (h2 : 0 ≤ g2)
+    (h3 : 0 ≤ g3) (h4 : 0 ≤ g4) (h5 : 0 ≤ g5) :
+    (2714 / 10000000 : ℝ) * (g0 + g1 + g2 + g3 + g4 + g5) ≤
+      pressure 0 * g0 + pressure 1 * g1 + pressure 2 * g2 +
+      pressure 3 * g3 + pressure 4 * g4 + pressure 5 * g5 := by
+  simp [pressure]
+  nlinarith
+
+/-- Hence a total six-gap span of at least `14.37` is already settled by the
+linear pressure term alone.  The genuinely analytic problem is compact. -/
+lemma v21_pressure_tail_six
+    (g0 g1 g2 g3 g4 g5 : ℝ)
+    (h0 : 0 ≤ g0) (h1 : 0 ≤ g1) (h2 : 0 ≤ g2)
+    (h3 : 0 ≤ g3) (h4 : 0 ≤ g4) (h5 : 0 ≤ g5)
+    (hspan : (1437 / 100 : ℝ) ≤ g0 + g1 + g2 + g3 + g4 + g5) :
+    delta <
+      pressure 0 * g0 + pressure 1 * g1 + pressure 2 * g2 +
+      pressure 3 * g3 + pressure 4 * g4 + pressure 5 * g5 := by
+  have hfloor := v21_pressure_floor_six g0 g1 g2 g3 g4 g5 h0 h1 h2 h3 h4 h5
+  have hmargin := v21_pressure_cutoff_margin
+  nlinarith
+
 /-- Exact algebraic expansion of the historical seven-point functional. -/
 theorem v21_localFp_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
     localFp (limitingWeightOnPoints y) y s = v21ExplicitF y s := by
