@@ -12,6 +12,8 @@ on:
       - 'lean_harness/v21_analytic/V21KernelSecondDerivatives.lean'
       - 'lean_harness/v21_analytic/V21KernelEndpointBounds.lean'
       - 'lean_harness/v21_analytic/V21KernelFirstLobeSign.lean'
+      - 'lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean'
+      - 'lean_harness/v21_analytic/V21FirstGapExclusion.lean'
       - '.github/workflows/v21-derivative-smoke.yml'
   workflow_dispatch:
 
@@ -52,17 +54,30 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build focused kernel modules
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V21KernelDerivatives
-          lake build HurtadoZeta23.V21KernelSecondDerivatives
-          lake build HurtadoZeta23.V21KernelEndpointBounds
-          lake build HurtadoZeta23.V21KernelFirstLobeSign
+      - name: Build normalized kernel
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelNormalized
+      - name: Build kernel cell tools
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelCellTools
+      - name: Build first derivative
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelDerivatives
+      - name: Build second derivative
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelSecondDerivatives
+      - name: Build endpoint bounds
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelEndpointBounds
+      - name: Build first-lobe sign
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelFirstLobeSign
+      - name: Build quantitative first-lobe bound
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelFirstLobeQuantitative
+      - name: Build first gap exclusion
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21FirstGapExclusion
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelNormalized.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelCellTools.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelDerivatives.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelSecondDerivatives.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean" \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeSign.lean"
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeSign.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21FirstGapExclusion.lean"
