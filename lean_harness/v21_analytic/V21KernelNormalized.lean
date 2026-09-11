@@ -1,5 +1,5 @@
 import HurtadoZeta23.V21KernelClosedForm
-import HurtadoZeta23.V20KernelSignedAnalytic
+import HurtadoZeta23.V21TaylorTools
 import Mathlib.Tactic
 
 noncomputable section
@@ -86,10 +86,10 @@ lemma v21_C_eq_cos_div_sinc :
   rw [v21_sincA_eq_K0]
 
 /-- High-accuracy rational upper enclosure for the profile sinc, derived from
-the v20 Taylor theorem rather than an external interval oracle. -/
+an internal Taylor theorem rather than an external interval oracle. -/
 lemma v21_sincA_upper :
     v21SincA ≤ (5334193 / 5806080 : ℝ) := by
-  have hs := v20_sin_upper9 (x := v21A) v21_A_pos.le (le_of_lt v21_A_lt_one)
+  have hs := v21_sin_upper9 (x := v21A) v21_A_pos.le (le_of_lt v21_A_lt_one)
   unfold v21SincA
   apply (div_le_iff₀ v21_A_pos).2
   calc
@@ -103,7 +103,7 @@ lemma v21_sincA_upper :
 /-- High-accuracy rational lower enclosure for `cos(1/sqrt 2)`. -/
 lemma v21_cosA_lower :
     (88280819 / 116121600 : ℝ) ≤ Real.cos v21A := by
-  have hc := v20_cos_lower10 (x := v21A) v21_A_pos.le (le_of_lt v21_A_lt_one)
+  have hc := v21_cos_lower10 (x := v21A) v21_A_pos.le (le_of_lt v21_A_lt_one)
   calc
     (88280819 / 116121600 : ℝ) =
         1 - v21A^2 / 2 + v21A^4 / 24 - v21A^6 / 720
