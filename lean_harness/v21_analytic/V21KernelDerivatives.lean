@@ -40,13 +40,6 @@ theorem v21_limitingk_eq_kernelB {x : ℝ}
     limitingk x = v21KernelB (v21B x) := by
   simpa [v21KernelB] using v21_limitingk_normalized (x := x) hx
 
-/-- A very coarse but convenient rational lower bound for the profile
-constant.  It is enough for the derivative sign arguments. -/
-lemma v21_C_gt_half : (1 / 2 : ℝ) < v21C := by
-  have h := v21_C_lower
-  norm_num at h ⊢
-  linarith
-
 /-- Exact first derivative of the phase-normalized kernel.  This is kept in
 factored-denominator form so sign arguments can avoid quotient expansion. -/
 theorem v21_kernelB_hasDerivAt {b : ℝ}
