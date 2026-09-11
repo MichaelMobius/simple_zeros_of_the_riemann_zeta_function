@@ -23,7 +23,12 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
     ((((hasDerivAt_id b).pow 3).const_mul v21C).sub
       ((hasDerivAt_id b).const_mul ((1 / 2 : ℝ) * v21C))).add
       (hasDerivAt_id b)
-  have hR0' := hR0.congr_deriv (by ring)
+  have hR0' :
+      HasDerivAt _
+        (3 * v21C * b ^ 2 - (1 / 2 : ℝ) * v21C + 1) b := by
+    apply hR0.congr_deriv
+    simp only [id_eq]
+    ring
   have hR :
       HasDerivAt
         (fun t : ℝ => v21C * t ^ 3 - (1 / 2 : ℝ) * v21C * t + t)
@@ -37,7 +42,10 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
     (((((hasDerivAt_id b).pow 2).const_mul (-v21C)).add
       (((hasDerivAt_id b).pow 2).const_mul (1 / 2 : ℝ))).sub_const
       ((1 / 2 : ℝ) * v21C + (1 / 4 : ℝ)))
-  have hS0' := hS0.congr_deriv (by ring)
+  have hS0' : HasDerivAt _ (-2 * v21C * b + b) b := by
+    apply hS0.congr_deriv
+    simp only [id_eq]
+    ring
   have hS :
       HasDerivAt
         (fun t : ℝ =>
@@ -52,9 +60,10 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
   have hprod :=
     (hR.mul (Real.hasDerivAt_cos b)).add
       (hS.mul (Real.hasDerivAt_sin b))
-  have hprod' := hprod.congr_deriv (by
+  have hprod' : HasDerivAt _ (v21M1Prime b) b := by
+    apply hprod.congr_deriv
     unfold v21M1Prime
-    ring)
+    ring
   unfold v21M1
   refine hprod'.congr_of_eventuallyEq ?_
   filter_upwards with t
@@ -76,7 +85,10 @@ theorem v21_kernelBPrime_hasDerivAt {b : ℝ}
       (v21M2 b / (b ^ 2 - (1 / 2 : ℝ)) ^ 3) b := by
   have hm := v21_M1_hasDerivAt b
   have hdRaw := ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
-  have hdRaw' := hdRaw.congr_deriv (by ring)
+  have hdRaw' : HasDerivAt _ (2 * b) b := by
+    apply hdRaw.congr_deriv
+    simp only [id_eq]
+    ring
   have hd :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
