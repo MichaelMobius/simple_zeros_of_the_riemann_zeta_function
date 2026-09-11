@@ -179,6 +179,7 @@ theorem v21_first_gap_exclusion :
       (1 / 3 : ℝ) * q ^ 2 ≤ (1 / 3 : ℝ) * limitingWeight x :=
     mul_le_mul_of_nonneg_left hw (by norm_num)
   unfold v21MinOneBody
-  exact hpoly.trans (add_le_add_left hthird _)
+  exact hpoly.trans
+    (add_le_add (le_refl ((2714 / 10000000 : ℝ) * x)) hthird)
 
 end HurtadoZeta23
