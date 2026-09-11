@@ -47,7 +47,13 @@ theorem v21_kernelXPrime_hasDerivAt {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt v21KernelXPrime (v21KernelXSecond x) x := by
   have hcomp := (v21_kernelBPrime_hasDerivAt hD).comp x (v21_B_hasDerivAt_interval x)
-  have hscaled := hcomp.const_mul Real.pi
+  have hscaled :
+      HasDerivAt
+        (fun y : ℝ => Real.pi * v21KernelBPrime (v21B y))
+        (Real.pi *
+          ((v21M2 (v21B x) /
+            ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3) * Real.pi)) x := by
+    simpa only [Function.comp_apply] using hcomp.const_mul Real.pi
   simpa [v21KernelXPrime, v21KernelXSecond, Function.comp_apply, pow_two,
     mul_comm, mul_left_comm, mul_assoc] using hscaled
 
