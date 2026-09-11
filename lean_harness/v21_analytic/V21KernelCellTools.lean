@@ -145,7 +145,7 @@ lemma v21_weight_lower_of_k_lower {x q : ℝ}
     q ^ 2 ≤ limitingWeight x := by
   unfold limitingWeight
   have hk0 : 0 ≤ limitingk x := hq0.trans hk
-  exact pow_le_pow_left₀ hk hk0 (by norm_num)
+  exact pow_le_pow_left₀ hq0 hk (by norm_num)
 
 /-- The analogous conversion on a negative lobe. -/
 lemma v21_weight_lower_of_negk_lower {x q : ℝ}
@@ -153,7 +153,7 @@ lemma v21_weight_lower_of_negk_lower {x q : ℝ}
     q ^ 2 ≤ limitingWeight x := by
   unfold limitingWeight
   have hk0 : 0 ≤ -limitingk x := hq0.trans hk
-  have hs := pow_le_pow_left₀ hk hk0 (by norm_num)
+  have hs := pow_le_pow_left₀ hq0 hk (by norm_num)
   simpa using hs
 
 end HurtadoZeta23
