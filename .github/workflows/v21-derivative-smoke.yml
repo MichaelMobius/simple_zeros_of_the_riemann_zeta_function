@@ -5,11 +5,14 @@ on:
     branches: [v21-analytic-seven-point]
     paths:
       - 'lean_harness/v20_analytic/**'
+      - 'lean_harness/v21_analytic/V21TaylorTools.lean'
       - 'lean_harness/v21_analytic/V21KernelClosedForm.lean'
       - 'lean_harness/v21_analytic/V21KernelNormalized.lean'
       - 'lean_harness/v21_analytic/V21KernelCellTools.lean'
       - 'lean_harness/v21_analytic/V21KernelDerivatives.lean'
       - 'lean_harness/v21_analytic/V21KernelSecondDerivatives.lean'
+      - 'lean_harness/v21_analytic/V21KernelSecondDerivativeSigns.lean'
+      - 'lean_harness/v21_analytic/V21KernelCurvatureSigns.lean'
       - 'lean_harness/v21_analytic/V21KernelEndpointBounds.lean'
       - 'lean_harness/v21_analytic/V21KernelFirstLobeSign.lean'
       - 'lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean'
@@ -54,6 +57,8 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
+      - name: Build Taylor tools
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21TaylorTools
       - name: Build normalized kernel
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelNormalized
       - name: Build kernel cell tools
@@ -62,6 +67,10 @@ jobs:
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelDerivatives
       - name: Build second derivative
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelSecondDerivatives
+      - name: Build second-derivative signs
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelSecondDerivativeSigns
+      - name: Build curvature signs
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelCurvatureSigns
       - name: Build endpoint bounds
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelEndpointBounds
       - name: Build first-lobe sign
@@ -73,10 +82,13 @@ jobs:
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21TaylorTools.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelNormalized.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelCellTools.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelDerivatives.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelSecondDerivatives.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelSecondDerivativeSigns.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelCurvatureSigns.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeSign.lean" \
             "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelFirstLobeQuantitative.lean" \
