@@ -52,18 +52,25 @@ theorem v21_kernelB_hasDerivAt {b : ℝ}
           v21C * t * Real.sin t - (1 / 2 : ℝ) * Real.cos t)
         (v21C * Real.sin b + v21C * b * Real.cos b +
           (1 / 2 : ℝ) * Real.sin b) b := by
-    convert
+    simpa using
       ((((hasDerivAt_const b v21C).mul (hasDerivAt_id b)).mul
           (Real.hasDerivAt_sin b)).sub
         ((hasDerivAt_const b (1 / 2 : ℝ)).mul
-          (Real.hasDerivAt_cos b))) using 1 <;> ring
+          (Real.hasDerivAt_cos b)))
   have hden :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
         (2 * b) b := by
-    convert ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ) using 1 <;> ring
-  unfold v21KernelB
-  convert hnum.div hden hD using 1 <;>
-    simp only [v21M1] <;> ring
+    simpa using ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
+  change HasDerivAt
+    (fun t : ℝ =>
+      (v21C * t * Real.sin t - (1 / 2 : ℝ) * Real.cos t) /
+        (t ^ 2 - (1 / 2 : ℝ)))
+    (v21M1 b / (b ^ 2 - (1 / 2 : ℝ)) ^ 2) b
+  have hq := hnum.div hden hD
+  apply hq.congr_deriv
+  unfold v21M1
+  field_simp [hD]
+  ring
 
 end HurtadoZeta23
