@@ -60,8 +60,20 @@ jobs:
           name = "HurtadoZeta23"
           roots = ["HurtadoZeta23"]
           EOF
+      - name: Restore pinned dependency cache
+        id: pinned-deps-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/packages
+          key: v21-pinned-deps-${{ runner.os }}-lean433rc2-fbdc36bb-mathlib51e6992
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
+      - name: Save pinned dependency cache
+        if: steps.pinned-deps-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/packages
+          key: ${{ steps.pinned-deps-cache.outputs.cache-primary-key }}
       - name: Restore green kernel-base cache
         id: kernel-base-cache
         uses: actions/cache/restore@v4
