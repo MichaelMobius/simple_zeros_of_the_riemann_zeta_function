@@ -126,6 +126,12 @@ lemma v21_C_lower :
   rw [hexact] at hscaled
   exact hscaled.trans v21_cosA_lower
 
+/-- Coarse sign information used by the first- and higher-lobe derivative
+certificates. -/
+lemma v21_C_gt_half : (1 / 2 : ℝ) < v21C := by
+  have hrat : (1 / 2 : ℝ) < 88280819 / 106683860 := by norm_num
+  exact hrat.trans_le v21_C_lower
+
 /-- After normalization, the kernel has only one profile constant and the
 exact algebraic denominator `B^2 - 1/2`. -/
 theorem v21_limitingk_normalized {x : ℝ}
@@ -136,26 +142,25 @@ theorem v21_limitingk_normalized {x : ℝ}
         ((v21B x) ^ 2 - (1 / 2 : ℝ)) := by
   unfold limitingk
   rw [v21_limitingK_closed hx, limitingK_zero_closed, v21_A_sq]
-  fold v21A
-  rw [← v21_sincA_eq_K0]
-  rw [v21_C_eq_cos_div_sinc]
-  have hsinc : v21SincA ≠ 0 := ne_of_gt v21_sincA_pos
+  change
+    ((v21B x * Real.cos v21A * Real.sin (v21B x) -
+          v21A * Real.sin v21A * Real.cos (v21B x)) /
+        ((v21B x) ^ 2 - (1 / 2 : ℝ))) /
+      (Real.sqrt 2 * Real.sin v21A) =
+    (v21C * v21B x * Real.sin (v21B x) -
+          (1 / 2 : ℝ) * Real.cos (v21B x)) /
+        ((v21B x) ^ 2 - (1 / 2 : ℝ))
+  unfold v21C
+  have hsqrt : Real.sqrt 2 ≠ 0 := by positivity
+  have hsin : Real.sin v21A ≠ 0 := ne_of_gt v21_sinA_pos
   have hden : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0 := by
     have hBpos : 0 < v21B x := lt_trans v21_A_pos hx
     have hfac := mul_pos (sub_pos.mpr hx) (add_pos hBpos v21_A_pos)
     rw [v21_A_sq] at hfac
     nlinarith
-  have hAover : v21A / Real.sqrt 2 = (1 / 2 : ℝ) := by
-    apply (div_eq_iff (by positivity : Real.sqrt 2 ≠ 0)).2
-    nlinarith [v21_sqrt_two_half]
-  have hsincform :
-      v21SincA = Real.sqrt 2 * Real.sin v21A := v21_sincA_eq_K0
-  unfold v21SincA at hsinc
-  field_simp [hsinc, hden, v21_A_pos.ne']
-  have hsqrtA : Real.sqrt 2 * v21A = 1 := by
-    unfold v21A
-    exact mul_inv_cancel₀ (by positivity)
-  nlinarith [hsqrtA, v21_A_sq]
+  field_simp [hsqrt, hsin, hden]
+  rw [← v21_sqrt_two_half]
+  ring
 
 /-- Squared normalized form used in the finite hard-core certificate. -/
 theorem v21_limitingWeight_normalized {x : ℝ}
