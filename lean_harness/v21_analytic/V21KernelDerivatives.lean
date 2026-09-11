@@ -46,17 +46,19 @@ theorem v21_kernelB_hasDerivAt {b : ℝ}
     (hD : b ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt v21KernelB
       (v21M1 b / (b ^ 2 - (1 / 2 : ℝ)) ^ 2) b := by
+  have hraw :=
+    ((((hasDerivAt_const b v21C).mul (hasDerivAt_id b)).mul
+        (Real.hasDerivAt_sin b)).sub
+      ((hasDerivAt_const b (1 / 2 : ℝ)).mul
+        (Real.hasDerivAt_cos b)))
   have hnum :
       HasDerivAt
         (fun t : ℝ =>
           v21C * t * Real.sin t - (1 / 2 : ℝ) * Real.cos t)
         (v21C * Real.sin b + v21C * b * Real.cos b +
           (1 / 2 : ℝ) * Real.sin b) b := by
-    simpa using
-      ((((hasDerivAt_const b v21C).mul (hasDerivAt_id b)).mul
-          (Real.hasDerivAt_sin b)).sub
-        ((hasDerivAt_const b (1 / 2 : ℝ)).mul
-          (Real.hasDerivAt_cos b)))
+    convert hraw using 1 <;>
+      simp only [Pi.mul_apply, Pi.sub_apply, id_eq] <;> ring
   have hden :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
