@@ -130,21 +130,26 @@ lemma v21_kernelB_deriv_le_first_band {x : ℝ}
 
   have h9mb2 : 0 < 9 - b ^ 2 := by
     have hplus : 0 < (3 : ℝ) + b := by
-      nlinarith [hbpos]
+      linarith only [hbpos]
     have hprod : 0 < ((3 : ℝ) - b) * (3 + b) :=
       mul_pos (sub_pos.mpr hb3) hplus
-    nlinarith
+    nlinarith only [hprod]
   have hDlt : b ^ 2 - (1 / 2 : ℝ) < (17 / 2 : ℝ) := by
-    nlinarith
+    nlinarith only [h9mb2]
   have hDsqLt73 : (b ^ 2 - (1 / 2 : ℝ)) ^ 2 < 73 := by
-    have hprod := mul_pos (sub_pos.mpr hDlt)
-      (add_pos (by norm_num : (0 : ℝ) < 17 / 2) hDpos)
-    nlinarith
+    have hplusD :
+        0 < (17 / 2 : ℝ) + (b ^ 2 - (1 / 2 : ℝ)) := by
+      linarith only [hDpos]
+    have hprodD :
+        0 < ((17 / 2 : ℝ) - (b ^ 2 - (1 / 2 : ℝ))) *
+          ((17 / 2 : ℝ) + (b ^ 2 - (1 / 2 : ℝ))) :=
+      mul_pos (sub_pos.mpr hDlt) hplusD
+    nlinarith only [hprodD]
   have hDsqPos : 0 < (b ^ 2 - (1 / 2 : ℝ)) ^ 2 :=
     sq_pos_of_pos hDpos
 
   dsimp [b] at hM hDsqLt73 hDsqPos ⊢
   apply (div_le_iff₀ hDsqPos).2
-  nlinarith [hM, hDsqLt73]
+  nlinarith only [hM, hDsqLt73]
 
 end HurtadoZeta23
