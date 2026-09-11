@@ -1,4 +1,4 @@
-import HurtadoZeta23.V21GapFunctional
+import HurtadoZeta23.V21SevenPointAnalytic
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Tactic
 
