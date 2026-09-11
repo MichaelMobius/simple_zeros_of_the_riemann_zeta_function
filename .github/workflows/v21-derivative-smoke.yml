@@ -9,6 +9,8 @@ on:
       - 'lean_harness/v21_analytic/V21KernelNormalized.lean'
       - 'lean_harness/v21_analytic/V21KernelCellTools.lean'
       - 'lean_harness/v21_analytic/V21KernelDerivatives.lean'
+      - 'lean_harness/v21_analytic/V21KernelSecondDerivatives.lean'
+      - 'lean_harness/v21_analytic/V21KernelEndpointBounds.lean'
       - '.github/workflows/v21-derivative-smoke.yml'
   workflow_dispatch:
 
@@ -49,11 +51,15 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build kernel derivative module
+      - name: Build focused kernel modules
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21KernelDerivatives
+          lake build HurtadoZeta23.V21KernelSecondDerivatives
+          lake build HurtadoZeta23.V21KernelEndpointBounds
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
-            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelDerivatives.lean"
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelDerivatives.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelSecondDerivatives.lean" \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelEndpointBounds.lean"
