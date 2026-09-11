@@ -107,14 +107,14 @@ jobs:
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelFirstLobeSign
       - name: Build quantitative first-lobe bound
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelFirstLobeQuantitative
-      - name: Build first gap exclusion
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21FirstGapExclusion
       - name: Build second-lobe endpoints
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelHigherEndpointBounds
       - name: Build third-lobe endpoints
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelThirdLobeEndpoints
       - name: Build interval curvature
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21KernelIntervalCurvature
+      - name: Build first gap exclusion
+        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21FirstGapExclusion
       - name: Build uniform gap exclusions
         run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V21UniformGapExclusionsAnalytic
       - name: Build survivor-band reduction
