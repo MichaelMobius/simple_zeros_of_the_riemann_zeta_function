@@ -1,4 +1,5 @@
-import HurtadoZeta23.V21SevenPointAnalytic
+import HurtadoZeta23.ExternalCertificateFrontier
+import HurtadoZeta23.V17KernelMonotonicity
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Tactic
 
