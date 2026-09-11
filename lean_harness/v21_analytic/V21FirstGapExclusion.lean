@@ -43,7 +43,10 @@ lemma v21_kernelX_hasDerivAt {x : ℝ}
     simpa [v21D] using hpos.ne'
   have hk := v21_kernelB_hasDerivAt (b := v21B x) hD
   have hB := v21_B_hasDerivAt x
-  simpa only [v21KernelX, Function.comp_apply] using hk.comp x hB
+  change HasDerivAt (fun t : ℝ => v21KernelB (v21B t))
+    ((v21M1 (v21B x) /
+      ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 2) * Real.pi) x
+  simpa only [Function.comp_apply] using hk.comp x hB
 
 /-- The coarse phase derivative estimate becomes a uniform x-derivative
 bound after multiplying by `π > 3`. -/
@@ -79,12 +82,12 @@ lemma v21_kernelX_first_band_linear_lower {x : ℝ}
     intro z hz
     have hzD : z ∈ D := interior_subset hz
     exact v21_kernelX_deriv_le_first_band hzD.1 hzD.2
+  have hconv : Convex ℝ D := by
+    dsimp [D]
+    exact convex_Icc _ _
   have hslope :=
-    Convex.image_sub_le_mul_sub_of_deriv_le
-      (D := D) (f := v21KernelX) (C := -(3 / 200 : ℝ))
-      (convex_Icc : Convex ℝ D)
+    hconv.image_sub_le_mul_sub_of_deriv_le
       hcont hdiffInt hder x hxD (19 / 20 : ℝ) heD hxhi
-  dsimp [D] at hslope
   linarith
 
 /-- Uniform lower bound on the signed kernel throughout the first exclusion
