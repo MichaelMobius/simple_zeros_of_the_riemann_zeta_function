@@ -33,8 +33,7 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
         (3 * v21C * b ^ 2 - (1 / 2 : ℝ) * v21C + 1) b := by
     refine hR0'.congr_of_eventuallyEq ?_
     filter_upwards with t
-    simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]
-    ring
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.pow_apply, id_eq]
 
   have hS0 :=
     (((((hasDerivAt_id b).pow 2).const_mul (-v21C)).add
@@ -51,7 +50,7 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
         (-2 * v21C * b + b) b := by
     refine hS0'.congr_of_eventuallyEq ?_
     filter_upwards with t
-    simp only [Pi.add_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply, id_eq]
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.pow_apply, id_eq]
     ring
 
   have hprod :=
@@ -64,7 +63,6 @@ theorem v21_M1_hasDerivAt (b : ℝ) :
   refine hprod'.congr_of_eventuallyEq ?_
   filter_upwards with t
   simp only [Pi.add_apply, Pi.mul_apply]
-  ring
 
 /-- The algebraic identity responsible for the compact second derivative:
 `M₂ = M₁' D - 4 b M₁`. -/
@@ -96,6 +94,8 @@ theorem v21_kernelBPrime_hasDerivAt {b : ℝ}
   unfold v21KernelBPrime
   apply hq.congr_deriv
   rw [v21_M2_factor_identity]
+  simp only [Pi.pow_apply]
+  norm_num
   field_simp [hD]
   ring
 
