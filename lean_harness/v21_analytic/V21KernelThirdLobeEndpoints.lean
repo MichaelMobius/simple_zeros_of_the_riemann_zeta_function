@@ -31,22 +31,25 @@ theorem v21_k_at_237_lower :
   have hratioRaw :=
     v21_ratio_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hratio :
-      (1356375 / 10000000 : ℝ) ≤ v21B x / v21D x := by
+      (1355303 / 10000000 : ℝ) ≤ v21B x / v21D x := by
     have hrat :
-        (1356375 / 10000000 : ℝ) ≤
+        (1355303 / 10000000 : ℝ) ≤
           bU / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hratioRaw)
 
   have hrecipRaw :=
     v21_recip_factor_lower (b := bL) (u := v21B x) hbL1 hbL
+  have hrecipRaw' :
+      1 / v21D x ≤ 1 / (bL ^ 2 - (1 / 2 : ℝ)) := by
+    simpa [v21D] using hrecipRaw
   have hrecip :
-      1 / v21D x ≤ (182156 / 10000000 : ℝ) := by
+      1 / v21D x ≤ (182029 / 10000000 : ℝ) := by
     have hrat :
         1 / (bL ^ 2 - (1 / 2 : ℝ)) ≤
-          (182156 / 10000000 : ℝ) := by
+          (182029 / 10000000 : ℝ) := by
       norm_num [bL]
-    exact (by simpa [v21D] using hrecipRaw).trans hrat
+    exact hrecipRaw'.trans hrat
 
   have hC : (8274992 / 10000000 : ℝ) ≤ v21C := by
     nlinarith [v21_C_lower]
@@ -94,7 +97,7 @@ theorem v21_k_at_237_lower :
     hsinMono.trans (hsinTaylor.trans hsinRat)
 
   have hC0 : (0 : ℝ) ≤ 8274992 / 10000000 := by norm_num
-  have hratio0 : (0 : ℝ) ≤ 1356375 / 10000000 := by norm_num
+  have hratio0 : (0 : ℝ) ≤ 1355303 / 10000000 := by norm_num
   have hcos0 : (0 : ℝ) ≤ 9177546 / 10000000 := by norm_num
   have hrecip0 : 0 ≤ 1 / v21D x :=
     le_of_lt (one_div_pos.mpr (v21_D_pos hxA))
@@ -104,31 +107,30 @@ theorem v21_k_at_237_lower :
   have hratioNonneg : 0 ≤ v21B x / v21D x := hratio0.trans hratio
 
   have hterm1 :
-      (8274992 / 10000000 : ℝ) * (1356375 / 10000000 : ℝ) *
+      (8274992 / 10000000 : ℝ) * (1355303 / 10000000 : ℝ) *
           (9177546 / 10000000 : ℝ) ≤
         v21C * (v21B x / v21D x) * Real.cos u := by
     have hprod :
-        (8274992 / 10000000 : ℝ) * (1356375 / 10000000 : ℝ) ≤
+        (8274992 / 10000000 : ℝ) * (1355303 / 10000000 : ℝ) ≤
           v21C * (v21B x / v21D x) :=
       mul_le_mul hC hratio hratio0 hCnonneg
     exact mul_le_mul hprod hcos hcos0 (mul_nonneg hCnonneg hratioNonneg)
 
   have hhalfrecip :
       (1 / 2 : ℝ) * (1 / v21D x) ≤
-        (1 / 2 : ℝ) * (182156 / 10000000 : ℝ) :=
+        (1 / 2 : ℝ) * (182029 / 10000000 : ℝ) :=
     mul_le_mul_of_nonneg_left hrecip (by norm_num)
   have hterm2 :
       (1 / 2 : ℝ) * (1 / v21D x) * Real.sin u ≤
-        (1 / 2 : ℝ) * (182156 / 10000000 : ℝ) *
+        (1 / 2 : ℝ) * (182029 / 10000000 : ℝ) *
           (3971482 / 10000000 : ℝ) := by
-    exact mul_le_mul hhalfrecip hsin hsinu0
-      (mul_nonneg (by norm_num) hrecip0)
+    exact mul_le_mul hhalfrecip hsin hsinu0 (by norm_num)
 
   have hratFinal :
       (993 / 10000 : ℝ) <
-        (8274992 / 10000000 : ℝ) * (1356375 / 10000000 : ℝ) *
+        (8274992 / 10000000 : ℝ) * (1355303 / 10000000 : ℝ) *
             (9177546 / 10000000 : ℝ) -
-          (1 / 2 : ℝ) * (182156 / 10000000 : ℝ) *
+          (1 / 2 : ℝ) * (182029 / 10000000 : ℝ) *
             (3971482 / 10000000 : ℝ) := by
     norm_num
 
@@ -157,9 +159,9 @@ theorem v21_k_at_255_lower :
   have hratioRaw :=
     v21_ratio_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hratio :
-      (1258881 / 10000000 : ℝ) ≤ v21B x / v21D x := by
+      (1258075 / 10000000 : ℝ) ≤ v21B x / v21D x := by
     have hrat :
-        (1258881 / 10000000 : ℝ) ≤
+        (1258075 / 10000000 : ℝ) ≤
           bU / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hratioRaw)
@@ -167,9 +169,9 @@ theorem v21_k_at_255_lower :
   have hrecipRaw :=
     v21_recip_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hrecip :
-      (157112 / 10000000 : ℝ) ≤ 1 / v21D x := by
+      (157042 / 10000000 : ℝ) ≤ 1 / v21D x := by
     have hrat :
-        (157112 / 10000000 : ℝ) ≤
+        (157042 / 10000000 : ℝ) ≤
           1 / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hrecipRaw)
@@ -222,8 +224,8 @@ theorem v21_k_at_255_lower :
     exact le_of_lt (hsinRat.trans_le (hsinTaylor.trans hsinMono))
 
   have hC0 : (0 : ℝ) ≤ 8274992 / 10000000 := by norm_num
-  have hratio0 : (0 : ℝ) ≤ 1258881 / 10000000 := by norm_num
-  have hrecip0 : (0 : ℝ) ≤ 157112 / 10000000 := by norm_num
+  have hratio0 : (0 : ℝ) ≤ 1258075 / 10000000 := by norm_num
+  have hrecip0 : (0 : ℝ) ≤ 157042 / 10000000 := by norm_num
   have hcos0 : (0 : ℝ) ≤ 9876883 / 10000000 := by norm_num
   have hsin0 : (0 : ℝ) ≤ 1564344 / 10000000 := by norm_num
   have hCnonneg : 0 ≤ v21C := hC0.trans hC
@@ -231,30 +233,30 @@ theorem v21_k_at_255_lower :
   have hrecipNonneg : 0 ≤ 1 / v21D x := hrecip0.trans hrecip
 
   have hterm1 :
-      (8274992 / 10000000 : ℝ) * (1258881 / 10000000 : ℝ) *
+      (8274992 / 10000000 : ℝ) * (1258075 / 10000000 : ℝ) *
           (9876883 / 10000000 : ℝ) ≤
         v21C * (v21B x / v21D x) * Real.cos u := by
     have hprod :
-        (8274992 / 10000000 : ℝ) * (1258881 / 10000000 : ℝ) ≤
+        (8274992 / 10000000 : ℝ) * (1258075 / 10000000 : ℝ) ≤
           v21C * (v21B x / v21D x) :=
       mul_le_mul hC hratio hratio0 hCnonneg
     exact mul_le_mul hprod hcos hcos0 (mul_nonneg hCnonneg hratioNonneg)
 
   have hterm2 :
-      (1 / 2 : ℝ) * (157112 / 10000000 : ℝ) *
+      (1 / 2 : ℝ) * (157042 / 10000000 : ℝ) *
           (1564344 / 10000000 : ℝ) ≤
         (1 / 2 : ℝ) * (1 / v21D x) * Real.sin u := by
     have hhalf :
-        (1 / 2 : ℝ) * (157112 / 10000000 : ℝ) ≤
+        (1 / 2 : ℝ) * (157042 / 10000000 : ℝ) ≤
           (1 / 2 : ℝ) * (1 / v21D x) :=
       mul_le_mul_of_nonneg_left hrecip (by norm_num)
     exact mul_le_mul hhalf hsin hsin0 (mul_nonneg (by norm_num) hrecipNonneg)
 
   have hratFinal :
       (993 / 10000 : ℝ) <
-        (8274992 / 10000000 : ℝ) * (1258881 / 10000000 : ℝ) *
+        (8274992 / 10000000 : ℝ) * (1258075 / 10000000 : ℝ) *
             (9876883 / 10000000 : ℝ) +
-          (1 / 2 : ℝ) * (157112 / 10000000 : ℝ) *
+          (1 / 2 : ℝ) * (157042 / 10000000 : ℝ) *
             (1564344 / 10000000 : ℝ) := by
     norm_num
 
@@ -283,9 +285,9 @@ theorem v21_k_at_261_lower :
   have hratioRaw :=
     v21_ratio_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hratio :
-      (1229404 / 10000000 : ℝ) ≤ v21B x / v21D x := by
+      (1228715 / 10000000 : ℝ) ≤ v21B x / v21D x := by
     have hrat :
-        (1229404 / 10000000 : ℝ) ≤
+        (1228715 / 10000000 : ℝ) ≤
           bU / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hratioRaw)
@@ -293,9 +295,9 @@ theorem v21_k_at_261_lower :
   have hrecipRaw :=
     v21_recip_factor_lower (b := v21B x) (u := bU) hB1 hbU
   have hrecip :
-      (150346 / 10000000 : ℝ) ≤ 1 / v21D x := by
+      (149851 / 10000000 : ℝ) ≤ 1 / v21D x := by
     have hrat :
-        (150346 / 10000000 : ℝ) ≤
+        (149851 / 10000000 : ℝ) ≤
           1 / (bU ^ 2 - (1 / 2 : ℝ)) := by
       norm_num [bU]
     exact hrat.trans (by simpa [v21D] using hrecipRaw)
@@ -348,8 +350,8 @@ theorem v21_k_at_261_lower :
     exact le_of_lt (hsinRat.trans_le (hsinTaylor.trans hsinMono))
 
   have hC0 : (0 : ℝ) ≤ 8274992 / 10000000 := by norm_num
-  have hratio0 : (0 : ℝ) ≤ 1229404 / 10000000 := by norm_num
-  have hrecip0 : (0 : ℝ) ≤ 150346 / 10000000 := by norm_num
+  have hratio0 : (0 : ℝ) ≤ 1228715 / 10000000 := by norm_num
+  have hrecip0 : (0 : ℝ) ≤ 149851 / 10000000 := by norm_num
   have hcos0 : (0 : ℝ) ≤ 9408807 / 10000000 := by norm_num
   have hsin0 : (0 : ℝ) ≤ 3387378 / 10000000 := by norm_num
   have hCnonneg : 0 ≤ v21C := hC0.trans hC
@@ -357,30 +359,30 @@ theorem v21_k_at_261_lower :
   have hrecipNonneg : 0 ≤ 1 / v21D x := hrecip0.trans hrecip
 
   have hterm1 :
-      (8274992 / 10000000 : ℝ) * (1229404 / 10000000 : ℝ) *
+      (8274992 / 10000000 : ℝ) * (1228715 / 10000000 : ℝ) *
           (9408807 / 10000000 : ℝ) ≤
         v21C * (v21B x / v21D x) * Real.cos u := by
     have hprod :
-        (8274992 / 10000000 : ℝ) * (1229404 / 10000000 : ℝ) ≤
+        (8274992 / 10000000 : ℝ) * (1228715 / 10000000 : ℝ) ≤
           v21C * (v21B x / v21D x) :=
       mul_le_mul hC hratio hratio0 hCnonneg
     exact mul_le_mul hprod hcos hcos0 (mul_nonneg hCnonneg hratioNonneg)
 
   have hterm2 :
-      (1 / 2 : ℝ) * (150346 / 10000000 : ℝ) *
+      (1 / 2 : ℝ) * (149851 / 10000000 : ℝ) *
           (3387378 / 10000000 : ℝ) ≤
         (1 / 2 : ℝ) * (1 / v21D x) * Real.sin u := by
     have hhalf :
-        (1 / 2 : ℝ) * (150346 / 10000000 : ℝ) ≤
+        (1 / 2 : ℝ) * (149851 / 10000000 : ℝ) ≤
           (1 / 2 : ℝ) * (1 / v21D x) :=
       mul_le_mul_of_nonneg_left hrecip (by norm_num)
     exact mul_le_mul hhalf hsin hsin0 (mul_nonneg (by norm_num) hrecipNonneg)
 
   have hratFinal :
       (491 / 5000 : ℝ) <
-        (8274992 / 10000000 : ℝ) * (1229404 / 10000000 : ℝ) *
+        (8274992 / 10000000 : ℝ) * (1228715 / 10000000 : ℝ) *
             (9408807 / 10000000 : ℝ) +
-          (1 / 2 : ℝ) * (150346 / 10000000 : ℝ) *
+          (1 / 2 : ℝ) * (149851 / 10000000 : ℝ) *
             (3387378 / 10000000 : ℝ) := by
     norm_num
 
