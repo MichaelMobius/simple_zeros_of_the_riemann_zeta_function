@@ -133,28 +133,35 @@ lemma v21_adjacent_weight_le_localPairEnergy
     exact Finset.single_le_sum
       (fun i hi => limitingWeightOnPoints_nonneg y (s + i) (s + i + 1))
       (Finset.mem_range.mpr j.2)
+  let outerTerm : ℕ → ℝ := fun r0 =>
+    (2 / ((6 - r0 : ℕ) : ℝ)) *
+      (∑ i ∈ Finset.range (6 - r0),
+        limitingWeightOnPoints y (s + i) (s + i + r0 + 1))
+  have houterNonneg :
+      ∀ r0 ∈ Finset.range 6, 0 ≤ outerTerm r0 := by
+    intro r0 hr0
+    have hr0lt : r0 < 6 := Finset.mem_range.mp hr0
+    have hdenNat : 0 < 6 - r0 := Nat.sub_pos_of_lt hr0lt
+    have hden : 0 < ((6 - r0 : ℕ) : ℝ) := by
+      exact_mod_cast hdenNat
+    have hsum :
+        0 ≤ ∑ i ∈ Finset.range (6 - r0),
+          limitingWeightOnPoints y (s + i) (s + i + r0 + 1) := by
+      apply Finset.sum_nonneg
+      intro i hi
+      exact limitingWeightOnPoints_nonneg y (s + i) (s + i + r0 + 1)
+    exact mul_nonneg (div_nonneg (by norm_num) hden.le) hsum
+  have houterRaw :
+      outerTerm 0 ≤ ∑ r0 ∈ Finset.range 6, outerTerm r0 := by
+    exact Finset.single_le_sum houterNonneg (by simp)
   have houter :
-      (2 / ((6 - 0 : ℕ) : ℝ)) *
-          (∑ i ∈ Finset.range (6 - 0),
-            limitingWeightOnPoints y (s + i) (s + i + 0 + 1)) ≤
+      (1 / 3 : ℝ) *
+          (∑ i ∈ Finset.range 6,
+            limitingWeightOnPoints y (s + i) (s + i + 1)) ≤
         localPairEnergy (limitingWeightOnPoints y) s := by
-    unfold localPairEnergy
-    apply Finset.single_le_sum
-    · intro r0 hr0
-      have hr0lt : r0 < 6 := Finset.mem_range.mp hr0
-      have hdenNat : 0 < 6 - r0 := Nat.sub_pos_of_lt hr0lt
-      have hden : 0 < ((6 - r0 : ℕ) : ℝ) := by
-        exact_mod_cast hdenNat
-      have hsum :
-          0 ≤ ∑ i ∈ Finset.range (6 - r0),
-            limitingWeightOnPoints y (s + i) (s + i + r0 + 1) := by
-        apply Finset.sum_nonneg
-        intro i hi
-        exact limitingWeightOnPoints_nonneg y (s + i) (s + i + r0 + 1)
-      exact mul_nonneg (div_nonneg (by norm_num) hden.le) hsum
-    · simp
-  norm_num at houter
-  have hscaled := mul_le_mul_of_nonneg_left hinner (show (0 : ℝ) ≤ 1 / 3 by norm_num)
+    simpa [outerTerm, localPairEnergy] using houterRaw
+  have hscaled :=
+    mul_le_mul_of_nonneg_left hinner (show (0 : ℝ) ≤ 1 / 3 by norm_num)
   exact hscaled.trans houter
 
 /-- The full local functional dominates its linear pressure part. -/
