@@ -20,7 +20,7 @@ def v21KernelXSecond (x : ℝ) : ℝ :=
   Real.pi ^ 2 *
     (v21M2 (v21B x) / ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3)
 
-lemma v21_B_hasDerivAt (x : ℝ) : HasDerivAt v21B Real.pi x := by
+lemma v21_B_hasDerivAt_interval (x : ℝ) : HasDerivAt v21B Real.pi x := by
   unfold v21B
   convert (hasDerivAt_id x).const_mul Real.pi using 1 <;> ring
 
@@ -39,7 +39,7 @@ lemma v21_kernel_den_pos_of_cert_lt {x : ℝ}
 theorem v21_kernelX_hasDerivAt {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt v21KernelX (v21KernelXPrime x) x := by
-  have hcomp := (v21_kernelB_hasDerivAt hD).comp x (v21_B_hasDerivAt x)
+  have hcomp := (v21_kernelB_hasDerivAt hD).comp x (v21_B_hasDerivAt_interval x)
   unfold v21KernelX v21KernelXPrime
   convert hcomp using 1 <;> ring
 
@@ -47,7 +47,7 @@ theorem v21_kernelX_hasDerivAt {x : ℝ}
 theorem v21_kernelXPrime_hasDerivAt {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt v21KernelXPrime (v21KernelXSecond x) x := by
-  have hcomp := (v21_kernelBPrime_hasDerivAt hD).comp x (v21_B_hasDerivAt x)
+  have hcomp := (v21_kernelBPrime_hasDerivAt hD).comp x (v21_B_hasDerivAt_interval x)
   have hscaled := hcomp.const_mul Real.pi
   unfold v21KernelXPrime v21KernelXSecond
   convert hscaled using 1 <;> ring
