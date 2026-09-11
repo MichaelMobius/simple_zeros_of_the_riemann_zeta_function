@@ -1,4 +1,4 @@
-import HurtadoZeta23.V17KernelMonotonicity
+import HurtadoZeta23.V17ScalarPressure
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Tactic
 
