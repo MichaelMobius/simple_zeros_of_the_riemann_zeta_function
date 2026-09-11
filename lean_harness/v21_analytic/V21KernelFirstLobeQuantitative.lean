@@ -129,7 +129,10 @@ lemma v21_kernelB_deriv_le_first_band {x : ℝ}
     nlinarith [hleft, hright1, hright2]
 
   have h9mb2 : 0 < 9 - b ^ 2 := by
-    have hprod := mul_pos (sub_pos.mpr hb3) (add_pos (by norm_num) hbpos)
+    have hplus : 0 < (3 : ℝ) + b := by
+      nlinarith [hbpos]
+    have hprod : 0 < ((3 : ℝ) - b) * (3 + b) :=
+      mul_pos (sub_pos.mpr hb3) hplus
     nlinarith
   have hDlt : b ^ 2 - (1 / 2 : ℝ) < (17 / 2 : ℝ) := by
     nlinarith
