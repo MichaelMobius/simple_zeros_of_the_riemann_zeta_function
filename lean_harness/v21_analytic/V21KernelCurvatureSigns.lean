@@ -78,7 +78,7 @@ lemma v21_sin_phase15_le_two_cos {x : ℝ}
   have hprod : 0 ≤ v21Phase15 x * (1 - v21Phase15 x) :=
     mul_nonneg ht0 (sub_nonneg.mpr ht1)
   have hsq : (v21Phase15 x) ^ 2 ≤ 1 := by nlinarith
-  have hcos := Real.one_sub_sq_div_two_le_cos (v21Phase15 x)
+  have hcos := Real.one_sub_sq_div_two_le_cos (x := v21Phase15 x)
   have hcoshalf : (1 / 2 : ℝ) ≤ Real.cos (v21Phase15 x) := by
     nlinarith
   have hsin := Real.sin_le_one (v21Phase15 x)
@@ -93,7 +93,7 @@ lemma v21_sin_phase25_le_cos {x : ℝ}
       0 ≤ v21Phase25 x * ((1 / 2 : ℝ) - v21Phase25 x) :=
     mul_nonneg ht0 (sub_nonneg.mpr ht12)
   have hsq : (v21Phase25 x) ^ 2 ≤ (1 / 4 : ℝ) := by nlinarith
-  have hcos := Real.one_sub_sq_div_two_le_cos (v21Phase25 x)
+  have hcos := Real.one_sub_sq_div_two_le_cos (x := v21Phase25 x)
   have hcoshalf : (1 / 2 : ℝ) ≤ Real.cos (v21Phase25 x) := by
     nlinarith
   have habs := Real.abs_sin_le_abs (x := v21Phase25 x)
