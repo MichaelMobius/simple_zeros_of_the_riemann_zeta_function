@@ -58,14 +58,18 @@ theorem v21_kernelB_hasDerivAt {b : ℝ}
         (v21C * Real.sin b + v21C * b * Real.cos b +
           (1 / 2 : ℝ) * Real.sin b) b := by
     convert hraw using 1 <;>
-      simp only [Pi.mul_apply, Pi.sub_apply, id_eq] <;> ring
+      first
+      | ring
+      | (simp only [Pi.mul_apply, Pi.sub_apply, id_eq]; ring)
   have hdenRaw := ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
   have hden :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
         (2 * b) b := by
     convert hdenRaw using 1 <;>
-      simp only [Pi.pow_apply, id_eq] <;> ring
+      first
+      | ring
+      | (simp only [Pi.pow_apply, id_eq]; ring)
   change HasDerivAt
     (fun t : ℝ =>
       (v21C * t * Real.sin t - (1 / 2 : ℝ) * Real.cos t) /
