@@ -1,4 +1,5 @@
 import HurtadoZeta23.ExternalCertificateFrontier
+import HurtadoZeta23.V17KernelMonotonicity
 import Mathlib.Tactic
 
 noncomputable section
@@ -107,6 +108,55 @@ lemma v21_localPairEnergy_nonneg (y : ℕ → ℝ) (s : ℕ) :
     exact limitingWeightOnPoints_nonneg y (s + i) (s + i + r0 + 1)
   exact mul_nonneg (div_nonneg (by norm_num) hden.le) hinner
 
+/-- Nonnegative gaps make the whole pressure contribution nonnegative. -/
+lemma v21_localPressure_nonneg
+    (y : ℕ → ℝ) (s : ℕ)
+    (hgap : ∀ j : Fin 6, 0 ≤ windowGap y s j) :
+    0 ≤ localPressure y s := by
+  unfold localPressure
+  apply Finset.sum_nonneg
+  intro j hj
+  exact mul_nonneg (pressure_nonneg j) (hgap j)
+
+/-- Every adjacent weight appears in `localPairEnergy` with coefficient `1/3`.
+All other pair contributions are nonnegative, so this single contribution is
+a rigorous lower bound for the pair energy. -/
+lemma v21_adjacent_weight_le_localPairEnergy
+    (y : ℕ → ℝ) (s : ℕ) (j : Fin 6) :
+    (1 / 3 : ℝ) *
+        limitingWeightOnPoints y (s + j.1) (s + j.1 + 1) ≤
+      localPairEnergy (limitingWeightOnPoints y) s := by
+  have hinner :
+      limitingWeightOnPoints y (s + j.1) (s + j.1 + 1) ≤
+        ∑ i ∈ Finset.range 6,
+          limitingWeightOnPoints y (s + i) (s + i + 1) := by
+    exact Finset.single_le_sum
+      (fun i hi => limitingWeightOnPoints_nonneg y (s + i) (s + i + 1))
+      (Finset.mem_range.mpr j.2)
+  have houter :
+      (2 / ((6 - 0 : ℕ) : ℝ)) *
+          (∑ i ∈ Finset.range (6 - 0),
+            limitingWeightOnPoints y (s + i) (s + i + 0 + 1)) ≤
+        localPairEnergy (limitingWeightOnPoints y) s := by
+    unfold localPairEnergy
+    apply Finset.single_le_sum
+    · intro r0 hr0
+      have hr0lt : r0 < 6 := Finset.mem_range.mp hr0
+      have hdenNat : 0 < 6 - r0 := Nat.sub_pos_of_lt hr0lt
+      have hden : 0 < ((6 - r0 : ℕ) : ℝ) := by
+        exact_mod_cast hdenNat
+      have hsum :
+          0 ≤ ∑ i ∈ Finset.range (6 - r0),
+            limitingWeightOnPoints y (s + i) (s + i + r0 + 1) := by
+        apply Finset.sum_nonneg
+        intro i hi
+        exact limitingWeightOnPoints_nonneg y (s + i) (s + i + r0 + 1)
+      exact mul_nonneg (div_nonneg (by norm_num) hden.le) hsum
+    · simp
+  norm_num at houter
+  have hscaled := mul_le_mul_of_nonneg_left hinner (show (0 : ℝ) ≤ 1 / 3 by norm_num)
+  exact hscaled.trans houter
+
 /-- The full local functional dominates its linear pressure part. -/
 lemma v21_localPressure_le_localFp (y : ℕ → ℝ) (s : ℕ) :
     localPressure y s ≤ localFp (limitingWeightOnPoints y) y s := by
@@ -162,6 +212,69 @@ theorem v21_localFp_of_large_span
   have hpressure := v21_localPressure_le_localFp y s
   rw [v21_localPressure_eq_explicit] at hpressure
   exact (le_of_lt htail).trans hpressure
+
+/-- If one gap is at most the internally certified point `0.89`, its adjacent
+kernel term alone already exceeds `delta`.  This theorem is parameterized by
+the signed point statement; v20 proves that statement analytically in Lean. -/
+theorem v21_localFp_of_small_gap
+    (hsigned : V17KernelSignedCertPointClaim)
+    (y : ℕ → ℝ) (s : ℕ)
+    (hgap : ∀ j : Fin 6, 0 ≤ windowGap y s j)
+    (j : Fin 6)
+    (hsmall : windowGap y s j ≤ v17KernelCertPoint) :
+    delta ≤ localFp (limitingWeightOnPoints y) y s := by
+  have hmono :=
+    v17_weight_cert_le_below_of_signed hsigned (hgap j) hsmall
+  have hcert := v17_weight_cert_of_signed hsigned
+  unfold V17KernelAtCertPointClaim at hcert
+  have hweight :
+      (2937 / 100000 : ℝ) < limitingWeight (windowGap y s j) :=
+    hcert.trans_le hmono
+  have hpoint :
+      (2937 / 100000 : ℝ) <
+        limitingWeightOnPoints y (s + j.1) (s + j.1 + 1) := by
+    simpa [limitingWeightOnPoints, windowGap, Nat.add_assoc] using hweight
+  have hterm :
+      delta < (1 / 3 : ℝ) *
+        limitingWeightOnPoints y (s + j.1) (s + j.1 + 1) := by
+    norm_num [delta] at ⊢
+    nlinarith
+  have hadj := v21_adjacent_weight_le_localPairEnergy y s j
+  have hp := v21_localPressure_nonneg y s hgap
+  rw [localFp_eq]
+  linarith
+
+/-- The exact remaining compact region after the two elementary reductions:
+all six gaps lie strictly above `0.89`, while their total span is below
+`14.37`. -/
+def V21HardCoreClaim : Prop :=
+  ∀ (y : ℕ → ℝ) (s : ℕ),
+    (∀ j : Fin 6, 0 ≤ windowGap y s j) →
+    (∀ j : Fin 6, v17KernelCertPoint < windowGap y s j) →
+    y (s+6) - y s < (1437 / 100 : ℝ) →
+      delta ≤ localFp (limitingWeightOnPoints y) y s
+
+/-- Once the compact hard core is proved, the universal article inequality
+follows: large total span is settled by pressure, and any gap at most `0.89`
+is settled by the internally certified adjacent kernel term. -/
+theorem v21_article_of_hard_core
+    (hsigned : V17KernelSignedCertPointClaim)
+    (hcore : V21HardCoreClaim) :
+    ArticleSevenPointInequality := by
+  intro y s hgap
+  by_cases hspan : (1437 / 100 : ℝ) ≤ y (s+6) - y s
+  · exact v21_localFp_of_large_span y s hgap hspan
+  · have hspanlt : y (s+6) - y s < (1437 / 100 : ℝ) := lt_of_not_ge hspan
+    by_cases hsmall : ∃ j : Fin 6, windowGap y s j ≤ v17KernelCertPoint
+    · rcases hsmall with ⟨j, hj⟩
+      exact v21_localFp_of_small_gap hsigned y s hgap j hj
+    · apply hcore y s hgap
+      · intro j
+        have hj : ¬ windowGap y s j ≤ v17KernelCertPoint := by
+          intro h
+          exact hsmall ⟨j, h⟩
+        exact lt_of_not_ge hj
+      · exact hspanlt
 
 /-- Exact algebraic expansion of the historical seven-point functional. -/
 theorem v21_localFp_eq_explicit (y : ℕ → ℝ) (s : ℕ) :
