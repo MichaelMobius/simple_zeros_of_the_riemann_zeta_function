@@ -51,7 +51,9 @@ theorem v21_kernelB_hasDerivAt {b : ℝ}
         (Real.hasDerivAt_sin b)).sub
       ((hasDerivAt_const b (1 / 2 : ℝ)).mul
         (Real.hasDerivAt_cos b)))
-  have hrawDeriv := hraw.congr_deriv (by ring)
+  have hrawDeriv := hraw.congr_deriv (by
+    simp only [Pi.mul_apply, id_eq]
+    ring)
   have hnum :
       HasDerivAt
         (fun t : ℝ =>
@@ -62,7 +64,9 @@ theorem v21_kernelB_hasDerivAt {b : ℝ}
     filter_upwards with t
     simp only [Pi.mul_apply, Pi.sub_apply, id_eq]
   have hdenRaw := ((hasDerivAt_id b).pow 2).sub_const (1 / 2 : ℝ)
-  have hdenRaw' := hdenRaw.congr_deriv (by ring)
+  have hdenRaw' := hdenRaw.congr_deriv (by
+    simp only [id_eq]
+    ring)
   have hden :
       HasDerivAt
         (fun t : ℝ => t ^ 2 - (1 / 2 : ℝ))
