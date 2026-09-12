@@ -96,7 +96,7 @@ lemma v21_ramp_sq_ge_quadratic (z : ℝ) :
       · positivity
     have habs : |z| ^ 2 = z ^ 2 := sq_abs z
     nlinarith
-  · have hz' : (1 / 200000 : ℝ) ≤ |z| := (le_of_not_ge hz).le
+  · have hz' : (1 / 200000 : ℝ) ≤ |z| := le_of_not_ge hz
     rw [max_eq_left (sub_nonneg.mpr hz')]
     have habs : |z| ^ 2 = z ^ 2 := sq_abs z
     nlinarith [sq_nonneg (|z| / 10 - 10 * (1 / 200000 : ℝ))]
