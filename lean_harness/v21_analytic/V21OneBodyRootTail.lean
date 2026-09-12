@@ -18,7 +18,6 @@ theorem v21_oneBody_C_tail6 {j : Fin 6} {x : ℝ}
   let U : ℝ := 21700 / 3553
   let L : ℝ := 6078 / 1000
   have hx0 : 0 ≤ x := by nlinarith
-  have hU0 : 0 ≤ U := by dsimp [U]; norm_num
   have hxU' : x ≤ U := by simpa [U] using hxU
   have hxCellL : (6 : ℝ) - (1 / 20 : ℝ) ≤ x := by
     dsimp [L] at hxL
@@ -30,7 +29,7 @@ theorem v21_oneBody_C_tail6 {j : Fin 6} {x : ℝ}
     exact hxU'.trans hcap
   have hw := v21_weight_ge_root_quadratic
     (n := 6) (x := x) (U := U)
-    (by norm_num) (by norm_num) hxCellL hxCellU hx0 hxU' hU0
+    (by norm_num) (by norm_num) hxCellL hxCellU hxU'
   have hLm : 0 ≤ L - v21RootMid 6 := by
     dsimp [L]
     norm_num [v21RootMid, v21RootLeft, v21RootRight]
@@ -49,12 +48,26 @@ theorem v21_oneBody_C_tail6 {j : Fin 6} {x : ℝ}
   have hcoef0 :
       0 ≤ ((7 * (6 : ℝ)) ^ 2 / (v21RootDenCap U) ^ 2) := by
     positivity
+  have hw' :
+      ((7 * (6 : ℝ)) ^ 2 / (v21RootDenCap U) ^ 2) *
+          ((99 / 100 : ℝ) * (x - v21RootMid 6) ^ 2 -
+            99 * (1 / 200000 : ℝ) ^ 2) ≤
+        limitingWeight x := by
+    calc
+      ((7 * (6 : ℝ)) ^ 2 / (v21RootDenCap U) ^ 2) *
+          ((99 / 100 : ℝ) * (x - v21RootMid 6) ^ 2 -
+            99 * (1 / 200000 : ℝ) ^ 2) =
+        (((7 * (6 : ℝ)) ^ 2) *
+          ((99 / 100 : ℝ) * (x - v21RootMid 6) ^ 2 -
+            99 * (1 / 200000 : ℝ) ^ 2)) /
+          (v21RootDenCap U) ^ 2 := by ring
+      _ ≤ limitingWeight x := hw
   have hwconst :
       ((7 * (6 : ℝ)) ^ 2 / (v21RootDenCap U) ^ 2) *
           ((99 / 100 : ℝ) * (L - v21RootMid 6) ^ 2 -
             99 * (1 / 200000 : ℝ) ^ 2) ≤
         limitingWeight x := by
-    exact (mul_le_mul_of_nonneg_left hqform hcoef0).trans hw
+    exact (mul_le_mul_of_nonneg_left hqform hcoef0).trans hw'
   have hpressureL :
       (3553 / 10000000 : ℝ) * L ≤
         (3553 / 10000000 : ℝ) * x := by
