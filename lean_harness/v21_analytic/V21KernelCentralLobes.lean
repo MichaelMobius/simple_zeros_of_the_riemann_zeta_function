@@ -61,7 +61,7 @@ lemma v21_signed_M2_phase_eq (n : ℕ) (x : ℝ) :
   rw [hsin, hcos]
   dsimp [t]
   ring_nf
-  simp [hs]
+  simp
 
 /-- On the right part of the central strip the elementary phase relation
 `-cos t ≤ 2 sin t` has enough slack to pair with `Q₂ ≤ 2 P₂`. -/
@@ -143,12 +143,14 @@ lemma v21_signed_M2_nonpos_central {n : ℕ} (hn1 : 1 ≤ n) {x : ℝ}
     (hxL : (n : ℝ) + (3 / 20 : ℝ) ≤ x)
     (hxU : x ≤ (n : ℝ) + (17 / 20 : ℝ)) :
     (-1 : ℝ) ^ n * v21M2 (v21B x) ≤ 0 := by
-  have hxpos : 0 < x := by
-    have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
-    nlinarith
+  have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
+  have hxpos : 0 < x := by nlinarith
+  have hx1 : 1 < x := by nlinarith
   have hb2 : 2 < v21B x := by
+    have hpi : (3 : ℝ) * x < Real.pi * x :=
+      mul_lt_mul_of_pos_right Real.pi_gt_three hxpos
     unfold v21B
-    nlinarith [mul_lt_mul_of_pos_right Real.pi_gt_three hxpos]
+    nlinarith
   have hP : v21P2 (v21B x) < 0 := v21_P2_neg_of_two_lt hb2
   have hQ : v21Q2 (v21B x) < 0 := v21_Q2_neg_of_two_lt hb2
   have heq := v21_signed_M2_phase_eq n x
@@ -177,7 +179,6 @@ lemma v21_signed_M2_nonpos_central {n : ℕ} (hn1 : 1 ≤ n) {x : ℝ}
   · have hxM' : (n : ℝ) + (1 / 2 : ℝ) ≤ x := le_of_not_ge hxM
     have hrel := v21_central_negcos_le_two_sin hxM' hxU
     have hb47 : (47 / 10 : ℝ) ≤ v21B x := by
-      have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
       have hx15 : (3 / 2 : ℝ) ≤ x := by nlinarith
       have hmul := mul_le_mul_of_nonneg_left hx15 Real.pi_pos.le
       unfold v21B at hmul ⊢
@@ -199,21 +200,25 @@ lemma v21_signed_M2_nonpos_central {n : ℕ} (hn1 : 1 ≤ n) {x : ℝ}
 lemma v21_signedKernel_hasDerivAt {n : ℕ} {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt (v21SignedKernel n) (v21SignedKernelPrime n x) x := by
-  simpa [v21SignedKernel, v21SignedKernelPrime] using
-    (v21_kernelX_hasDerivAt hD).const_mul ((-1 : ℝ) ^ n)
+  change HasDerivAt
+    (fun y : ℝ => (-1 : ℝ) ^ n * v21KernelX y)
+    ((-1 : ℝ) ^ n * v21KernelXPrime x) x
+  exact (v21_kernelX_hasDerivAt hD).const_mul ((-1 : ℝ) ^ n)
 
 lemma v21_signedKernelPrime_hasDerivAt {n : ℕ} {x : ℝ}
     (hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0) :
     HasDerivAt (v21SignedKernelPrime n) (v21SignedKernelSecond n x) x := by
-  simpa [v21SignedKernelPrime, v21SignedKernelSecond] using
-    (v21_kernelXPrime_hasDerivAt hD).const_mul ((-1 : ℝ) ^ n)
+  change HasDerivAt
+    (fun y : ℝ => (-1 : ℝ) ^ n * v21KernelXPrime y)
+    ((-1 : ℝ) ^ n * v21KernelXSecond x) x
+  exact (v21_kernelXPrime_hasDerivAt hD).const_mul ((-1 : ℝ) ^ n)
 
 lemma v21_signedKernelSecond_nonpos_central {n : ℕ} (hn1 : 1 ≤ n) {x : ℝ}
     (hxL : (n : ℝ) + (3 / 20 : ℝ) ≤ x)
     (hxU : x ≤ (n : ℝ) + (17 / 20 : ℝ)) :
     v21SignedKernelSecond n x ≤ 0 := by
-  have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
   have hxcert : v17KernelCertPoint < x := by
+    have hnR : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn1
     have : (89 / 100 : ℝ) < x := by nlinarith
     simpa [v17KernelCertPoint] using this
   have hden := v21_kernel_den_pos_of_cert_lt hxcert
@@ -224,7 +229,15 @@ lemma v21_signedKernelSecond_nonpos_central {n : ℕ} (hn1 : 1 ≤ n) {x : ℝ}
     div_nonpos_of_nonpos_of_nonneg hm (pow_nonneg hden.le 3)
   have hs := mul_nonpos_of_nonneg_of_nonpos (sq_nonneg Real.pi) hq
   unfold v21SignedKernelSecond v21KernelXSecond
-  simpa [mul_assoc, mul_left_comm, mul_comm] using hs
+  calc
+    (-1 : ℝ) ^ n *
+        (Real.pi ^ 2 *
+          (v21M2 (v21B x) /
+            ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3)) =
+      Real.pi ^ 2 *
+        (((-1 : ℝ) ^ n * v21M2 (v21B x)) /
+          ((v21B x) ^ 2 - (1 / 2 : ℝ)) ^ 3) := by ring
+    _ ≤ 0 := hs
 
 /-- Universal central-lobe concavity.  This one theorem covers every gap
 between the conservative univariate basins used later. -/
