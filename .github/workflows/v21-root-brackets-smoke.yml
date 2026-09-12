@@ -1,0 +1,56 @@
+name: v21 root brackets smoke
+
+on:
+  push:
+    branches: [v21-root-brackets-wip]
+    paths:
+      - 'lean_harness/v20_analytic/**'
+      - 'lean_harness/v21_analytic/**'
+      - '.github/workflows/v21-root-brackets-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  root-brackets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Reconstruct pinned proof environment
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+          cd zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/a.tar.gz
+          tar -xzf /tmp/a.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/b.tar.gz
+          tar -xzf /tmp/b.tar.gz -C .
+          find "$GITHUB_WORKSPACE/lean_harness" -name '*.lean' \
+            -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+              cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+      - name: Fetch Mathlib cache
+        run: cd /tmp/formal-math/zeta23 && lake exe cache get
+      - name: Build root bracket layer only
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V21KernelRootBrackets
+      - name: Reject placeholders
+        run: |
+          ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
+            "$GITHUB_WORKSPACE/lean_harness/v21_analytic/V21KernelRootBrackets.lean"
