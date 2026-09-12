@@ -82,6 +82,7 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21OneBodyCentralExclusions
+          lake build HurtadoZeta23.V21OneBodyCentralExclusionTable
           lake build HurtadoZeta23.V21OneBodyB2LowerSlivers
           lake build HurtadoZeta23.V21OneBodyRootTail
       - name: Reject placeholders
