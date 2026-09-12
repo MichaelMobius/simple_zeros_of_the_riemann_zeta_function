@@ -46,10 +46,10 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build root bracket and slope layers
+      - name: Build root bracket, slope, and catalog layers
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V21KernelRootSlope
+          lake build HurtadoZeta23.V21KernelRootCatalog
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
