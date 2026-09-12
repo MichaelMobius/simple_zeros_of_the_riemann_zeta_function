@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: v21-root-brackets-wip
+  cancel-in-progress: true
+
 jobs:
   root-brackets:
     runs-on: ubuntu-latest
