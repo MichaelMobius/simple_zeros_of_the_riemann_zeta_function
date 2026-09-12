@@ -32,12 +32,14 @@ lemma v21_rootH_hasDerivAt (n : ℕ) (x : ℝ) :
     (((hasDerivAt_id x).const_mul (v21C * Real.pi)).mul hsin).sub
       (hcos.const_mul (1 / 2 : ℝ))
   have hraw' := hraw.congr_deriv (g' := v21RootHDeriv n x) (by
+    simp only [id_eq]
     unfold v21RootHDeriv
-    ring_nf)
+    ring)
   refine hraw'.congr_of_eventuallyEq ?_
   filter_upwards with t
+  simp only [Pi.mul_apply, Pi.sub_apply, id_eq]
   unfold v21RootH
-  ring_nf
+  ring
 
 /-- A rational cosine floor on the positive part of every root cell used by
 our bootstrap. -/
