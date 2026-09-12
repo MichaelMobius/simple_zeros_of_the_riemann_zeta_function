@@ -55,7 +55,8 @@ lemma v21_oneBody_B1_left_cut {j : Fin 6} {p T x : ℝ}
           (v21RootLeft 1 - v21B1CutL) ^ 2 ≤
         p * x + v21B1RampCoeff * (v21RootLeft 1 - x) ^ 2 := by
     nlinarith
-  unfold v21OneBody v21B1RampCoeff at hboundary hquad ⊢
+  unfold v21B1RampCoeff at hboundary hquad
+  unfold v21OneBody
   nlinarith
 
 /-- Symmetric right-side monotonicity for the exact first-band ramp. -/
@@ -100,7 +101,8 @@ lemma v21_oneBody_B1_right_cut {j : Fin 6} {p T x : ℝ}
           (v21B1CutR - v21RootRight 1) ^ 2 ≤
         p * x + v21B1RampCoeff * (x - v21RootRight 1) ^ 2 := by
     nlinarith
-  unfold v21OneBody v21B1RampCoeff at hboundary hquad ⊢
+  unfold v21B1RampCoeff at hboundary hquad
+  unfold v21OneBody
   nlinarith
 
 /-- Generic first-band localization once the two rational endpoint checks are
