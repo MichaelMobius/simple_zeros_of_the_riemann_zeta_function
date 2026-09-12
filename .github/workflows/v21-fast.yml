@@ -2,7 +2,7 @@ name: v21 fast proof loop
 
 on:
   push:
-    branches: [v21-analytic-seven-point]
+    branches: [v21-analytic-seven-point, v21-root-brackets-wip]
     paths:
       - 'lean_harness/v20_analytic/**'
       - 'lean_harness/v21_analytic/**'
@@ -56,6 +56,7 @@ jobs:
           lake build HurtadoZeta23.V21KernelNormalized
           lake build HurtadoZeta23.V21KernelCellTools
           lake build HurtadoZeta23.V21KernelDerivatives
+          lake build HurtadoZeta23.V21KernelRootBrackets
       - name: Reject placeholders and trusted declarations
         run: |
           ! grep -R -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
