@@ -11,12 +11,12 @@ namespace HurtadoZeta23
 def v21RootDenCap (U : ℝ) : ℝ :=
   (v21RootPiU * U) ^ 2 - (1 / 2 : ℝ)
 
-/-- The normalized kernel numerator and the cell-centered numerator differ
-only by `(-1)^n`; hence their squares agree. -/
-lemma v21_root_numerator_sq (n : ℕ) (x : ℝ) :
-    (v21C * v21B x * Real.sin (v21B x) -
-        (1 / 2 : ℝ) * Real.cos (v21B x)) ^ 2 =
-      (v21RootH n x) ^ 2 := by
+/-- The normalized kernel numerator differs from the cell-centered numerator
+only by the exact sign `(-1)^n`. -/
+lemma v21_root_numerator_eq (n : ℕ) (x : ℝ) :
+    v21C * v21B x * Real.sin (v21B x) -
+        (1 / 2 : ℝ) * Real.cos (v21B x) =
+      (-1 : ℝ) ^ n * v21RootH n x := by
   let t : ℝ := Real.pi * (x - (n : ℝ))
   have hB : v21B x = t + (n : ℝ) * Real.pi := by
     dsimp [t]
@@ -30,17 +30,34 @@ lemma v21_root_numerator_sq (n : ℕ) (x : ℝ) :
       Real.cos (v21B x) = (-1 : ℝ) ^ n * Real.cos t := by
     rw [hB]
     simpa using Real.cos_add_nat_mul_pi t n
-  have hnum :
-      v21C * v21B x * Real.sin (v21B x) -
-          (1 / 2 : ℝ) * Real.cos (v21B x) =
-        (-1 : ℝ) ^ n * v21RootH n x := by
-    rw [hsin, hcos]
-    dsimp [t]
-    unfold v21B v21RootH
-    ring
+  rw [hsin, hcos]
+  dsimp [t]
+  unfold v21B v21RootH
+  ring
+
+/-- Squaring removes the cell sign. -/
+lemma v21_root_numerator_sq (n : ℕ) (x : ℝ) :
+    (v21C * v21B x * Real.sin (v21B x) -
+        (1 / 2 : ℝ) * Real.cos (v21B x)) ^ 2 =
+      (v21RootH n x) ^ 2 := by
+  rw [v21_root_numerator_eq n x, mul_pow]
   have hsignsq : ((-1 : ℝ) ^ n) ^ 2 = 1 := by
     simpa using (sq_abs ((-1 : ℝ) ^ n)).symm
-  rw [hnum, mul_pow, hsignsq, one_mul]
+  rw [hsignsq, one_mul]
+
+/-- Exact signed root-cell form of the phase-normalized kernel. -/
+lemma v21_kernelB_eq_sign_rootH_div (n : ℕ) (x : ℝ) :
+    v21KernelB (v21B x) =
+      (-1 : ℝ) ^ n * v21RootH n x / v21D x := by
+  unfold v21KernelB v21D
+  rw [v21_root_numerator_eq n x]
+
+/-- Exact signed root-cell form of the physical normalized kernel. -/
+lemma v21_limitingk_eq_sign_rootH_div {n : ℕ} {x : ℝ}
+    (hx : v17KernelCertPoint < x) :
+    limitingk x = (-1 : ℝ) ^ n * v21RootH n x / v21D x := by
+  rw [v21_limitingk_eq_kernelB (v21_A_lt_B_of_cert_lt hx)]
+  exact v21_kernelB_eq_sign_rootH_div n x
 
 /-- Exact root-cell representation of the limiting weight. -/
 lemma v21_limitingWeight_eq_rootH_sq_div {n : ℕ} {x : ℝ}
