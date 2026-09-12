@@ -56,7 +56,7 @@ lemma v21_signed_M2_phase_eq (n : ℕ) (x : ℝ) :
     rw [hB]
     simpa using Real.cos_add_nat_mul_pi t n
   have hs : ((-1 : ℝ) ^ n) ^ 2 = 1 := by
-    norm_num
+    simpa using (sq_abs ((-1 : ℝ) ^ n)).symm
   unfold v21M2
   rw [hsin, hcos]
   dsimp [t]
