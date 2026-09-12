@@ -74,6 +74,7 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21KernelCentralEndpointBounds
+          lake build HurtadoZeta23.V21KernelCentralEndpointTable
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
