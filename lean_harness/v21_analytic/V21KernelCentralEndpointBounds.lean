@@ -48,8 +48,9 @@ lemma v21_sin_cell_lower_of_deviation {n : ℕ} {x r : ℝ}
       z = Real.pi * (x - (n : ℝ)) - Real.pi / 2 := by
     dsimp [z]
     ring
+  rw [hzphase] at hsq
   rw [hzphase, Real.cos_sub_pi_div_two] at hcos
-  nlinarith
+  linarith
 
 /-- Central-cell lower bound for the cleared numerator.  The only
 transcendental input is the elementary cosine lower bound packaged above;
