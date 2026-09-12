@@ -30,19 +30,25 @@ lemma v21_B1_upper_gt_cert : v17KernelCertPoint < v21B1Upper := by
 
 lemma v21_k_B1_left_nonneg : 0 ≤ limitingk v21B1Left := by
   have hH := v21_root_left_sign (n := 1) (by norm_num) (by norm_num)
+  have hH0 : v21RootH 1 v21B1Left ≤ 0 := by
+    simpa [v21B1Left] using hH.trans (by norm_num : (-(7 / 100000 : ℝ)) ≤ 0)
   have hA := v21_A_lt_B_of_cert_lt v21_B1_left_gt_cert
   have hD : 0 < v21D v21B1Left := v21_D_pos hA
   rw [v21_limitingk_eq_sign_rootH_div (n := 1) v21_B1_left_gt_cert]
   norm_num
-  exact div_nonneg (by linarith) hD.le
+  exact div_nonneg (neg_nonneg.mpr hH0) hD.le
 
 lemma v21_k_B1_right_nonpos : limitingk v21B1Right ≤ 0 := by
   have hH := v21_root_right_sign (n := 1) (by norm_num) (by norm_num)
+  have hH0 : 0 ≤ v21RootH 1 v21B1Right := by
+    simpa [v21B1Right] using (by
+      have : (0 : ℝ) ≤ (1 / 100000 : ℝ) := by norm_num
+      exact this.trans hH)
   have hA := v21_A_lt_B_of_cert_lt v21_B1_right_gt_cert
   have hD : 0 < v21D v21B1Right := v21_D_pos hA
   rw [v21_limitingk_eq_sign_rootH_div (n := 1) v21_B1_right_gt_cert]
   norm_num
-  exact div_nonpos_of_nonpos_of_nonneg (by linarith) hD.le
+  exact div_nonpos_of_nonpos_of_nonneg (neg_nonpos.mpr hH0) hD.le
 
 lemma v21_rootH_one_at_120_lower :
     (71 / 50 : ℝ) ≤ v21RootH 1 (6 / 5 : ℝ) := by
@@ -88,9 +94,20 @@ lemma v21_k_B1_upper_endpoint :
   have hslope :
       v21B1Slope * (v21B1Upper - v21B1Left) ≤ (71 / 686 : ℝ) := by
     norm_num [v21B1Slope, v21B1Upper, v21B1Left, v21RootLeft]
+  have hcompare :
+      v21B1Slope * (v21B1Upper - v21B1Left) ≤
+        v21RootH 1 v21B1Upper / v21D v21B1Upper :=
+    hslope.trans hratio
+  have hneg :
+      -(v21RootH 1 v21B1Upper / v21D v21B1Upper) ≤
+        -v21B1Slope * (v21B1Upper - v21B1Left) := by
+    calc
+      -(v21RootH 1 v21B1Upper / v21D v21B1Upper) ≤
+          -(v21B1Slope * (v21B1Upper - v21B1Left)) := neg_le_neg hcompare
+      _ = -v21B1Slope * (v21B1Upper - v21B1Left) := by ring
   rw [v21_limitingk_eq_sign_rootH_div (n := 1) v21_B1_upper_gt_cert]
   norm_num
-  nlinarith
+  simpa [neg_div] using hneg
 
 lemma v21_kernelX_B1_left_nonneg : 0 ≤ v21KernelX v21B1Left := by
   rw [v21_kernelX_eq_limitingk v21_B1_left_gt_cert]
@@ -192,9 +209,11 @@ lemma v21_k_B1_right_linear {x : ℝ}
         add_le_add htermR htermU
       _ = (-v21B1Slope * (x - v21B1Right)) *
             (v21B1Upper - v21B1Left) := by ring
+  have hLR : v21B1Left ≤ v21B1Right := by
+    norm_num [v21B1Left, v21B1Right, v21RootLeft, v21RootRight]
   have hlen :
       v21B1Upper - v21B1Right ≤ v21B1Upper - v21B1Left := by
-    norm_num [v21B1Left, v21B1Right, v21RootLeft, v21RootRight]
+    linarith
   have hnegcoef : -v21B1Slope * (x - v21B1Right) ≤ 0 := by
     have hS0 : 0 ≤ v21B1Slope := by norm_num [v21B1Slope]
     nlinarith
@@ -226,8 +245,10 @@ lemma v21_k_abs_ge_B1_ramp {x : ℝ}
     by_cases hright : v21B1Right ≤ x
     · rw [v21_root_ramp_eq_right (n := 1) (by norm_num) (by norm_num) hright]
       have hk := v21_k_B1_right_linear hright (by simpa [v21B1Upper] using hxhi)
+      have hneg : v21B1Slope * (x - v21B1Right) ≤ -limitingk x := by
+        linarith
       have hnegabs : -limitingk x ≤ |limitingk x| := neg_le_abs _
-      nlinarith
+      simpa [v21B1Right] using hneg.trans hnegabs
     · have hxR : x ≤ v21B1Right := le_of_not_ge hright
       rw [v21_root_ramp_eq_zero_of_mem_bracket (n := 1)
         (by norm_num) (by norm_num) hLx hxR, mul_zero]
