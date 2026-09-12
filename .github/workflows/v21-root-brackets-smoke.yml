@@ -46,6 +46,22 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
+      - name: Restore certified v21 base build
+        id: v21-base-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v21-root-quadratic-${{ runner.os }}-fbdc36b-v1
+      - name: Build certified root-quadratic base
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V21KernelRootQuadratic
+      - name: Save certified v21 base build
+        if: steps.v21-base-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v21-root-quadratic-${{ runner.os }}-fbdc36b-v1
       - name: Build root, B1, and one-body floor layers
         run: |
           cd /tmp/formal-math/zeta23
