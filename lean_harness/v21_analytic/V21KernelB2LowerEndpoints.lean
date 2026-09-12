@@ -5,7 +5,7 @@ noncomputable section
 
 namespace HurtadoZeta23
 
-private macro "b2_lower_endpoint" : tactic =>
+macro "b2_lower_endpoint" : tactic =>
   `(tactic|
     first
     | norm_num [v17KernelCertPoint, v21RootPiU, v21RootDenCap,
