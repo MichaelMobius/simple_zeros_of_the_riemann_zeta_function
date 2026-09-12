@@ -130,7 +130,7 @@ lemma v21_rootH_upper_bound {n : ℕ} {x e : ℝ}
     nlinarith [Real.pi_pos, huPi2]
   have hsinMono : Real.sin t ≤ Real.sin u := by
     apply Real.sin_le_sin_of_le_of_le_pi_div_two
-    · exact ht0
+    · nlinarith [Real.pi_pos, ht0]
     · exact huPi2
     · exact htu
   have hsinTaylor := v21_sin_upper9 (x := u) hu0 hu1
@@ -201,7 +201,7 @@ lemma v21_rootH_lower_bound {n : ℕ} {x e : ℝ}
   have htPi : t ≤ Real.pi := by nlinarith [Real.pi_pos, htPi2]
   have hsinMono : Real.sin l ≤ Real.sin t := by
     apply Real.sin_le_sin_of_le_of_le_pi_div_two
-    · exact hl0
+    · nlinarith [Real.pi_pos, hl0]
     · exact htPi2
     · exact hlu
   have hsinTaylor := v21_sin_lower7 (x := l) hl0 hl1
