@@ -4,6 +4,8 @@ import Mathlib.Tactic
 
 noncomputable section
 
+open Set
+
 namespace HurtadoZeta23
 
 /-- Removing the alternating lobe sign leaves exactly the root-cell numerator
@@ -123,5 +125,74 @@ lemma v21_signedKernel_central_lower {n : ℕ} {x r q : ℝ}
   apply v21_signedKernel_lower_of_rootH_cap
     (n := n) hxcert hx0 le_rfl hq0
   exact hq.trans (v21_rootH_central_lower hx0 hr0 hdev hslow0)
+
+/-- Uniform box version of the preceding endpoint certificate.  This is
+useful for a short tail that extends past the concavity strip: the numerator
+is frozen at the rational left endpoint `L` and the denominator at `U`. -/
+lemma v21_signedKernel_central_box_lower {n : ℕ} {L U r q x : ℝ}
+    (hxcert : v17KernelCertPoint < x)
+    (hL0 : 0 ≤ L) (hLx : L ≤ x) (hxU : x ≤ U)
+    (hr0 : 0 ≤ r) (hq0 : 0 ≤ q)
+    (hdev : |x - ((n : ℝ) + (1 / 2 : ℝ))| ≤ r)
+    (hslow0 : 0 ≤ 1 - (v21RootPiU * r) ^ 2 / 2)
+    (hq : q * v21RootDenCap U ≤
+      v21RootCL * v21RootPiL * L *
+        (1 - (v21RootPiU * r) ^ 2 / 2) - (1 / 2 : ℝ)) :
+    q ≤ v21SignedKernel n x := by
+  have hx0 : 0 ≤ x := hL0.trans hLx
+  apply v21_signedKernel_lower_of_rootH_cap
+    (n := n) hxcert hx0 hxU hq0
+  have hroot := v21_rootH_central_lower
+    (n := n) hx0 hr0 hdev hslow0
+  have hcoef0 : 0 ≤ v21RootCL * v21RootPiL := by
+    norm_num [v21RootCL, v21RootPiL]
+  have hLX :
+      v21RootCL * v21RootPiL * L ≤
+        v21RootCL * v21RootPiL * x :=
+    mul_le_mul_of_nonneg_left hLx hcoef0
+  have hmul :
+      v21RootCL * v21RootPiL * L *
+          (1 - (v21RootPiU * r) ^ 2 / 2) ≤
+        v21RootCL * v21RootPiL * x *
+          (1 - (v21RootPiU * r) ^ 2 / 2) :=
+    mul_le_mul_of_nonneg_right hLX hslow0
+  linarith
+
+/-- Concavity turns two endpoint certificates into a certificate on the
+whole subinterval. -/
+lemma v21_signedKernel_lower_on_central_interval {n : ℕ} (hn1 : 1 ≤ n)
+    {a b q x : ℝ}
+    (ha : a ∈ Icc ((n : ℝ) + (3 / 20 : ℝ))
+      ((n : ℝ) + (17 / 20 : ℝ)))
+    (hb : b ∈ Icc ((n : ℝ) + (3 / 20 : ℝ))
+      ((n : ℝ) + (17 / 20 : ℝ)))
+    (hx : x ∈ Icc a b)
+    (hqa : q ≤ v21SignedKernel n a)
+    (hqb : q ≤ v21SignedKernel n b) :
+    q ≤ v21SignedKernel n x := by
+  have hmin := (v21_signedKernel_concave_central hn1).min_le_of_mem_Icc
+    ha hb hx
+  exact (le_min hqa hqb).trans hmin
+
+/-- The squared signed kernel is exactly the kernel weight once we are beyond
+the already-certified normalization threshold. -/
+lemma v21_limitingWeight_eq_signedKernel_sq {n : ℕ} {x : ℝ}
+    (hxcert : v17KernelCertPoint < x) :
+    limitingWeight x = (v21SignedKernel n x) ^ 2 := by
+  have hk : limitingk x = v21KernelX x := by
+    simpa [v21KernelX] using
+      (v21_limitingk_eq_kernelB (v21_A_lt_B_of_cert_lt hxcert))
+  have hs : ((-1 : ℝ) ^ n) ^ 2 = 1 := by
+    simpa using (sq_abs ((-1 : ℝ) ^ n)).symm
+  unfold limitingWeight v21SignedKernel
+  rw [hk, mul_pow, hs, one_mul]
+
+lemma v21_weight_lower_of_signedKernel_lower {n : ℕ} {x q : ℝ}
+    (hxcert : v17KernelCertPoint < x) (hq0 : 0 ≤ q)
+    (hq : q ≤ v21SignedKernel n x) :
+    q ^ 2 ≤ limitingWeight x := by
+  have hs := pow_le_pow_left₀ hq0 hq 2
+  rw [v21_limitingWeight_eq_signedKernel_sq hxcert]
+  exact hs
 
 end HurtadoZeta23
