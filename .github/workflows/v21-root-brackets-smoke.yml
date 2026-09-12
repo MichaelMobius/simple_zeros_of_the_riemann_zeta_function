@@ -85,6 +85,7 @@ jobs:
           lake build HurtadoZeta23.V21OneBodyCentralExclusionTable
           lake build HurtadoZeta23.V21OneBodyB2LowerSlivers
           lake build HurtadoZeta23.V21OneBodyRootTail
+          lake build HurtadoZeta23.V21OneBodyLocalization
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
