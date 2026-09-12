@@ -46,10 +46,10 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build root bracket through quadratic layers
+      - name: Build root bracket through weight layers
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V21KernelRootQuadratic
+          lake build HurtadoZeta23.V21KernelRootWeight
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
