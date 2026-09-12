@@ -33,11 +33,11 @@ lemma v21_rootH_hasDerivAt (n : ℕ) (x : ℝ) :
       (hcos.const_mul (1 / 2 : ℝ))
   have hraw' := hraw.congr_deriv (g' := v21RootHDeriv n x) (by
     unfold v21RootHDeriv
-    ring)
+    ring_nf)
   refine hraw'.congr_of_eventuallyEq ?_
   filter_upwards with t
   unfold v21RootH
-  ring
+  ring_nf
 
 /-- A rational cosine floor on the positive part of every root cell used by
 our bootstrap. -/
@@ -128,7 +128,7 @@ private lemma v21_root_Cpi2_lower :
 private lemma v21_root_slope_pos_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
     (hx0 : (n : ℝ) ≤ x)
     (hxU : x ≤ (n : ℝ) + (151 / 1000 : ℝ)) :
-    (6 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
+    (7 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
   let e : ℝ := x - (n : ℝ)
   have he0 : 0 ≤ e := by dsimp [e]; linarith
   have heU : e ≤ (151 / 1000 : ℝ) := by dsimp [e]; linarith
@@ -155,10 +155,10 @@ private lemma v21_root_slope_pos_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
         v21C * Real.pi ^ 2 * x * Real.cos (Real.pi * e) :=
     mul_le_mul hprod1 hcos (by norm_num) hright1
   have hcoef :
-      (6 : ℝ) ≤ v21RootCL * v21RootPiL ^ 2 * (887 / 1000 : ℝ) := by
+      (7 : ℝ) ≤ v21RootCL * v21RootPiL ^ 2 * (887 / 1000 : ℝ) := by
     norm_num [v21RootCL, v21RootPiL]
   have hrat :
-      (6 : ℝ) * (n : ℝ) ≤
+      (7 : ℝ) * (n : ℝ) ≤
         v21RootCL * v21RootPiL ^ 2 * (n : ℝ) * (887 / 1000 : ℝ) := by
     have := mul_le_mul_of_nonneg_right hcoef hn0
     nlinarith
@@ -175,7 +175,7 @@ private lemma v21_root_slope_pos_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
 private lemma v21_root_slope_neg_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
     (hxL : (n : ℝ) - (1 / 20 : ℝ) ≤ x)
     (hx0 : x ≤ (n : ℝ)) :
-    (6 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
+    (7 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
   let e : ℝ := x - (n : ℝ)
   have heL : -(1 / 20 : ℝ) ≤ e := by dsimp [e]; linarith
   have he0 : e ≤ 0 := by dsimp [e]; linarith
@@ -241,7 +241,7 @@ private lemma v21_root_slope_neg_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
         v21C * Real.pi ^ 2 * x * Real.cos (Real.pi * e) :=
     mul_le_mul hprod1 hcos (by norm_num) hright1
   have hrat :
-      (6 : ℝ) * (n : ℝ) ≤
+      (7 : ℝ) * (n : ℝ) ≤
         v21RootCL * v21RootPiL ^ 2 * ((n : ℝ) - (1 / 20 : ℝ)) *
           (987 / 1000 : ℝ) -
         v21RootPiU * (v21RootCU + (1 / 2 : ℝ)) *
@@ -254,10 +254,10 @@ private lemma v21_root_slope_neg_side {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
 
 /-- Uniform slope bound on the entire root-cell range needed by the analytic
 quadratic bootstrap. -/
-lemma v21_rootHDeriv_ge_six_mul {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
+lemma v21_rootHDeriv_ge_seven_mul {n : ℕ} (hn : 1 ≤ n) {x : ℝ}
     (hxL : (n : ℝ) - (1 / 20 : ℝ) ≤ x)
     (hxU : x ≤ (n : ℝ) + (151 / 1000 : ℝ)) :
-    (6 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
+    (7 : ℝ) * (n : ℝ) ≤ v21RootHDeriv n x := by
   by_cases hx0 : (n : ℝ) ≤ x
   · exact v21_root_slope_pos_side hn hx0 hxU
   · exact v21_root_slope_neg_side hn hxL (le_of_not_ge hx0)
