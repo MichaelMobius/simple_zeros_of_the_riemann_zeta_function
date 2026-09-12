@@ -4,6 +4,9 @@ import Mathlib.Tactic
 
 noncomputable section
 
+open Filter Finset Real
+open scoped BigOperators Topology
+
 namespace HurtadoZeta23
 
 private def v21RootCosTerm (x : ℝ) (n : ℕ) : ℝ :=
@@ -32,11 +35,11 @@ lemma v21_cos_upper8 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
       1 - x^2 / 2 + x^4 / 24 - x^6 / 720 + x^8 / 40320 := by
   have ht :
       Tendsto
-        (fun n : ℕ => ∑ i ∈ Finset.range n, (-1 : ℝ)^i * v21RootCosTerm x i)
+        (fun n : ℕ => ∑ i ∈ range n, (-1 : ℝ)^i * v21RootCosTerm x i)
         atTop (𝓝 (Real.cos x)) := by
     simpa [v21RootCosTerm, mul_div_assoc] using (Real.hasSum_cos x).tendsto_sum_nat
   have h := (v21RootCosTerm_antitone hx0 hx1).tendsto_le_alternating_series ht 2
-  norm_num [v21RootCosTerm, Finset.sum_range_succ, Nat.factorial] at h ⊢
+  norm_num [v21RootCosTerm, sum_range_succ, Nat.factorial] at h ⊢
   linarith
 
 /-- Rational lower enclosure for the profile sinc, used only to obtain a
@@ -96,7 +99,7 @@ def v21RootCosLower10 (t : ℝ) : ℝ :=
 def v21RootCosUpper8 (t : ℝ) : ℝ :=
   1 - t^2 / 2 + t^4 / 24 - t^6 / 720 + t^8 / 40320
 
-/-- Cleared numerator around the integer cell `n`.  Its zero is the positive
+/-- Cleared numerator around the integer cell `n`. Its zero is the positive
 kernel zero in that cell. -/
 def v21RootH (n : ℕ) (x : ℝ) : ℝ :=
   v21C * Real.pi * x * Real.sin (Real.pi * (x - (n : ℝ))) -
@@ -115,6 +118,7 @@ lemma v21_rootH_upper_bound {n : ℕ} {x e : ℝ}
   have hC : v21C ≤ v21RootCU := by
     simpa [v21RootCU] using v21_C_upper
   have hCU0 : 0 ≤ v21RootCU := by norm_num [v21RootCU]
+  have hpiU0 : 0 ≤ v21RootPiU := by norm_num [v21RootPiU]
   have hx0 : 0 ≤ x := by rw [hx]; positivity
   let t : ℝ := Real.pi * e
   let u : ℝ := v21RootPiU * e
@@ -134,16 +138,20 @@ lemma v21_rootH_upper_bound {n : ℕ} {x e : ℝ}
     · exact huPi2
     · exact htu
   have hsinTaylor := v21_sin_upper9 (x := u) hu0 hu1
-  have hsin : Real.sin t ≤ v21RootSinUpper9 u := by
-    exact hsinMono.trans (by simpa [v21RootSinUpper9] using hsinTaylor)
+  have hsinTaylor' : Real.sin u ≤ v21RootSinUpper9 u := by
+    simpa [v21RootSinUpper9] using hsinTaylor
+  have hsin : Real.sin t ≤ v21RootSinUpper9 u :=
+    hsinMono.trans hsinTaylor'
   have hcosMono : Real.cos u ≤ Real.cos t := by
     apply Real.cos_le_cos_of_nonneg_of_le_pi
     · exact ht0
     · exact huPi
     · exact htu
   have hcosTaylor := v21_cos_lower10 (x := u) hu0 hu1
-  have hcos : v21RootCosLower10 u ≤ Real.cos t := by
-    exact (by simpa [v21RootCosLower10] using hcosTaylor).trans hcosMono
+  have hcosTaylor' : v21RootCosLower10 u ≤ Real.cos u := by
+    simpa [v21RootCosLower10] using hcosTaylor
+  have hcos : v21RootCosLower10 u ≤ Real.cos t :=
+    hcosTaylor'.trans hcosMono
   have htPi : t ≤ Real.pi := htu.trans huPi
   have hsint0 : 0 ≤ Real.sin t :=
     Real.sin_nonneg_of_nonneg_of_le_pi ht0 htPi
@@ -155,7 +163,8 @@ lemma v21_rootH_upper_bound {n : ℕ} {x e : ℝ}
       v21C * Real.pi * x * Real.sin t ≤
         v21RootCU * v21RootPiU * x * Real.sin t :=
     mul_le_mul_of_nonneg_right hcoef hsint0
-  have hcoefU0 : 0 ≤ v21RootCU * v21RootPiU * x := by positivity
+  have hcoefU0 : 0 ≤ v21RootCU * v21RootPiU * x :=
+    mul_nonneg (mul_nonneg hCU0 hpiU0) hx0
   have hterm1b :
       v21RootCU * v21RootPiU * x * Real.sin t ≤
         v21RootCU * v21RootPiU * x * v21RootSinUpper9 u :=
@@ -180,6 +189,8 @@ lemma v21_rootH_lower_bound {n : ℕ} {x e : ℝ}
     simpa [v21RootPiU] using (le_of_lt v21_pi_upper)
   have hCL : v21RootCL ≤ v21C := by
     simpa [v21RootCL] using v21_C_lower
+  have hCL0 : 0 ≤ v21RootCL := by norm_num [v21RootCL]
+  have hpiL0 : 0 ≤ v21RootPiL := by norm_num [v21RootPiL]
   have hC0 : 0 ≤ v21C := by nlinarith [v21_C_gt_half]
   have hx0 : 0 ≤ x := by rw [hx]; positivity
   let l : ℝ := v21RootPiL * e
@@ -196,8 +207,8 @@ lemma v21_rootH_lower_bound {n : ℕ} {x e : ℝ}
   have hu1 : u ≤ 1 := by simpa [u] using heu
   have hl1 : l ≤ 1 := hlu.trans (htu.trans hu1)
   have htPi2 : t ≤ Real.pi / 2 := by
-    have : t ≤ 1 := htu.trans hu1
-    nlinarith [Real.pi_gt_three]
+    have ht1 : t ≤ 1 := htu.trans hu1
+    nlinarith [Real.pi_gt_three, ht1]
   have htPi : t ≤ Real.pi := by nlinarith [Real.pi_pos, htPi2]
   have hsinMono : Real.sin l ≤ Real.sin t := by
     apply Real.sin_le_sin_of_le_of_le_pi_div_two
@@ -205,24 +216,28 @@ lemma v21_rootH_lower_bound {n : ℕ} {x e : ℝ}
     · exact htPi2
     · exact hlu
   have hsinTaylor := v21_sin_lower7 (x := l) hl0 hl1
-  have hsin : v21RootSinLower7 l ≤ Real.sin t := by
-    exact (by simpa [v21RootSinLower7] using hsinTaylor).trans hsinMono
+  have hsinTaylor' : v21RootSinLower7 l ≤ Real.sin l := by
+    simpa [v21RootSinLower7] using hsinTaylor
+  have hsin : v21RootSinLower7 l ≤ Real.sin t :=
+    hsinTaylor'.trans hsinMono
   have hcosMono : Real.cos t ≤ Real.cos l := by
     apply Real.cos_le_cos_of_nonneg_of_le_pi
     · exact hl0
     · exact htPi
     · exact hlu
   have hcosTaylor := v21_cos_upper8 (x := l) hl0 hl1
-  have hcos : Real.cos t ≤ v21RootCosUpper8 l := by
-    exact hcosMono.trans (by simpa [v21RootCosUpper8] using hcosTaylor)
+  have hcosTaylor' : Real.cos l ≤ v21RootCosUpper8 l := by
+    simpa [v21RootCosUpper8] using hcosTaylor
+  have hcos : Real.cos t ≤ v21RootCosUpper8 l :=
+    hcosMono.trans hcosTaylor'
   have hsint0 : 0 ≤ Real.sin t :=
     Real.sin_nonneg_of_nonneg_of_le_pi ht0 htPi
   have hCpi : v21RootCL * v21RootPiL ≤ v21C * Real.pi :=
-    mul_le_mul hCL hpiL (by norm_num [v21RootPiL]) hC0
+    mul_le_mul hCL hpiL hpiL0 hC0
   have hcoef : v21RootCL * v21RootPiL * x ≤ v21C * Real.pi * x :=
     mul_le_mul_of_nonneg_right hCpi hx0
-  have hcoefL0 : 0 ≤ v21RootCL * v21RootPiL * x := by
-    positivity
+  have hcoefL0 : 0 ≤ v21RootCL * v21RootPiL * x :=
+    mul_nonneg (mul_nonneg hCL0 hpiL0) hx0
   have hterm1a :
       v21RootCL * v21RootPiL * x * v21RootSinLower7 l ≤
         v21RootCL * v21RootPiL * x * Real.sin t :=
