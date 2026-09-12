@@ -11,10 +11,12 @@ functional. -/
 def v21OneBody (j : Fin 6) (x : ℝ) : ℝ :=
   pressure j * x + (1 / 3 : ℝ) * limitingWeight x
 
-/-- Rational one-body floors used by the analytic bootstrap. -/
+/-- Rational one-body floors used by the analytic bootstrap.  We branch on the
+underlying natural value rather than equality in `Fin 6`, so all six literal
+coordinates normalize definitionally and remain stable under Mathlib changes. -/
 def v21Lambda (j : Fin 6) : ℝ :=
-  if j = (0 : Fin 6) ∨ j = (5 : Fin 6) then (285 / 1000000 : ℝ)
-  else if j = (1 : Fin 6) ∨ j = (4 : Fin 6) then (393 / 1000000 : ℝ)
+  if j.val = 0 ∨ j.val = 5 then (285 / 1000000 : ℝ)
+  else if j.val = 1 ∨ j.val = 4 then (393 / 1000000 : ℝ)
   else (374 / 1000000 : ℝ)
 
 lemma v21_lambda_le_max (j : Fin 6) :
@@ -42,7 +44,9 @@ lemma v21_one_third_weight_B1_quadratic_rat {x : ℝ}
     (7 / 40 : ℝ) * (x - v21RootMid 1) ^ 2 -
         (280053 / 64000000000000 : ℝ) ≤
       (1 / 3 : ℝ) * limitingWeight x at h
-  simpa [v21RootMid, v21RootLeft, v21RootRight] using h
+  have hmid : v21RootMid 1 = (211455 / 200000 : ℝ) := by
+    norm_num [v21RootMid, v21RootLeft, v21RootRight]
+  rwa [hmid] at h
 
 /-- On the first survivor band the strong kernel ramp gives the desired
 position-dependent one-body floor. -/
@@ -148,7 +152,13 @@ theorem v21_one_body_thresholds_of_bands_counterexample
   have hf4 := v21_one_body_floor_of_band (4 : Fin 6) hb4
   have hf5 := v21_one_body_floor_of_band (5 : Fin 6) hb5
   have hsum := v21_one_body_sum_le_gapF g0 g1 g2 g3 g4 g5
-  norm_num [v21Lambda] at hf0 hf1 hf2 hf3 hf4 hf5
+  rcases v21_lambda_values with ⟨hl0, hl1, hl2, hl3, hl4, hl5⟩
+  rw [hl0] at hf0
+  rw [hl1] at hf1
+  rw [hl2] at hf2
+  rw [hl3] at hf3
+  rw [hl4] at hf4
+  rw [hl5] at hf5
   norm_num [delta] at hbad
   constructor
   · nlinarith
