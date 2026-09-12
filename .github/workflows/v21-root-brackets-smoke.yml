@@ -67,6 +67,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21OneBodyFloors
           lake build HurtadoZeta23.V21OneBodyB1Localization
+          lake build HurtadoZeta23.V21OneBodyPressureCaps
       - name: Build central-lobe concavity layer
         run: |
           cd /tmp/formal-math/zeta23
@@ -76,15 +77,18 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21KernelCentralEndpointBounds
           lake build HurtadoZeta23.V21KernelCentralEndpointTable
+          lake build HurtadoZeta23.V21KernelB2LowerEndpoints
       - name: Build one-body basin exclusions
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21OneBodyCentralExclusions
+          lake build HurtadoZeta23.V21OneBodyB2LowerSlivers
           lake build HurtadoZeta23.V21OneBodyRootTail
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
             "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelRoot*.lean \
             "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelB1*.lean \
+            "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelB2*.lean \
             "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelCentral*.lean \
             "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21OneBody*.lean
