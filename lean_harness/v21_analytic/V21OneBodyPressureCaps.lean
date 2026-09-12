@@ -18,10 +18,10 @@ lemma v21_oneBody_pressure_cap {j : Fin 6} {p T U x : ℝ}
   have hpress : p * x ≤ v21OneBody j x := by
     unfold v21OneBody
     nlinarith
-  have : p * x < p * U := by
+  have hmul : p * x < p * U := by
     rw [← hTU]
     exact hpress.trans_lt hsmall
-  exact (mul_lt_mul_left hp0).mp this
+  nlinarith [hmul, hp0]
 
 lemma v21_oneBody_pressure_cap_A {j : Fin 6} {x : ℝ}
     (hx0 : 0 ≤ x)
