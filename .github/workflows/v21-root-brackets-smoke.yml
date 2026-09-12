@@ -46,11 +46,13 @@ jobs:
           EOF
       - name: Fetch Mathlib cache
         run: cd /tmp/formal-math/zeta23 && lake exe cache get
-      - name: Build root bracket through weight layers
+      - name: Build root, B1, and one-body floor layers
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V21KernelRootWeight
+          lake build HurtadoZeta23.V21OneBodyFloors
       - name: Reject placeholders
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|^[[:space:]]*(axiom|opaque|unsafe)[[:space:]]' \
-            "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelRoot*.lean
+            "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelRoot*.lean \
+            "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21KernelB1*.lean \
+            "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/V21OneBodyFloors.lean
