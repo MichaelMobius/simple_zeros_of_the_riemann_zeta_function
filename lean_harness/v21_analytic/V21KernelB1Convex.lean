@@ -56,7 +56,7 @@ lemma v21_P2_le_neg100_B1_left {x : ℝ}
   have hterm4a :
       (-2 * v21C + (1 / 2 : ℝ)) * b ^ 4 ≤
         -(11 / 10 : ℝ) * b ^ 4 :=
-    mul_le_mul_of_nonneg_right hcoef (pow_nonneg b 4)
+    mul_le_mul_of_nonneg_right hcoef (pow_nonneg hb0 4)
   have hterm4b :
       -(11 / 10 : ℝ) * b ^ 4 ≤
         -(11 / 10 : ℝ) * (149 / 50 : ℝ) ^ 4 :=
@@ -100,7 +100,7 @@ lemma v21_Q2_ge_neg250_B1_left {x : ℝ}
   have hb5U : b ^ 5 ≤ (1571 / 500 : ℝ) ^ 5 :=
     pow_le_pow_left₀ hb0 hbU 5
   have hCb5a : v21C * b ^ 5 ≤ v21RootCU * b ^ 5 :=
-    mul_le_mul_of_nonneg_right hCU (pow_nonneg b 5)
+    mul_le_mul_of_nonneg_right hCU (pow_nonneg hb0 5)
   have hCb5b : v21RootCU * b ^ 5 ≤
       v21RootCU * (1571 / 500 : ℝ) ^ 5 :=
     mul_le_mul_of_nonneg_left hb5U hCU0
