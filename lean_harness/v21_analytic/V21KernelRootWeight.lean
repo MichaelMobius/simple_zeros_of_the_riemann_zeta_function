@@ -1,4 +1,5 @@
 import HurtadoZeta23.V21KernelRootQuadratic
+import HurtadoZeta23.V21KernelDerivatives
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Tactic
 
