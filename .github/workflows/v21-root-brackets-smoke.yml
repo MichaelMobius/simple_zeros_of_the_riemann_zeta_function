@@ -66,6 +66,7 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21OneBodyFloors
+          lake build HurtadoZeta23.V21OneBodyB1Localization
       - name: Build central-lobe concavity layer
         run: |
           cd /tmp/formal-math/zeta23
