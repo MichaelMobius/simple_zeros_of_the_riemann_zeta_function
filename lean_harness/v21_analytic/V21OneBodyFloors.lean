@@ -1,5 +1,5 @@
 import HurtadoZeta23.V21KernelB1Ramp
-import HurtadoZeta23.V21GapBandReduction
+import HurtadoZeta23.V21HardCoreGeometry
 import Mathlib.Tactic
 
 noncomputable section
