@@ -70,4 +70,57 @@ theorem v26_certified_cell_minorant
     hrho0 hrho1 (v26_A_lt_B_of_hardcore hx89)
     (v26_dk_lt_sq_of_hardcore hx89) halpha heta
 
+/-- Exact quadratic minimum when a stationary point is supplied explicitly. -/
+lemma v26_quad_lower_stationary
+    {p a q eta target c x : ℝ}
+    (ha : 0 ≤ a)
+    (hstat : p + 2 * a * (c - q) = 0)
+    (hmin : target ≤ p * c + a * (c - q) ^ 2 - eta) :
+    target ≤ p * x + a * (x - q) ^ 2 - eta := by
+  have hs : 0 ≤ a * (x - c) ^ 2 :=
+    mul_nonneg ha (sq_nonneg (x - c))
+  nlinarith
+
+/-- Exact quadratic lower bound when the minimum over the cell is at its left
+endpoint. -/
+lemma v26_quad_lower_left
+    {p a q eta target L x : ℝ}
+    (ha : 0 ≤ a) (hLx : L ≤ x)
+    (hder : 0 ≤ p + 2 * a * (L - q))
+    (hmin : target ≤ p * L + a * (L - q) ^ 2 - eta) :
+    target ≤ p * x + a * (x - q) ^ 2 - eta := by
+  have hdx : 0 ≤ x - L := sub_nonneg.mpr hLx
+  have hamul : 0 ≤ a * (x - L) := mul_nonneg ha hdx
+  have hbr : 0 ≤ p + a * (x + L - 2 * q) := by
+    nlinarith
+  have hprod : 0 ≤ (x - L) * (p + a * (x + L - 2 * q)) :=
+    mul_nonneg hdx hbr
+  nlinarith
+
+/-- Exact quadratic lower bound when the minimum over the cell is at its right
+endpoint. -/
+lemma v26_quad_lower_right
+    {p a q eta target U x : ℝ}
+    (ha : 0 ≤ a) (hxU : x ≤ U)
+    (hder : p + 2 * a * (U - q) ≤ 0)
+    (hmin : target ≤ p * U + a * (U - q) ^ 2 - eta) :
+    target ≤ p * x + a * (x - q) ^ 2 - eta := by
+  have hdx : 0 ≤ U - x := sub_nonneg.mpr hxU
+  have hamul : 0 ≤ a * (U - x) := mul_nonneg ha hdx
+  have hbr : p + a * (x + U - 2 * q) ≤ 0 := by
+    nlinarith
+  have hprod : 0 ≤ (U - x) * (-(p + a * (x + U - 2 * q))) :=
+    mul_nonneg hdx (neg_nonneg.mpr hbr)
+  nlinarith
+
+/-- Transport a rational quadratic one-body lower bound through a certified
+kernel minorant. -/
+lemma v26_oneBody_lower_of_minorant
+    {p alpha q eta target x : ℝ}
+    (hminor : alpha * (x - q) ^ 2 - eta ≤ limitingWeight x)
+    (hquad : target ≤ p * x + (1 / 3 : ℝ) *
+      (alpha * (x - q) ^ 2 - eta)) :
+    target ≤ p * x + (1 / 3 : ℝ) * limitingWeight x := by
+  linarith
+
 end HurtadoZeta23
