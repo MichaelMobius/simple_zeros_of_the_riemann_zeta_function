@@ -7,6 +7,9 @@ on:
       - 'certification/v26_exact/generate_v26_final_five_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26Final*.lean'
+      - 'lean_harness/v21_analytic/V26StrongConvexityLemma.lean'
+      - 'lean_harness/v21_analytic/V26LocalClosedForms.lean'
+      - 'lean_harness/v21_analytic/V26RationalBall.lean'
       - '.github/workflows/v26-package-e.yml'
   workflow_dispatch:
 
@@ -55,17 +58,24 @@ jobs:
           EOF
 
       - name: Restore Lean build cache
-        uses: actions/cache@v4
+        id: cache-zeta
+        uses: actions/cache/restore@v4
         with:
           path: /tmp/formal-math/zeta23/.lake/build
-          key: v26-package-e-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+          key: v26-package-e-zeta23-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
-            v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
-          save-always: true
+            v26-package-e-zeta23-${{ runner.os }}-
+            v26-package-d-zeta23-${{ runner.os }}-
 
       - name: Reject Package E proof shortcuts
         run: |
-          for f in lean_harness/v21_analytic/V26Final*.lean; do
+          files=(
+            lean_harness/v21_analytic/V26Final*.lean
+            lean_harness/v21_analytic/V26StrongConvexityLemma.lean
+            lean_harness/v21_analytic/V26LocalClosedForms.lean
+            lean_harness/v21_analytic/V26RationalBall.lean
+          )
+          for f in "${files[@]}"; do
             if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
               echo "Forbidden proof shortcut found in $f"
               exit 1
@@ -91,12 +101,24 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Kernel-check final weight derivative core
+      - name: Kernel-check Package E analytic support
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26FinalConvexityCore
+          lake build \
+            HurtadoZeta23.V26FinalConvexityCore \
+            HurtadoZeta23.V26RationalBall \
+            HurtadoZeta23.V26LocalClosedForms \
+            HurtadoZeta23.V26StrongConvexityLemma \
+            HurtadoZeta23.V26FinalIntervalCore
 
       - name: Kernel-check final five exact minima
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
+
+      - name: Save Lean build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: ${{ steps.cache-zeta.outputs.cache-primary-key }}
