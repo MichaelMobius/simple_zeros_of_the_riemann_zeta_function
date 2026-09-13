@@ -1,6 +1,8 @@
 import HurtadoZeta23.V26Word511Certificate
 import Mathlib.Tactic
 
+noncomputable section
+
 namespace HurtadoZeta23
 
 /-- Exact positional pressure vector used by the v26 local functional.  It is
