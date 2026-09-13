@@ -29,13 +29,15 @@ lemma v26_ball_of_bounds {x L U : ℝ} (hL : L ≤ x) (hU : x ≤ U) :
 lemma v26_ball_neg {x c r : ℝ} (h : v26Ball x c r) :
     v26Ball (-x) (-c) r := by
   unfold v26Ball at h ⊢
-  simpa [abs_neg] using h
+  have heq : (-x) - (-c) = -(x - c) := by ring
+  rw [heq, abs_neg]
+  exact h
 
 lemma v26_ball_add {x cx rx y cy ry : ℝ}
     (hx : v26Ball x cx rx) (hy : v26Ball y cy ry) :
     v26Ball (x + y) (cx + cy) (rx + ry) := by
   unfold v26Ball at hx hy ⊢
-  have htri := abs_add (x - cx) (y - cy)
+  have htri := abs_add_le (x - cx) (y - cy)
   have hid : (x + y) - (cx + cy) = (x - cx) + (y - cy) := by ring
   rw [hid]
   exact htri.trans (add_le_add hx hy)
@@ -72,10 +74,10 @@ lemma v26_ball_mul {x cx rx y cy ry : ℝ}
   calc
     |(x - cx) * (y - cy) + cx * (y - cy) + cy * (x - cx)|
         ≤ |(x - cx) * (y - cy) + cx * (y - cy)| + |cy * (x - cx)| :=
-      abs_add _ _
+      abs_add_le _ _
     _ ≤ (|(x - cx) * (y - cy)| + |cx * (y - cy)|) + |cy * (x - cx)| := by
       gcongr
-      exact abs_add _ _
+      exact abs_add_le _ _
     _ ≤ (rx * ry + |cx| * ry) + |cy| * rx := by linarith
     _ = |cx| * ry + |cy| * rx + rx * ry := by ring
 
