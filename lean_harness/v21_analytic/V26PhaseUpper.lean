@@ -43,13 +43,16 @@ lemma v26_reciprocal_shift_abs_le {c L x r : ℝ}
       _ ≤ x * r := mul_le_mul_of_nonneg_left hLr hx.le
   have hid : c / x - c / r = c * (r - x) / (x * r) := by
     field_simp [hx.ne', hr.ne']
-    ring
   have hrec : 1 / (x * r) ≤ 1 / L ^ 2 :=
     one_div_le_one_div_of_le hL2 hprod
   have hcoef : c / (x * r) ≤ c / L ^ 2 := by
     simpa [div_eq_mul_inv] using mul_le_mul_of_nonneg_left hrec hc
   rw [hid, abs_div, abs_mul, abs_of_nonneg hc, abs_of_pos hxr, abs_sub_comm]
-  exact mul_le_mul_of_nonneg_right hcoef (abs_nonneg _)
+  calc
+    c * |x - r| / (x * r) = (c / (x * r)) * |x - r| := by
+      field_simp [hxr.ne']
+    _ ≤ (c / L ^ 2) * |x - r| :=
+      mul_le_mul_of_nonneg_right hcoef (abs_nonneg _)
 
 /-- Upper phase distortion on the positive half-line.  Together with
 `v26_phase_distance_lower`, this gives exactly the two-sided phase control
@@ -71,10 +74,11 @@ theorem v26_phase_distance_upper {c L x r : ℝ}
   calc
     |(x - r) - (1 / Real.pi) *
         (Real.arctan (c / x) - Real.arctan (c / r))|
-        ≤ |x - r| + |-(1 / Real.pi) *
-            (Real.arctan (c / x) - Real.arctan (c / r))| := by
-          convert abs_add_le (x - r)
-            (-(1 / Real.pi) * (Real.arctan (c / x) - Real.arctan (c / r))) using 1 <;> ring
+        = |(x - r) + (-(1 / Real.pi) *
+            (Real.arctan (c / x) - Real.arctan (c / r)))| := by ring
+    _ ≤ |x - r| + |-(1 / Real.pi) *
+            (Real.arctan (c / x) - Real.arctan (c / r))| :=
+          abs_add_le _ _
     _ = |x - r| + (1 / Real.pi) *
           |Real.arctan (c / x) - Real.arctan (c / r)| := by
           rw [abs_mul, abs_neg, abs_of_pos hpi]
@@ -84,6 +88,5 @@ theorem v26_phase_distance_upper {c L x r : ℝ}
           gcongr
     _ = (1 + c / (Real.pi * L ^ 2)) * |x - r| := by
           field_simp [Real.pi_ne_zero, hL.ne']
-          ring
 
 end HurtadoZeta23
