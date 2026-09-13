@@ -63,6 +63,15 @@ jobs:
             v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
           save-always: true
 
+      - name: Reject Package E proof shortcuts
+        run: |
+          for f in lean_harness/v21_analytic/V26Final*.lean; do
+            if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
+              echo "Forbidden proof shortcut found in $f"
+              exit 1
+            fi
+          done
+
       - name: Regenerate exact historical rational certificate
         run: |
           export V26_CERT_OUT="$RUNNER_TEMP/v21_rational_bootstrap_certificate.json"
@@ -81,6 +90,11 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
+
+      - name: Kernel-check final weight derivative core
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalConvexityCore
 
       - name: Kernel-check final five exact minima
         run: |
