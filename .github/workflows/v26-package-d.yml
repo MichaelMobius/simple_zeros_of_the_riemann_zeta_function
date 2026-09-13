@@ -53,6 +53,12 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
+      - name: Restore Package D Lean build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+
       - name: Reject forbidden proof shortcuts
         run: |
           for f in lean_harness/v21_analytic/V26OneBody*.lean lean_harness/v21_analytic/V26PackageD.lean; do
