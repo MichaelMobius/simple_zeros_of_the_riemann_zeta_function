@@ -26,7 +26,9 @@ lemma v26_C0_pos : 0 < v26C0 := by
 
 lemma v26_c_pos : 0 < v26c := by
   unfold v26c
-  positivity
+  have h2C : 0 < 2 * v21C := mul_pos (by norm_num) v26_C_pos
+  have hden : 0 < 2 * v21C * Real.pi := mul_pos h2C Real.pi_pos
+  exact one_div_pos.mpr hden
 
 /-- Directed rational lower bound used in every phase minorant. -/
 theorem v26_C0_lower :
@@ -43,7 +45,8 @@ theorem v26_C0_lower :
 /-- Directed rational upper bound for the phase shift. -/
 theorem v26_c_upper :
     v26c < (193 / 1000 : ℝ) := by
-  have hden : 0 < 2 * v21C * Real.pi := by positivity
+  have h2C : 0 < 2 * v21C := mul_pos (by norm_num) v26_C_pos
+  have hden : 0 < 2 * v21C * Real.pi := mul_pos h2C Real.pi_pos
   unfold v26c
   apply (div_lt_iff₀ hden).2
   have hprod :
@@ -75,7 +78,7 @@ lemma v26_pi_lt_3142 : Real.pi < (3142 / 1000 : ℝ) := by
 /-- The rational denominator weakening really lies below the exact one. -/
 theorem v26_d0_lt_dk : v26d0 < v26dk := by
   unfold v26d0 v26dk
-  have hp2 : 0 < 2 * Real.pi ^ 2 := by positivity
+  have hp2 : 0 < 2 * Real.pi ^ 2 := mul_pos (by norm_num) (sq_pos_of_pos Real.pi_pos)
   have hden :
       2 * Real.pi ^ 2 < 2 * (3142 / 1000 : ℝ) ^ 2 := by
     have hp := v26_pi_lt_3142
