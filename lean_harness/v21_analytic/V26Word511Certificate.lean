@@ -96,20 +96,27 @@ theorem v26_mem_survivorWords_iff (w : V26BasinWord) :
     have hBA : (e, f) ∈ v26SuffixBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ e, hA⟩, ?_⟩
+      change v26MuB e + v26MuA f < 3900
       omega
     have hCBA : (d, e, f) ∈ v26SuffixCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ d, hBA⟩, ?_⟩
+      change v26MuC d + v26MuB e + v26MuA f < 3900
       omega
     have hCCBA : (c, d, e, f) ∈ v26SuffixCCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ c, hCBA⟩, ?_⟩
+      change v26MuC c + v26MuC d + v26MuB e + v26MuA f < 3900
       omega
     have hBCCBA : (b, c, d, e, f) ∈ v26SuffixBCCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ b, hCCBA⟩, ?_⟩
+      change v26MuB b + v26MuC c + v26MuC d + v26MuB e + v26MuA f < 3900
       omega
     apply Finset.mem_filter.mpr
-    exact ⟨Finset.mem_product.mpr ⟨Finset.mem_univ a, hBCCBA⟩, hw⟩
+    refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ a, hBCCBA⟩, ?_⟩
+    change
+      v26MuA a + v26MuB b + v26MuC c + v26MuC d + v26MuB e + v26MuA f < 3900
+    exact hw
 
 end HurtadoZeta23
