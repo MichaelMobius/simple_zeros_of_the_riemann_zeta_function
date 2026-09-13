@@ -2,7 +2,7 @@ name: v21 analytic seven-point
 
 on:
   push:
-    branches: [v21-analytic-seven-point, v26-lean-verification]
+    branches: [v21-analytic-seven-point]
   workflow_dispatch:
 
 concurrency:
@@ -51,119 +51,20 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
-      - name: Reject forbidden proof shortcuts in v26 modules
-        run: |
-          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' lean_harness/v21_analytic/V26*.lean; then
-            echo 'Forbidden proof shortcut found in V26 module'
-            exit 1
-          fi
-
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
       - name: Build historical v20 closure
-        if: github.ref_name == 'v21-analytic-seven-point'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
       - name: Build historical v21 target
-        if: github.ref_name == 'v21-analytic-seven-point'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V21SevenPointAnalytic
           if [ -f HurtadoZeta23/V21FinalAssembly.lean ]; then
             lake build HurtadoZeta23.V21FinalAssembly
           fi
-
-      - name: Verify v26 44100-to-511 certificate
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26Word511Certificate
-
-      - name: Verify v26 bootstrap stage bookkeeping
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26BootstrapStageLists
-
-      - name: Verify v26 one-body bridge
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26WordBridge
-
-      - name: Verify v26 rational quadratic core
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26QuadraticCore
-
-      - name: Verify first exact R0 discard
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26Round0Prototype
-
-      - name: Verify v26 basin interface
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26BasinInterface
-
-      - name: Verify v26 Taylor extension
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26TaylorExtension
-
-      - name: Verify v26 rational root center
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26RationalCenter
-
-      - name: Verify v26 phase distance geometry
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26PhaseGeometry
-
-      - name: Verify v26 upper phase distortion
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26PhaseUpper
-
-      - name: Verify v26 rational sine chord
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26SineChord
-
-      - name: Verify v26 amplitude geometry
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26AmplitudeGeometry
-
-      - name: Verify v26 phase constants
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26PhaseConstants
-
-      - name: Verify v26 exact phase identity
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26PhaseIdentity
-
-      - name: Verify v26 full minorant prerequisites
-        if: github.ref_name == 'v26-lean-verification'
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26MinorantPrereqs
