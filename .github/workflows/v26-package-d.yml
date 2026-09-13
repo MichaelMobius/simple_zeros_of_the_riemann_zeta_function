@@ -58,6 +58,7 @@ jobs:
         with:
           path: /tmp/formal-math/zeta23/.lake/build
           key: v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+          save-always: true
 
       - name: Reject forbidden proof shortcuts
         run: |
