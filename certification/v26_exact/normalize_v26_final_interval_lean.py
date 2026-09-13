@@ -6,9 +6,10 @@ The exact interval generator historically emitted local declarations of the form
     have h : v26Ball VALUE _ _ := by
       simpa [...] using hraw
 
-or
+or, for longer values,
 
-    have h : v26Ball VALUE _ _ := by
+    have h : v26Ball
+      VALUE _ _ := by
       convert hraw using 1 <;> ring
 
 Lean 4.24 does not infer the centre/radius metavariables from the proof body in
@@ -26,7 +27,9 @@ import argparse
 from pathlib import Path
 import re
 
-HAVE_RE = re.compile(r"^(?P<indent>\s*)have\s+(?P<name>[A-Za-z0-9_']+)\s*:\s*v26Ball\s+(?P<rest>.*)$")
+# `v26Ball` is sometimes the final token on the first line of a multiline
+# declaration, so the suffix must be allowed to be empty.
+HAVE_RE = re.compile(r"^(?P<indent>\s*)have\s+(?P<name>[A-Za-z0-9_']+)\s*:\s*v26Ball\s*(?P<rest>.*)$")
 
 
 def equality_tactic(name: str, proof_line: str) -> tuple[str, str]:
@@ -95,8 +98,12 @@ def normalize_file(path: Path) -> int:
     text = "\n".join(out) + "\n"
     path.write_text(text, encoding="utf-8")
     leftovers = [(k + 1, line) for k, line in enumerate(out) if " _ _ := by" in line]
-    for line_no, line in leftovers:
-        print(f"RESIDUAL {path.name}:{line_no}: {line}")
+    if leftovers:
+        for line_no, line in leftovers:
+            print(f"RESIDUAL {path.name}:{line_no}: {line}")
+        raise RuntimeError(
+            f"typed ball placeholders remain after normalization: {path}"
+        )
     return changed
 
 
@@ -109,16 +116,13 @@ def main() -> None:
     if len(files) != 10:
         raise SystemExit(f"expected 10 generated numeric modules, found {len(files)}")
     total = 0
-    residual = 0
     for path in files:
         n = normalize_file(path)
-        text = path.read_text(encoding="utf-8")
-        residual += text.count(" _ _ := by")
         print(f"{path.name}: normalized {n} ball transports")
         total += n
     if total == 0:
         raise SystemExit("no generated ball transports were normalized")
-    print(f"NORMALIZATION: {total} transports; residual placeholders: {residual}")
+    print(f"NORMALIZATION OK: {total} transports; residual placeholders: 0")
 
 
 if __name__ == "__main__":
