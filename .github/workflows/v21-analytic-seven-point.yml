@@ -84,6 +84,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
 
+      - name: Verify v26 bootstrap stage bookkeeping
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26BootstrapStageLists
+
       - name: Verify v26 one-body bridge
         if: github.ref_name == 'v26-lean-verification'
         run: |
