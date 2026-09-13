@@ -5,6 +5,10 @@ on:
     branches: [v21-analytic-seven-point, v26-lean-verification]
   workflow_dispatch:
 
+concurrency:
+  group: v21-analytic-seven-point-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
