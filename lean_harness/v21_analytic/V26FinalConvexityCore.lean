@@ -32,8 +32,7 @@ theorem v26_weightX_hasDerivAt {x : ℝ}
   have h := (v21_kernelX_hasDerivAt hD).pow 2
   exact h.congr_deriv (g' := v26WeightXPrime x) (by
     unfold v26WeightXPrime
-    norm_num
-    ring)
+    norm_num)
 
 /-- Exact second derivative of the squared kernel. -/
 theorem v26_weightXPrime_hasDerivAt {x : ℝ}
@@ -45,6 +44,9 @@ theorem v26_weightXPrime_hasDerivAt {x : ℝ}
   have h' := h.congr_deriv (g' := v26WeightXSecond x) (by
     unfold v26WeightXSecond
     ring)
-  simpa only [v26WeightXPrime, Pi.mul_apply] using h'
+  change HasDerivAt
+    (fun y : ℝ => 2 * v21KernelX y * v21KernelXPrime y)
+    (v26WeightXSecond x) x
+  simpa only [Pi.mul_apply] using h'
 
 end HurtadoZeta23
