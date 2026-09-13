@@ -25,6 +25,13 @@ lemma v26_ball_nonneg {x c r : ℝ} (h : v26Ball x c r) (hlower : 0 ≤ c - r) :
     0 ≤ x := by
   exact hlower.trans (v26_ball_bounds h).1
 
+/-- Transport a centre-radius enclosure across an exact equality of values.
+The centre and radius are inferred from the already certified ball, avoiding
+unconstrained metavariables in generated interval certificates. -/
+lemma v26_ball_congr_value {x c r y : ℝ}
+    (h : v26Ball x c r) (hxy : x = y) : v26Ball y c r := by
+  rwa [← hxy]
+
 lemma v26_ball_of_bounds {x L U : ℝ} (hL : L ≤ x) (hU : x ≤ U) :
     v26Ball x ((L + U) / 2) ((U - L) / 2) := by
   unfold v26Ball
