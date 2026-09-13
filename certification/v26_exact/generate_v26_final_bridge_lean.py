@@ -88,7 +88,7 @@ def emit_word(w, intervals) -> str:
             k += 1
     assert k == 21
     rcases = ", ".join(hs)
-    hws = " ".join(f"hw{i}" for i in range(21))
+    hws = ", ".join(f"hw{i}" for i in range(21))
     return f'''/-- Exact R2 contracted box for final word `{wc}`. -/
 def v26FinalBox_{wc} (x0 x1 x2 x3 x4 x5 : ℝ) : Prop :=
     {box_def(w, intervals)}
