@@ -23,9 +23,10 @@ lemma v26_rootRight_lt_nat_add_half {n : ℕ} (hn1 : 1 ≤ n) (hn12 : n ≤ 12) 
 
 /-- The phase shift constant is exactly the reciprocal coefficient appearing
 in the cleared root numerator. -/
-lemma v26_c_div_eq (x : ℝ) :
+lemma v26_c_div_eq {x : ℝ} (hx : x ≠ 0) :
     v26c / x = 1 / (2 * v21C * Real.pi * x) := by
   unfold v26c
+  field_simp [hx, v26_C_pos.ne', Real.pi_ne_zero]
   ring
 
 /-- A zero of the cleared numerator inside one of the twelve certified
@@ -63,7 +64,7 @@ lemma v26_phase_eq_nat_of_rootH_zero {n : ℕ}
     dsimp [θ]
     linarith
   have htan : Real.tan θ = v26c / r := by
-    rw [Real.tan_eq_sin_div_cos, v26_c_div_eq]
+    rw [Real.tan_eq_sin_div_cos, v26_c_div_eq hr0.ne']
     apply (div_eq_iff hcos.ne').2
     have hC : v21C ≠ 0 := v26_C_pos.ne'
     have hp : Real.pi ≠ 0 := Real.pi_ne_zero
