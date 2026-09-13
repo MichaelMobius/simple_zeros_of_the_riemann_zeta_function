@@ -4,9 +4,7 @@ on:
   push:
     branches: [v26-package-d-staging]
     paths:
-      - 'lean_harness/v21_analytic/V26OneBodyCellTools.lean'
-      - 'lean_harness/v21_analytic/V26OneBodyFloors.lean'
-      - 'lean_harness/v21_analytic/V26OneBodyLocalization.lean'
+      - 'lean_harness/v21_analytic/V26OneBody*.lean'
       - 'lean_harness/v21_analytic/V26PackageD.lean'
       - '.github/workflows/v26-package-d.yml'
   workflow_dispatch:
@@ -57,12 +55,8 @@ jobs:
 
       - name: Reject forbidden proof shortcuts
         run: |
-          for f in \
-            lean_harness/v21_analytic/V26OneBodyCellTools.lean \
-            lean_harness/v21_analytic/V26OneBodyFloors.lean \
-            lean_harness/v21_analytic/V26OneBodyLocalization.lean \
-            lean_harness/v21_analytic/V26PackageD.lean; do
-            if [ -f "$f" ] && grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
+          for f in lean_harness/v21_analytic/V26OneBody*.lean lean_harness/v21_analytic/V26PackageD.lean; do
+            if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
               echo "Forbidden proof shortcut found in $f"
               exit 1
             fi
@@ -76,22 +70,19 @@ jobs:
       - name: Verify Package D cell tools
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26OneBodyCellTools
+          lake build HurtadoZeta23.V26OneBodyCellTools HurtadoZeta23.V26OneBodyCertTools
 
       - name: Verify Package D floors
-        if: ${{ hashFiles('lean_harness/v21_analytic/V26OneBodyFloors.lean') != '' }}
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26OneBodyFloors
 
       - name: Verify Package D localization
-        if: ${{ hashFiles('lean_harness/v21_analytic/V26OneBodyLocalization.lean') != '' }}
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26OneBodyLocalization
 
       - name: Verify Package D aggregator
-        if: ${{ hashFiles('lean_harness/v21_analytic/V26PackageD.lean') != '' }}
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26PackageD
