@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: v26-package-e-${{ github.ref }}
-  cancel-in-progress: true
+  group: v26-package-e-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -130,7 +130,6 @@ jobs:
             HurtadoZeta23.V26FinalIntervalCore
 
       - name: Diagnose final numeric N1
-        if: always()
         run: |
           cd /tmp/formal-math/zeta23
           set +e
