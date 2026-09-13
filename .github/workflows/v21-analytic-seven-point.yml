@@ -132,6 +132,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26PhaseGeometry
 
+      - name: Verify v26 upper phase distortion
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26PhaseUpper
+
       - name: Verify v26 phase constants
         if: github.ref_name == 'v26-lean-verification'
         run: |
