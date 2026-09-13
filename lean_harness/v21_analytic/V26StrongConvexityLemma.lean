@@ -29,13 +29,25 @@ theorem v26_strong_convex_taylor_lower
       (g' := m * (y - a)) (by
         norm_num
         ring)
-    simpa [g, gp] using (hf y hy).sub hquad
+    have hraw := (hf y hy).sub hquad
+    have hfun :
+        (f - fun z : ℝ => (m / 2) * (z - a) ^ 2) = g := by
+      funext z
+      rfl
+    rw [hfun] at hraw
+    simpa only [gp] using hraw
 
   have hgp : ∀ y ∈ Icc L U, HasDerivAt gp (gpp y) y := by
     intro y hy
     have hlin := (((hasDerivAt_id y).sub_const a).const_mul m).congr_deriv
       (g' := m) (by simp)
-    simpa [gp, gpp] using (hfp y hy).sub hlin
+    have hraw := (hfp y hy).sub hlin
+    have hfun :
+        (fp - fun z : ℝ => m * (z - a)) = gp := by
+      funext z
+      rfl
+    rw [hfun] at hraw
+    simpa only [gpp] using hraw
 
   have hcont : ContinuousOn g (Icc L U) := by
     intro y hy
@@ -65,7 +77,7 @@ theorem v26_strong_convex_taylor_lower
     dsimp [g] at hmul
     nlinarith
   · subst x
-    ring_nf
+    exact le_rfl
   · have hs := hconv.slope_le_of_hasDerivAt hx ha hxa hga
     rw [slope_def_field] at hs
     have hmul := (div_le_iff₀ (sub_pos.mpr hxa)).mp hs
