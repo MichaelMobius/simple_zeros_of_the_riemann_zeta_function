@@ -5,11 +5,13 @@ on:
     branches: [v26-package-e-staging]
     paths:
       - 'certification/v26_exact/generate_v26_final_five_lean.py'
+      - 'certification/v26_exact/generate_v26_final_interval_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26Final*.lean'
       - 'lean_harness/v21_analytic/V26StrongConvexityLemma.lean'
       - 'lean_harness/v21_analytic/V26LocalClosedForms.lean'
       - 'lean_harness/v21_analytic/V26RationalBall.lean'
+      - 'lean_harness/v21_analytic/V26TrigIntervalBridge.lean'
       - '.github/workflows/v26-package-e.yml'
   workflow_dispatch:
 
@@ -74,6 +76,7 @@ jobs:
             lean_harness/v21_analytic/V26StrongConvexityLemma.lean
             lean_harness/v21_analytic/V26LocalClosedForms.lean
             lean_harness/v21_analytic/V26RationalBall.lean
+            lean_harness/v21_analytic/V26TrigIntervalBridge.lean
           )
           for f in "${files[@]}"; do
             if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
@@ -96,6 +99,14 @@ jobs:
             exit 1
           fi
 
+      - name: Generate final numeric interval certificates
+        run: |
+          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalNumeric*.lean; then
+            echo 'Forbidden proof shortcut found in generated final numeric certificate'
+            exit 1
+          fi
+
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
@@ -108,8 +119,14 @@ jobs:
             HurtadoZeta23.V26FinalConvexityCore \
             HurtadoZeta23.V26RationalBall \
             HurtadoZeta23.V26LocalClosedForms \
+            HurtadoZeta23.V26TrigIntervalBridge \
             HurtadoZeta23.V26StrongConvexityLemma \
             HurtadoZeta23.V26FinalIntervalCore
+
+      - name: Kernel-check final numeric interval table
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalNumericGenerated
 
       - name: Kernel-check final five exact minima
         run: |
