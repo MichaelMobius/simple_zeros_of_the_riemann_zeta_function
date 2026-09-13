@@ -45,19 +45,19 @@ def v26SuffixBA : Finset (Fin 5 × Fin 7) :=
 
 def v26SuffixCBA : Finset (Fin 6 × (Fin 5 × Fin 7)) :=
   (Finset.univ.product v26SuffixBA).filter
-    (fun def => v26MuC def.1 + v26MuB def.2.1 + v26MuA def.2.2 < 3900)
+    (fun cef => v26MuC cef.1 + v26MuB cef.2.1 + v26MuA cef.2.2 < 3900)
 
 def v26SuffixCCBA : Finset (Fin 6 × (Fin 6 × (Fin 5 × Fin 7))) :=
   (Finset.univ.product v26SuffixCBA).filter
-    (fun cdef =>
-      v26MuC cdef.1 + v26MuC cdef.2.1 +
-      v26MuB cdef.2.2.1 + v26MuA cdef.2.2.2 < 3900)
+    (fun ccef =>
+      v26MuC ccef.1 + v26MuC ccef.2.1 +
+      v26MuB ccef.2.2.1 + v26MuA ccef.2.2.2 < 3900)
 
 def v26SuffixBCCBA : Finset (Fin 5 × (Fin 6 × (Fin 6 × (Fin 5 × Fin 7)))) :=
   (Finset.univ.product v26SuffixCCBA).filter
-    (fun bcdef =>
-      v26MuB bcdef.1 + v26MuC bcdef.2.1 + v26MuC bcdef.2.2.1 +
-      v26MuB bcdef.2.2.2.1 + v26MuA bcdef.2.2.2.2 < 3900)
+    (fun bccef =>
+      v26MuB bccef.1 + v26MuC bccef.2.1 + v26MuC bccef.2.2.1 +
+      v26MuB bccef.2.2.2.1 + v26MuA bccef.2.2.2.2 < 3900)
 
 /-- Exact finite set of one-body survivors.  Its type is definitionally the
 A-B-C-C-B-A word type. -/
@@ -83,35 +83,35 @@ theorem v26_mem_survivorWords_iff (w : V26BasinWord) :
     w ∈ v26SurvivorWords ↔ v26WordWeight w < 3900 := by
   constructor
   · intro hw
-    simpa [v26SurvivorWords] using hw
+    exact (Finset.mem_filter.mp hw).2
   · intro hw
     rcases w with ⟨a, b, c, d, e, f⟩
-    simp only [v26SurvivorWords, Finset.mem_filter, Finset.mem_product,
-      Finset.mem_univ, true_and]
-    constructor
-    · simp only [v26SuffixBCCBA, Finset.mem_filter, Finset.mem_product,
-        Finset.mem_univ, true_and]
-      constructor
-      · simp only [v26SuffixCCBA, Finset.mem_filter, Finset.mem_product,
-          Finset.mem_univ, true_and]
-        constructor
-        · simp only [v26SuffixCBA, Finset.mem_filter, Finset.mem_product,
-            Finset.mem_univ, true_and]
-          constructor
-          · simp only [v26SuffixBA, Finset.mem_filter, Finset.mem_product,
-              Finset.mem_univ, true_and]
-            constructor
-            · simp only [v26SuffixA, Finset.mem_filter, Finset.mem_univ, true_and]
-              unfold v26WordWeight at hw
-              omega
-            · unfold v26WordWeight at hw
-              omega
-          · unfold v26WordWeight at hw
-            omega
-        · unfold v26WordWeight at hw
-          omega
-      · unfold v26WordWeight at hw
-        omega
-    · exact hw
+    have hA : f ∈ v26SuffixA := by
+      apply Finset.mem_filter.mpr
+      refine ⟨Finset.mem_univ f, ?_⟩
+      unfold v26WordWeight at hw
+      omega
+    have hBA : (e, f) ∈ v26SuffixBA := by
+      apply Finset.mem_filter.mpr
+      refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ e, hA⟩, ?_⟩
+      unfold v26WordWeight at hw
+      omega
+    have hCBA : (d, e, f) ∈ v26SuffixCBA := by
+      apply Finset.mem_filter.mpr
+      refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ d, hBA⟩, ?_⟩
+      unfold v26WordWeight at hw
+      omega
+    have hCCBA : (c, d, e, f) ∈ v26SuffixCCBA := by
+      apply Finset.mem_filter.mpr
+      refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ c, hCBA⟩, ?_⟩
+      unfold v26WordWeight at hw
+      omega
+    have hBCCBA : (b, c, d, e, f) ∈ v26SuffixBCCBA := by
+      apply Finset.mem_filter.mpr
+      refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ b, hCCBA⟩, ?_⟩
+      unfold v26WordWeight at hw
+      omega
+    apply Finset.mem_filter.mpr
+    exact ⟨Finset.mem_product.mpr ⟨Finset.mem_univ a, hBCCBA⟩, hw⟩
 
 end HurtadoZeta23
