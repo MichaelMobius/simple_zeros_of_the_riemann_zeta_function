@@ -18,8 +18,11 @@ theorem v26_strong_convex_taylor_lower
     (hfp : ∀ y ∈ Icc L U, HasDerivAt fp (fpp y) y)
     (hm : ∀ y ∈ Icc L U, m ≤ fpp y) :
     f a + fp a * (x - a) + (m / 2) * (x - a) ^ 2 ≤ f x := by
-  let g : ℝ → ℝ := fun y => f y - (m / 2) * (y - a) ^ 2
-  let gp : ℝ → ℝ := fun y => fp y - m * (y - a)
+  let q : ℝ → ℝ :=
+    fun y => (m / 2) * ((fun z : ℝ => id z - a) ^ 2) y
+  let ell : ℝ → ℝ := fun y => m * (id y - a)
+  let g : ℝ → ℝ := f - q
+  let gp : ℝ → ℝ := fp - ell
   let gpp : ℝ → ℝ := fun y => fpp y - m
 
   have hg : ∀ y ∈ Icc L U, HasDerivAt g (gp y) y := by
@@ -29,21 +32,15 @@ theorem v26_strong_convex_taylor_lower
       (g' := m * (y - a)) (by
         norm_num
         ring)
-    have hraw := (hf y hy).sub hquad
-    convert hraw using 1
-    · funext z
-      simp [g]
-    · simp [gp]
+    change HasDerivAt (f - q) (fp y - m * (y - a)) y
+    exact (hf y hy).sub hquad
 
   have hgp : ∀ y ∈ Icc L U, HasDerivAt gp (gpp y) y := by
     intro y hy
     have hlin := (((hasDerivAt_id y).sub_const a).const_mul m).congr_deriv
       (g' := m) (by simp)
-    have hraw := (hfp y hy).sub hlin
-    convert hraw using 1
-    · funext z
-      simp [gp]
-    · simp [gpp]
+    change HasDerivAt (fp - ell) (fpp y - m) y
+    exact (hfp y hy).sub hlin
 
   have hcont : ContinuousOn g (Icc L U) := by
     intro y hy
@@ -63,21 +60,21 @@ theorem v26_strong_convex_taylor_lower
   have hga : HasDerivAt g (fp a) a := by
     have h := hg a ha
     apply h.congr_deriv
-    dsimp [gp]
+    dsimp [gp, ell]
     ring
 
   rcases lt_trichotomy a x with hax | hax | hxa
   · have hs := hconv.le_slope_of_hasDerivAt ha hx hax hga
     rw [slope_def_field] at hs
     have hmul := (le_div_iff₀ (sub_pos.mpr hax)).mp hs
-    dsimp [g] at hmul
+    simp only [g, q, Pi.sub_apply, Pi.pow_apply, id_eq] at hmul
     nlinarith
   · subst x
     simp
   · have hs := hconv.slope_le_of_hasDerivAt hx ha hxa hga
     rw [slope_def_field] at hs
     have hmul := (div_le_iff₀ (sub_pos.mpr hxa)).mp hs
-    dsimp [g] at hmul
+    simp only [g, q, Pi.sub_apply, Pi.pow_apply, id_eq] at hmul
     nlinarith
 
 end HurtadoZeta23
