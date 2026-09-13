@@ -74,7 +74,8 @@ jobs:
             lake build HurtadoZeta23.V21FinalAssembly
           fi
 
-      - name: Build v26 exact word certificate
+      - name: Build v26 exact finite layer
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
+          lake build HurtadoZeta23.V26WordBridge
