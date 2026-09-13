@@ -140,7 +140,6 @@ jobs:
           exit $status
 
       - name: Kernel-check final five exact minima
-        if: always()
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
