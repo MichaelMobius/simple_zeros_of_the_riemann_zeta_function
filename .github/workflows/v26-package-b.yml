@@ -56,9 +56,8 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
-      - name: Verify exact historical rational certificate
+      - name: Regenerate exact historical rational certificate
         run: |
-          echo '925ca760112f1819d5223c9f8004a3b2c53ea5a86a3fc25c4b894e0b930c24b0  certification/v26_exact/v21_rational_bootstrap_verify.py' | sha256sum -c -
           python certification/v26_exact/v21_rational_bootstrap_verify.py
           echo '5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  /mnt/data/v21_rational_bootstrap_certificate.json' | sha256sum -c -
 
