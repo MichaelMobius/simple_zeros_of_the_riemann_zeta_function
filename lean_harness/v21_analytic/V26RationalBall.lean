@@ -20,6 +20,11 @@ lemma v26_ball_bounds {x c r : ℝ} (h : v26Ball x c r) :
   rw [abs_le] at h
   constructor <;> linarith
 
+/-- If the lower endpoint of a certified ball is nonnegative, so is its value. -/
+lemma v26_ball_nonneg {x c r : ℝ} (h : v26Ball x c r) (hlower : 0 ≤ c - r) :
+    0 ≤ x := by
+  exact hlower.trans (v26_ball_bounds h).1
+
 lemma v26_ball_of_bounds {x L U : ℝ} (hL : L ≤ x) (hU : x ≤ U) :
     v26Ball x ((L + U) / 2) ((U - L) / 2) := by
   unfold v26Ball
