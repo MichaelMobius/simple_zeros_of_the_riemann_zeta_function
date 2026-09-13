@@ -1,5 +1,6 @@
 import HurtadoZeta23.V26RationalBall
 import HurtadoZeta23.V26LocalClosedForms
+import HurtadoZeta23.V26TrigIntervalBridge
 import HurtadoZeta23.V21KernelRootBrackets
 import Mathlib.Tactic
 
@@ -33,11 +34,13 @@ lemma v26_sin_ball_of_taylor_bounds {u slo shi : ℝ}
     (hlo : slo ≤ v21RootSinLower7 u)
     (hhi : v21RootSinUpper9 u ≤ shi) :
     v26Ball (Real.sin u) ((slo + shi) / 2) ((shi - slo) / 2) := by
+  have hlowTaylor : v21RootSinLower7 u ≤ Real.sin u := by
+    simpa [v21RootSinLower7] using v21_sin_lower7 hu0 hu1
+  have hhighTaylor : Real.sin u ≤ v21RootSinUpper9 u := by
+    simpa [v21RootSinUpper9] using v21_sin_upper9 hu0 hu1
   apply v26_ball_of_bounds
-  · exact hlo.trans (by
-      simpa [v21RootSinLower7] using v21_sin_lower7 hu0 hu1)
-  · exact (by
-      simpa [v21RootSinUpper9] using v21_sin_upper9 hu0 hu1).trans hhi
+  · exact hlo.trans hlowTaylor
+  · exact hhighTaylor.trans hhi
 
 /-- The analogous cosine enclosure from the already kernel-checked Taylor
 bounds. -/
@@ -46,10 +49,12 @@ lemma v26_cos_ball_of_taylor_bounds {u clo chi : ℝ}
     (hlo : clo ≤ v21RootCosLower10 u)
     (hhi : v21RootCosUpper8 u ≤ chi) :
     v26Ball (Real.cos u) ((clo + chi) / 2) ((chi - clo) / 2) := by
+  have hlowTaylor : v21RootCosLower10 u ≤ Real.cos u := by
+    simpa [v21RootCosLower10] using v21_cos_lower10 hu0 hu1
+  have hhighTaylor : Real.cos u ≤ v21RootCosUpper8 u := by
+    simpa [v21RootCosUpper8] using v21_cos_upper8 hu0 hu1
   apply v26_ball_of_bounds
-  · exact hlo.trans (by
-      simpa [v21RootCosLower10] using v21_cos_lower10 hu0 hu1)
-  · exact (by
-      simpa [v21RootCosUpper8] using v21_cos_upper8 hu0 hu1).trans hhi
+  · exact hlo.trans hlowTaylor
+  · exact hhighTaylor.trans hhi
 
 end HurtadoZeta23
