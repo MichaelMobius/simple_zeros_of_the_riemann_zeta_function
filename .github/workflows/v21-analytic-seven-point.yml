@@ -79,3 +79,4 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
           lake build HurtadoZeta23.V26WordBridge
+          lake build HurtadoZeta23.V26BasinInterface
