@@ -1,33 +1,26 @@
-name: v26 package A minorant
+name: v26 package B rational bootstrap
 
 on:
   push:
     branches: [v26-lean-verification]
     paths:
-      - 'lean_harness/v21_analytic/V26AnalyticMinorant.lean'
-      - 'lean_harness/v21_analytic/V26MinorantPrereqs.lean'
-      - 'lean_harness/v21_analytic/V26AmplitudeGeometry.lean'
-      - 'lean_harness/v21_analytic/V26IntervalGeometry.lean'
-      - 'lean_harness/v21_analytic/V26PhaseConstants.lean'
-      - 'lean_harness/v21_analytic/V26PhaseGeometry.lean'
-      - 'lean_harness/v21_analytic/V26PhaseIdentity.lean'
-      - 'lean_harness/v21_analytic/V26PhasePeriodicity.lean'
-      - 'lean_harness/v21_analytic/V26PhaseRationalBounds.lean'
-      - 'lean_harness/v21_analytic/V26PhaseUpper.lean'
-      - 'lean_harness/v21_analytic/V26RationalCenter.lean'
-      - 'lean_harness/v21_analytic/V26SineChord.lean'
-      - 'lean_harness/v21_analytic/V26TaylorExtension.lean'
+      - 'certification/v26_exact/**'
+      - '.github/workflows/v26-package-b.yml'
+      - 'lean_harness/v21_analytic/V26BootstrapStageLists.lean'
+      - 'lean_harness/v21_analytic/V26QuadraticCore.lean'
+      - 'lean_harness/v21_analytic/V26Word511Certificate.lean'
+      - 'lean_harness/v21_analytic/V26WordBridge.lean'
   workflow_dispatch:
 
 concurrency:
-  group: v26-package-a-${{ github.ref }}
+  group: v26-package-b-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  package-a:
+  package-b:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,10 +56,16 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
-      - name: Reject forbidden proof shortcuts
+      - name: Regenerate exact historical rational certificate
         run: |
-          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' lean_harness/v21_analytic/V26*.lean; then
-            echo 'Forbidden proof shortcut found in V26 module'
+          python certification/v26_exact/v21_rational_bootstrap_verify.py
+          echo '5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  /mnt/data/v21_rational_bootstrap_certificate.json' | sha256sum -c -
+
+      - name: Generate exact Lean discard certificates
+        run: |
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26Bootstrap*.lean; then
+            echo 'Forbidden proof shortcut found in generated certificate'
             exit 1
           fi
 
@@ -75,7 +74,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Verify package A analytic minorant
+      - name: Kernel-check all generated rational discards
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26AnalyticMinorant
+          lake build HurtadoZeta23.V26BootstrapDiscardGenerated
