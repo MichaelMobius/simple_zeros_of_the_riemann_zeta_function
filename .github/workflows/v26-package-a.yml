@@ -1,19 +1,19 @@
-name: v21 analytic seven-point
+name: v26 package A minorant
 
 on:
   push:
-    branches: [v21-analytic-seven-point]
+    branches: [v26-lean-verification]
   workflow_dispatch:
 
 concurrency:
-  group: v21-analytic-seven-point-${{ github.ref }}
+  group: v26-package-a-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  analytic-seven-point:
+  package-a:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,9 +41,7 @@ jobs:
             cp "$f" "HurtadoZeta23/$(basename "$f")"
           done
           cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
-          if compgen -G "$GITHUB_WORKSPACE/lean_harness/v21_analytic/*.lean" > /dev/null; then
-            cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
-          fi
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
           cat >> lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -51,20 +49,19 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
+      - name: Reject forbidden proof shortcuts
+        run: |
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' lean_harness/v21_analytic/V26*.lean; then
+            echo 'Forbidden proof shortcut found in V26 module'
+            exit 1
+          fi
+
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Build historical v20 closure
+      - name: Verify package A analytic minorant
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V20FinalAssembly
-
-      - name: Build historical v21 target
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V21SevenPointAnalytic
-          if [ -f HurtadoZeta23/V21FinalAssembly.lean ]; then
-            lake build HurtadoZeta23.V21FinalAssembly
-          fi
+          lake build HurtadoZeta23.V26AnalyticMinorant
