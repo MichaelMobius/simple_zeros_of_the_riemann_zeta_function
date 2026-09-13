@@ -77,9 +77,17 @@ lemma v26_quad_lower_stationary
     (hstat : p + 2 * a * (c - q) = 0)
     (hmin : target ≤ p * c + a * (c - q) ^ 2 - eta) :
     target ≤ p * x + a * (x - q) ^ 2 - eta := by
+  have hp : p = -2 * a * (c - q) := by
+    linarith
   have hs : 0 ≤ a * (x - c) ^ 2 :=
     mul_nonneg ha (sq_nonneg (x - c))
-  nlinarith
+  calc
+    target ≤ p * c + a * (c - q) ^ 2 - eta := hmin
+    _ ≤ (p * c + a * (c - q) ^ 2 - eta) + a * (x - c) ^ 2 :=
+      le_add_of_nonneg_right hs
+    _ = p * x + a * (x - q) ^ 2 - eta := by
+      rw [hp]
+      ring
 
 /-- Exact quadratic lower bound when the minimum over the cell is at its left
 endpoint. -/
@@ -95,7 +103,12 @@ lemma v26_quad_lower_left
     nlinarith
   have hprod : 0 ≤ (x - L) * (p + a * (x + L - 2 * q)) :=
     mul_nonneg hdx hbr
-  nlinarith
+  calc
+    target ≤ p * L + a * (L - q) ^ 2 - eta := hmin
+    _ ≤ (p * L + a * (L - q) ^ 2 - eta) +
+          (x - L) * (p + a * (x + L - 2 * q)) :=
+      le_add_of_nonneg_right hprod
+    _ = p * x + a * (x - q) ^ 2 - eta := by ring
 
 /-- Exact quadratic lower bound when the minimum over the cell is at its right
 endpoint. -/
@@ -111,7 +124,12 @@ lemma v26_quad_lower_right
     nlinarith
   have hprod : 0 ≤ (U - x) * (-(p + a * (x + U - 2 * q))) :=
     mul_nonneg hdx (neg_nonneg.mpr hbr)
-  nlinarith
+  calc
+    target ≤ p * U + a * (U - q) ^ 2 - eta := hmin
+    _ ≤ (p * U + a * (U - q) ^ 2 - eta) +
+          (U - x) * (-(p + a * (x + U - 2 * q))) :=
+      le_add_of_nonneg_right hprod
+    _ = p * x + a * (x - q) ^ 2 - eta := by ring
 
 /-- Transport a rational quadratic one-body lower bound through a certified
 kernel minorant. -/
