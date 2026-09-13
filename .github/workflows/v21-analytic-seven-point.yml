@@ -138,6 +138,18 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26PhaseUpper
 
+      - name: Verify v26 rational sine chord
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26SineChord
+
+      - name: Verify v26 amplitude geometry
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26AmplitudeGeometry
+
       - name: Verify v26 phase constants
         if: github.ref_name == 'v26-lean-verification'
         run: |
