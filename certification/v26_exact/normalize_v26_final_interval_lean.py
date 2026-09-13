@@ -64,7 +64,8 @@ def normalize_file(path: Path) -> int:
         name = m.group("name")
         type_parts = [m.group("rest")]
         j = i
-        while "_ _ := by" not in type_parts[-1]:
+        # Stop at the end of this declaration, whether or not it has holes.
+        while ":= by" not in type_parts[-1]:
             j += 1
             if j >= len(lines):
                 raise RuntimeError(f"unterminated v26Ball declaration in {path}:{i+1}")
@@ -73,13 +74,13 @@ def normalize_file(path: Path) -> int:
         joined = " ".join(type_parts)
         marker = " _ _ := by"
         if marker not in joined:
-            # Explicit centre/radius: leave untouched.
+            # Explicit centre/radius: preserve the declaration verbatim.  Its
+            # proof body is processed normally on subsequent iterations.
             out.extend(lines[i:j+1])
             i = j + 1
             continue
 
         target = joined.split(marker, 1)[0].strip()
-        # `rest` starts immediately after `v26Ball`.
         if not target:
             raise RuntimeError(f"empty v26Ball target in {path}:{i+1}")
 
