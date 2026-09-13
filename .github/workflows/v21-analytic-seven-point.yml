@@ -59,22 +59,23 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Build existing v20 closure
+      - name: Build historical v20 closure
+        if: github.ref_name == 'v21-analytic-seven-point'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V20FinalAssembly
 
-      - name: Build v21 modules when present
+      - name: Build historical v21 target
+        if: github.ref_name == 'v21-analytic-seven-point'
         run: |
           cd /tmp/formal-math/zeta23
-          if [ -f HurtadoZeta23/V21SevenPointAnalytic.lean ]; then
-            lake build HurtadoZeta23.V21SevenPointAnalytic
-          fi
+          lake build HurtadoZeta23.V21SevenPointAnalytic
           if [ -f HurtadoZeta23/V21FinalAssembly.lean ]; then
             lake build HurtadoZeta23.V21FinalAssembly
           fi
 
       - name: Build v26 exact finite layer
+        if: github.ref_name == 'v26-lean-verification'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
