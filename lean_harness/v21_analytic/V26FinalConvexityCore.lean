@@ -44,9 +44,11 @@ theorem v26_weightXPrime_hasDerivAt {x : ℝ}
   have h' := h.congr_deriv (g' := v26WeightXSecond x) (by
     unfold v26WeightXSecond
     ring)
-  change HasDerivAt
-    (fun y : ℝ => 2 * v21KernelX y * v21KernelXPrime y)
-    (v26WeightXSecond x) x
-  simpa only [Pi.mul_apply] using h'
+  have hfun :
+      ((fun y : ℝ => 2 * v21KernelX y) * v21KernelXPrime) = v26WeightXPrime := by
+    funext y
+    rfl
+  rw [hfun] at h'
+  exact h'
 
 end HurtadoZeta23
