@@ -78,11 +78,26 @@ jobs:
             lake build HurtadoZeta23.V21FinalAssembly
           fi
 
-      - name: Build v26 verification layer
+      - name: Verify v26 44100-to-511 certificate
         if: github.ref_name == 'v26-lean-verification'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
+
+      - name: Verify v26 one-body bridge
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26WordBridge
+
+      - name: Verify v26 basin interface
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26BasinInterface
+
+      - name: Verify v26 Taylor extension
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26TaylorExtension
