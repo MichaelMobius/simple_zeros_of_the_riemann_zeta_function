@@ -86,30 +86,28 @@ theorem v26_mem_survivorWords_iff (w : V26BasinWord) :
     exact (Finset.mem_filter.mp hw).2
   · intro hw
     rcases w with ⟨a, b, c, d, e, f⟩
+    change
+      v26MuA a + v26MuB b + v26MuC c + v26MuC d + v26MuB e + v26MuA f < 3900
+      at hw
     have hA : f ∈ v26SuffixA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_univ f, ?_⟩
-      unfold v26WordWeight at hw
       omega
     have hBA : (e, f) ∈ v26SuffixBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ e, hA⟩, ?_⟩
-      unfold v26WordWeight at hw
       omega
     have hCBA : (d, e, f) ∈ v26SuffixCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ d, hBA⟩, ?_⟩
-      unfold v26WordWeight at hw
       omega
     have hCCBA : (c, d, e, f) ∈ v26SuffixCCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ c, hCBA⟩, ?_⟩
-      unfold v26WordWeight at hw
       omega
     have hBCCBA : (b, c, d, e, f) ∈ v26SuffixBCCBA := by
       apply Finset.mem_filter.mpr
       refine ⟨Finset.mem_product.mpr ⟨Finset.mem_univ b, hCCBA⟩, ?_⟩
-      unfold v26WordWeight at hw
       omega
     apply Finset.mem_filter.mpr
     exact ⟨Finset.mem_product.mpr ⟨Finset.mem_univ a, hBCCBA⟩, hw⟩
