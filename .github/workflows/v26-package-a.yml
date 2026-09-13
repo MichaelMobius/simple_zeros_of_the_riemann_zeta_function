@@ -3,6 +3,20 @@ name: v26 package A minorant
 on:
   push:
     branches: [v26-lean-verification]
+    paths:
+      - 'lean_harness/v21_analytic/V26AnalyticMinorant.lean'
+      - 'lean_harness/v21_analytic/V26MinorantPrereqs.lean'
+      - 'lean_harness/v21_analytic/V26AmplitudeGeometry.lean'
+      - 'lean_harness/v21_analytic/V26IntervalGeometry.lean'
+      - 'lean_harness/v21_analytic/V26PhaseConstants.lean'
+      - 'lean_harness/v21_analytic/V26PhaseGeometry.lean'
+      - 'lean_harness/v21_analytic/V26PhaseIdentity.lean'
+      - 'lean_harness/v21_analytic/V26PhasePeriodicity.lean'
+      - 'lean_harness/v21_analytic/V26PhaseRationalBounds.lean'
+      - 'lean_harness/v21_analytic/V26PhaseUpper.lean'
+      - 'lean_harness/v21_analytic/V26RationalCenter.lean'
+      - 'lean_harness/v21_analytic/V26SineChord.lean'
+      - 'lean_harness/v21_analytic/V26TaylorExtension.lean'
   workflow_dispatch:
 
 concurrency:
