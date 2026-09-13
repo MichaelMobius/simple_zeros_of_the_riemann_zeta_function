@@ -46,20 +46,17 @@ theorem v26_sine_chord {t rho : ℝ}
   have hb : 0 ≤ t / rho := div_nonneg ht0 hrho0.le
   have hratio : t / rho ≤ 1 := (div_le_one hrho0).2 htr
   have ha : 0 ≤ 1 - t / rho := sub_nonneg.mpr hratio
-  have harg :
-      (1 - t / rho) • (0 : ℝ) + (t / rho) • (Real.pi * rho) =
-        Real.pi * t := by
-    simp only [smul_eq_mul, mul_zero, zero_add]
-    field_simp [hrho0.ne']
   have hconc :
       (1 - t / rho) • Real.sin (0 : ℝ) +
           (t / rho) • Real.sin (Real.pi * rho) ≤
         Real.sin ((1 - t / rho) • (0 : ℝ) +
           (t / rho) • (Real.pi * rho)) :=
     strictConcaveOn_sin_Icc.concaveOn.2
-      (show (0 : ℝ) ∈ Set.Icc 0 Real.pi by simp)
+      ⟨le_rfl, Real.pi_pos.le⟩
       hy ha hb (by ring)
-  simpa [smul_eq_mul, harg] using hconc
+  have hmul : (t / rho) * (Real.pi * rho) = Real.pi * t := by
+    field_simp [hrho0.ne']
+  simpa [smul_eq_mul, hmul] using hconc
 
 /-- The folded endpoint sine is bounded below by the exact rational Taylor
 polynomial evaluated at `3.14*s`.  This is the directed rounding used in the
