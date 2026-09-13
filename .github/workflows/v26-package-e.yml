@@ -6,6 +6,7 @@ on:
     paths:
       - 'certification/v26_exact/generate_v26_final_five_lean.py'
       - 'certification/v26_exact/generate_v26_final_interval_lean.py'
+      - 'certification/v26_exact/normalize_v26_final_interval_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26Final*.lean'
       - 'lean_harness/v21_analytic/V26StrongConvexityLemma.lean'
@@ -102,8 +103,13 @@ jobs:
       - name: Generate final numeric interval certificates
         run: |
           python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir /tmp/formal-math/zeta23/HurtadoZeta23
           if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalNumeric*.lean; then
             echo 'Forbidden proof shortcut found in generated final numeric certificate'
+            exit 1
+          fi
+          if grep -R -n -F ' _ _ := by' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalNumericN*Generated.lean; then
+            echo 'Typed v26Ball placeholders remain after normalization'
             exit 1
           fi
 
