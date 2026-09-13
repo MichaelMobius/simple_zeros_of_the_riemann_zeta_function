@@ -7,9 +7,12 @@ on:
       - 'certification/v26_exact/generate_v26_final_five_lean.py'
       - 'certification/v26_exact/generate_v26_final_interval_lean.py'
       - 'certification/v26_exact/normalize_v26_final_interval_lean.py'
+      - 'certification/v26_exact/generate_v26_final_strong_lower_lean.py'
+      - 'certification/v26_exact/generate_v26_final_bridge_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26Final*.lean'
       - 'lean_harness/v21_analytic/V26StrongConvexityLemma.lean'
+      - 'lean_harness/v21_analytic/V26StrongConvexityTransfer.lean'
       - 'lean_harness/v21_analytic/V26LocalClosedForms.lean'
       - 'lean_harness/v21_analytic/V26RationalBall.lean'
       - 'lean_harness/v21_analytic/V26TrigIntervalBridge.lean'
@@ -75,6 +78,7 @@ jobs:
           files=(
             lean_harness/v21_analytic/V26Final*.lean
             lean_harness/v21_analytic/V26StrongConvexityLemma.lean
+            lean_harness/v21_analytic/V26StrongConvexityTransfer.lean
             lean_harness/v21_analytic/V26LocalClosedForms.lean
             lean_harness/v21_analytic/V26RationalBall.lean
             lean_harness/v21_analytic/V26TrigIntervalBridge.lean
@@ -92,23 +96,20 @@ jobs:
           python certification/v26_exact/v21_rational_bootstrap_verify.py
           echo "5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  $V26_CERT_OUT" | sha256sum -c -
 
-      - name: Generate final five Lean certificates
+      - name: Generate Package E Lean certificates
         run: |
-          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
-          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalFive*.lean; then
-            echo 'Forbidden proof shortcut found in generated final-five certificate'
+          out=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir "$out"
+          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir "$out"
+          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir "$out"
+          python certification/v26_exact/generate_v26_final_strong_lower_lean.py --out-dir "$out"
+          python certification/v26_exact/generate_v26_final_bridge_lean.py --out-dir "$out"
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+              "$out"/V26Final*Generated.lean; then
+            echo 'Forbidden proof shortcut found in generated Package E certificate'
             exit 1
           fi
-
-      - name: Generate final numeric interval certificates
-        run: |
-          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
-          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir /tmp/formal-math/zeta23/HurtadoZeta23
-          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalNumeric*.lean; then
-            echo 'Forbidden proof shortcut found in generated final numeric certificate'
-            exit 1
-          fi
-          if grep -R -n -F ' _ _ := by' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalNumericN*Generated.lean; then
+          if grep -R -n -F ' _ _ := by' "$out"/V26FinalNumericN*Generated.lean; then
             echo 'Typed v26Ball placeholders remain after normalization'
             exit 1
           fi
@@ -127,22 +128,28 @@ jobs:
             HurtadoZeta23.V26LocalClosedForms \
             HurtadoZeta23.V26TrigIntervalBridge \
             HurtadoZeta23.V26StrongConvexityLemma \
+            HurtadoZeta23.V26StrongConvexityTransfer \
             HurtadoZeta23.V26FinalIntervalCore
 
-      - name: Diagnose final numeric N1
+      - name: Kernel-check all 133 final numeric certificates
         run: |
           cd /tmp/formal-math/zeta23
-          set +e
-          lake build HurtadoZeta23.V26FinalNumericN1Generated 2>&1 | tee /tmp/v26-n1.log
-          status=${PIPESTATUS[0]}
-          echo '--- FIRST LEAN ERRORS ---'
-          grep -n -m 12 -A 8 -B 4 'error:' /tmp/v26-n1.log || true
-          exit $status
+          lake build HurtadoZeta23.V26FinalNumericGenerated
+
+      - name: Kernel-check ten final strong lower bounds
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalStrongLowerGenerated
 
       - name: Kernel-check final five exact minima
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
+
+      - name: Kernel-check final five analytic bridges
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalBridgeGenerated
 
       - name: Save Lean build cache
         if: always()
