@@ -1,8 +1,6 @@
 import HurtadoZeta23.V26WordBridge
 import Mathlib.Tactic
 
-noncomputable section
-
 namespace HurtadoZeta23
 
 /-- Rational endpoints of the seven A basins, used at positions 0 and 5. -/
@@ -42,57 +40,59 @@ def v26InWordBox (w : V26BasinWord)
   v26InB w.2.2.2.2.1 g4 ∧
   v26InA w.2.2.2.2.2 g5
 
-/-- Analytic localization obligation remaining for the v26 proof: every strict
-counterexample in the hard core belongs to one of the exact A-B-C-C-B-A
-boxes.  This is a definition of the target proposition, not a trusted
-statement. -/
-def V26BasinLocalizationClaim : Prop :=
+/-- Hard-core point written locally to keep the finite layer independent of
+historical wrapper modules. -/
+def v26HardCorePoint : ℝ := 89 / 100
+
+/-- Analytic localization obligation remaining for a nonnegative kernel
+weight: every strict hard-core counterexample belongs to one of the exact
+A-B-C-C-B-A boxes.  This is a target proposition, not a trusted statement. -/
+def V26BasinLocalizationClaim (weight : ℝ → ℝ) : Prop :=
   ∀ g0 g1 g2 g3 g4 g5 : ℝ,
-    v17KernelCertPoint < g0 →
-    v17KernelCertPoint < g1 →
-    v17KernelCertPoint < g2 →
-    v17KernelCertPoint < g3 →
-    v17KernelCertPoint < g4 →
-    v17KernelCertPoint < g5 →
+    v26HardCorePoint < g0 →
+    v26HardCorePoint < g1 →
+    v26HardCorePoint < g2 →
+    v26HardCorePoint < g3 →
+    v26HardCorePoint < g4 →
+    v26HardCorePoint < g5 →
     g0 + g1 + g2 + g3 + g4 + g5 < (1437 / 100 : ℝ) →
-    v21GapF g0 g1 g2 g3 g4 g5 < delta →
+    v26GapF weight g0 g1 g2 g3 g4 g5 < v26Delta →
     ∃ w : V26BasinWord, v26InWordBox w g0 g1 g2 g3 g4 g5
 
-/-- Analytic micro-floor obligation for the exact basin table.  Each clause is
-one of the rational lower bounds recorded in the v26 certificate. -/
-def V26BasinMicroFloorClaim : Prop :=
+/-- Analytic micro-floor obligation for the exact basin table. -/
+def V26BasinMicroFloorClaim (weight : ℝ → ℝ) : Prop :=
   (∀ (i : Fin 7) (x : ℝ), v26InA i x →
     (v26MuA i : ℝ) / 1000000 ≤
-      pressure 0 * x + (1 / 3 : ℝ) * limitingWeight x) ∧
+      v26Pressure 0 * x + (1 / 3 : ℝ) * weight x) ∧
   (∀ (i : Fin 5) (x : ℝ), v26InB i x →
     (v26MuB i : ℝ) / 1000000 ≤
-      pressure 1 * x + (1 / 3 : ℝ) * limitingWeight x) ∧
+      v26Pressure 1 * x + (1 / 3 : ℝ) * weight x) ∧
   (∀ (i : Fin 6) (x : ℝ), v26InC i x →
     (v26MuC i : ℝ) / 1000000 ≤
-      pressure 2 * x + (1 / 3 : ℝ) * limitingWeight x)
+      v26Pressure 2 * x + (1 / 3 : ℝ) * weight x)
 
-/-- Symmetry of the published pressure vector turns the A/B/C floor proofs at
-positions 0,1,2 into the corresponding bounds at positions 5,4,3. -/
+/-- Symmetry of the exact pressure vector. -/
 theorem v26_pressure_symmetry :
-    pressure (5 : Fin 6) = pressure (0 : Fin 6) ∧
-    pressure (4 : Fin 6) = pressure (1 : Fin 6) ∧
-    pressure (3 : Fin 6) = pressure (2 : Fin 6) := by
-  simp [pressure]
+    v26Pressure (5 : Fin 6) = v26Pressure (0 : Fin 6) ∧
+    v26Pressure (4 : Fin 6) = v26Pressure (1 : Fin 6) ∧
+    v26Pressure (3 : Fin 6) = v26Pressure (2 : Fin 6) := by
+  norm_num [v26Pressure]
 
 /-- Once localization and the basin micro-floors are established analytically,
 a strict counterexample must belong to the exact 511-word survivor set. -/
 theorem v26_counterexample_mem_511
-    (hloc : V26BasinLocalizationClaim)
-    (hfloor : V26BasinMicroFloorClaim)
+    (weight : ℝ → ℝ) (hweight : ∀ x, 0 ≤ weight x)
+    (hloc : V26BasinLocalizationClaim weight)
+    (hfloor : V26BasinMicroFloorClaim weight)
     (g0 g1 g2 g3 g4 g5 : ℝ)
-    (h0 : v17KernelCertPoint < g0)
-    (h1 : v17KernelCertPoint < g1)
-    (h2 : v17KernelCertPoint < g2)
-    (h3 : v17KernelCertPoint < g3)
-    (h4 : v17KernelCertPoint < g4)
-    (h5 : v17KernelCertPoint < g5)
+    (h0 : v26HardCorePoint < g0)
+    (h1 : v26HardCorePoint < g1)
+    (h2 : v26HardCorePoint < g2)
+    (h3 : v26HardCorePoint < g3)
+    (h4 : v26HardCorePoint < g4)
+    (h5 : v26HardCorePoint < g5)
     (hsum : g0 + g1 + g2 + g3 + g4 + g5 < (1437 / 100 : ℝ))
-    (hbad : v21GapF g0 g1 g2 g3 g4 g5 < delta) :
+    (hbad : v26GapF weight g0 g1 g2 g3 g4 g5 < v26Delta) :
     ∃ w : V26BasinWord, w ∈ v26SurvivorWords ∧
       v26InWordBox w g0 g1 g2 g3 g4 g5 := by
   rcases hloc g0 g1 g2 g3 g4 g5 h0 h1 h2 h3 h4 h5 hsum hbad with ⟨w, hw⟩
@@ -106,18 +106,18 @@ theorem v26_counterexample_mem_511
   have hf4base := hB w.2.2.2.2.1 g4 hw4
   have hf5base := hA w.2.2.2.2.2 g5 hw5
   have hf3 : (v26MuC w.2.2.2.1 : ℝ) / 1000000 ≤
-      pressure 3 * g3 + (1 / 3 : ℝ) * limitingWeight g3 := by
+      v26Pressure 3 * g3 + (1 / 3 : ℝ) * weight g3 := by
     rw [hp.2.2]
     exact hf3base
   have hf4 : (v26MuB w.2.2.2.2.1 : ℝ) / 1000000 ≤
-      pressure 4 * g4 + (1 / 3 : ℝ) * limitingWeight g4 := by
+      v26Pressure 4 * g4 + (1 / 3 : ℝ) * weight g4 := by
     rw [hp.2.1]
     exact hf4base
   have hf5 : (v26MuA w.2.2.2.2.2 : ℝ) / 1000000 ≤
-      pressure 5 * g5 + (1 / 3 : ℝ) * limitingWeight g5 := by
+      v26Pressure 5 * g5 + (1 / 3 : ℝ) * weight g5 := by
     rw [hp.1]
     exact hf5base
-  have hmem := v26_word_mem_511_of_floors w g0 g1 g2 g3 g4 g5
+  have hmem := v26_word_mem_511_of_floors weight hweight w g0 g1 g2 g3 g4 g5
     hf0 hf1 hf2 hf3 hf4 hf5 hbad
   exact ⟨w, hmem, hw0, hw1, hw2, hw3, hw4, hw5⟩
 
