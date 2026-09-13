@@ -123,53 +123,22 @@ jobs:
             HurtadoZeta23.V26StrongConvexityLemma \
             HurtadoZeta23.V26FinalIntervalCore
 
-      - name: Kernel-check final numeric N1
+      - name: Diagnose final numeric N1
         if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN1Generated
-
-      - name: Kernel-check final numeric N2
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN2Generated
-
-      - name: Kernel-check final numeric N3
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN3Generated
-
-      - name: Kernel-check final numeric N4
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN4Generated
-
-      - name: Kernel-check final numeric N5
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN5Generated
-
-      - name: Kernel-check final numeric N6
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN6Generated
-
-      - name: Kernel-check final numeric N7
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN7Generated
-
-      - name: Kernel-check final numeric N8
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN8Generated
-
-      - name: Kernel-check final numeric N9
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN9Generated
-
-      - name: Kernel-check final numeric N10
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericN10Generated
-
-      - name: Kernel-check final numeric aggregate
-        if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalNumericGenerated
+        run: |
+          cd /tmp/formal-math/zeta23
+          set +e
+          lake build HurtadoZeta23.V26FinalNumericN1Generated 2>&1 | tee /tmp/v26-n1.log
+          status=${PIPESTATUS[0]}
+          echo '--- FIRST LEAN ERRORS ---'
+          grep -n -m 12 -A 8 -B 4 'error:' /tmp/v26-n1.log || true
+          exit $status
 
       - name: Kernel-check final five exact minima
         if: always()
-        run: cd /tmp/formal-math/zeta23 && lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
 
       - name: Save Lean build cache
         if: always()
