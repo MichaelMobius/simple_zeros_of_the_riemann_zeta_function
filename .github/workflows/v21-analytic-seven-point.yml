@@ -161,3 +161,9 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26PhaseIdentity
+
+      - name: Verify v26 full minorant prerequisites
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26MinorantPrereqs
