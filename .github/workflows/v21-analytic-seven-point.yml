@@ -2,7 +2,7 @@ name: v21 analytic seven-point
 
 on:
   push:
-    branches: [v21-analytic-seven-point]
+    branches: [v21-analytic-seven-point, v26-lean-verification]
   workflow_dispatch:
 
 permissions:
@@ -47,13 +47,12 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
-      - name: Inspect archived seven-point interface
+      - name: Reject forbidden proof shortcuts in v26 modules
         run: |
-          cd /tmp/formal-math/zeta23
-          echo '=== ArchivedSevenPointClaim definition / uses ==='
-          grep -R -n -B 5 -A 18 'ArchivedSevenPointClaim' HurtadoZeta23 | head -n 240
-          echo '=== candidate seven-point constants ==='
-          grep -R -n -E '39[[:space:]]*/[[:space:]]*10000|2714|3733|3553' HurtadoZeta23 | head -n 240
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' lean_harness/v21_analytic/V26*.lean; then
+            echo 'Forbidden proof shortcut found in V26 module'
+            exit 1
+          fi
 
       - name: Fetch mathlib cache
         run: |
@@ -74,3 +73,8 @@ jobs:
           if [ -f HurtadoZeta23/V21FinalAssembly.lean ]; then
             lake build HurtadoZeta23.V21FinalAssembly
           fi
+
+      - name: Build v26 exact word certificate
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26Word511Certificate
