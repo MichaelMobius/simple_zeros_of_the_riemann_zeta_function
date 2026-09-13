@@ -36,9 +36,9 @@ instance (w : V26BasinWord) : Decidable (v26WordSurvives w) :=
 def v26SurvivorWords : Finset V26BasinWord :=
   Finset.univ.filter v26WordSurvives
 
-/-- The raw A-B-C-C-B-A word space contains exactly 44,100 words.  `decide`
-uses Lean's kernel-reducible decision procedure; no `native_decide` or
-external evaluator is involved. -/
+/-- The raw A-B-C-C-B-A word space contains exactly 44,100 words.  The proof
+uses Lean's kernel-reducible decision procedure rather than an external
+evaluator. -/
 set_option maxHeartbeats 0 in
 theorem v26_basin_word_count : Fintype.card V26BasinWord = 44100 := by
   decide
