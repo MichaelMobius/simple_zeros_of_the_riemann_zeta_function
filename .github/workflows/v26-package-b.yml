@@ -58,9 +58,9 @@ jobs:
 
       - name: Regenerate exact historical rational certificate
         run: |
-          mkdir -p /mnt/data
+          export V26_CERT_OUT="$RUNNER_TEMP/v21_rational_bootstrap_certificate.json"
           python certification/v26_exact/v21_rational_bootstrap_verify.py
-          echo '5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  /mnt/data/v21_rational_bootstrap_certificate.json' | sha256sum -c -
+          echo "5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  $V26_CERT_OUT" | sha256sum -c -
 
       - name: Generate exact Lean discard certificates
         run: |

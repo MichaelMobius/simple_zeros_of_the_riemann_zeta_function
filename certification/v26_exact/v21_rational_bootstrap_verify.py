@@ -25,6 +25,7 @@ from collections import defaultdict
 from math import isqrt
 import json
 import hashlib
+import os
 import sys
 
 # ---------------------------------------------------------------------------
@@ -440,7 +441,7 @@ def main():
     payload=json.dumps(certificate,sort_keys=True,separators=(',',':')).encode()
     certificate['sha256_without_sha_field']=hashlib.sha256(payload).hexdigest()
 
-    out='/mnt/data/v21_rational_bootstrap_certificate.json'
+    out=os.environ.get('V26_CERT_OUT', '/mnt/data/v21_rational_bootstrap_certificate.json')
     with open(out,'w',encoding='utf-8') as f:
         json.dump(certificate,f,indent=2,sort_keys=True)
         f.write('\n')
