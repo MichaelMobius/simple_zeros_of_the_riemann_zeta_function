@@ -12,7 +12,6 @@ lemma v26_phase_angle (c x : ℝ) :
       Real.pi * x - Real.arctan (c / x) := by
   unfold v26PhaseWith
   field_simp [Real.pi_ne_zero]
-  ring
 
 /-- Exact squared phase factorization of the oscillatory numerator. -/
 theorem v26_phase_numerator_sq {c x : ℝ} (hx : 0 < x) :
@@ -36,14 +35,12 @@ theorem v26_phase_numerator_sq {c x : ℝ} (hx : 0 < x) :
     rw [hangle, Real.sin_sub, Real.cos_arctan, Real.sin_arctan]
     dsimp [S]
     field_simp [hx.ne', (Real.sqrt_pos.2 hrad).ne']
-    ring
   have hden : (x * S) ^ 2 = x ^ 2 + c ^ 2 := by
     calc
       (x * S) ^ 2 = x ^ 2 * S ^ 2 := by ring
       _ = x ^ 2 * (1 + (c / x) ^ 2) := by rw [hS2]
       _ = x ^ 2 + c ^ 2 := by
         field_simp [hx.ne']
-        ring
   rw [hsin, div_pow, hden]
   have hsum : 0 < x ^ 2 + c ^ 2 := by
     nlinarith [sq_pos_of_pos hx, sq_nonneg c]
@@ -59,7 +56,8 @@ theorem v26_limitingWeight_phase_form {x : ℝ}
   have hBpos : 0 < v21B x := v21_A_pos.trans hx
   have hxpos : 0 < x := by
     unfold v21B at hBpos
-    exact pos_of_mul_pos_left hBpos Real.pi_pos.le
+    have hxpi : 0 < x * Real.pi := by simpa [mul_comm] using hBpos
+    exact pos_of_mul_pos_left hxpi Real.pi_pos.le
   have hD : (v21B x) ^ 2 - (1 / 2 : ℝ) ≠ 0 :=
     (v21_D_pos hx).ne'
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
@@ -69,7 +67,6 @@ theorem v26_limitingWeight_phase_form {x : ℝ}
         Real.pi ^ 2 * (x ^ 2 - v26dk) := by
     unfold v21B v26dk
     field_simp [hpi]
-    ring
   have hxd : x ^ 2 - v26dk ≠ 0 := by
     intro hz
     apply hD
@@ -83,7 +80,6 @@ theorem v26_limitingWeight_phase_form {x : ℝ}
     rw [v21_limitingWeight_normalized hx]
     unfold v26C0 v26c v26dk v21B
     field_simp [hpi, hC, hD, hxd]
-    ring
   rw [hk]
   have hnum := v26_phase_numerator_sq (c := v26c) hxpos
   rw [div_pow, mul_pow, hnum]
