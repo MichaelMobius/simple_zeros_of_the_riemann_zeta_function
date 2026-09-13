@@ -1,0 +1,95 @@
+name: v26 package D one-body localization
+
+on:
+  push:
+    branches: [v26-package-d-staging]
+    paths:
+      - 'lean_harness/v21_analytic/V26OneBody*.lean'
+      - 'lean_harness/v21_analytic/V26PackageD.lean'
+      - '.github/workflows/v26-package-d.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: v26-package-d-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  package-d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore Package D Lean build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+          save-always: true
+
+      - name: Reject forbidden proof shortcuts
+        run: |
+          for f in lean_harness/v21_analytic/V26OneBody*.lean lean_harness/v21_analytic/V26PackageD.lean; do
+            if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' "$f"; then
+              echo "Forbidden proof shortcut found in $f"
+              exit 1
+            fi
+          done
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Verify Package D cell tools
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26OneBodyCellTools HurtadoZeta23.V26OneBodyCertTools
+
+      - name: Verify Package D floors
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26OneBodyFloors
+
+      - name: Verify Package D localization
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26OneBodyLocalization
+
+      - name: Verify Package D aggregator
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26PackageD
