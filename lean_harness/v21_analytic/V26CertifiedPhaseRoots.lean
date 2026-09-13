@@ -27,7 +27,6 @@ lemma v26_c_div_eq {x : ℝ} (hx : x ≠ 0) :
     v26c / x = 1 / (2 * v21C * Real.pi * x) := by
   unfold v26c
   field_simp [hx, v26_C_pos.ne', Real.pi_ne_zero]
-  ring
 
 /-- A zero of the cleared numerator inside one of the twelve certified
 brackets is exactly an integer point of the v26 phase map. -/
