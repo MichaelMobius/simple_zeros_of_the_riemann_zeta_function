@@ -1,4 +1,5 @@
 import HurtadoZeta23.V26TaylorExtension
+import HurtadoZeta23.V21KernelCellTools
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Tactic
@@ -24,7 +25,7 @@ lemma v26_fold_le_half {rho : ℝ} : v26Fold rho ≤ (1 / 2 : ℝ) := by
   linarith
 
 /-- Folding does not change `sin (pi*rho)` for `rho` in `[0,1]`. -/
-lemma v26_sin_pi_fold {rho : ℝ} (h0 : 0 ≤ rho) (h1 : rho ≤ 1) :
+lemma v26_sin_pi_fold {rho : ℝ} (_h0 : 0 ≤ rho) (_h1 : rho ≤ 1) :
     Real.sin (Real.pi * v26Fold rho) = Real.sin (Real.pi * rho) := by
   rcases le_total rho (1 - rho) with h | h
   · rw [v26Fold, min_eq_left h]
@@ -45,7 +46,7 @@ theorem v26_sine_chord {t rho : ℝ}
   have hb : 0 ≤ t / rho := div_nonneg ht0 hrho0.le
   have hratio : t / rho ≤ 1 := (div_le_one hrho0).2 htr
   have ha : 0 ≤ 1 - t / rho := sub_nonneg.mpr hratio
-  have hconc := Real.strictConcaveOn_sin_Icc.concaveOn.2
+  have hconc := strictConcaveOn_sin_Icc.concaveOn.2
     (x := (0 : ℝ)) (by simp)
     (y := Real.pi * rho) hy
     (a := 1 - t / rho) (b := t / rho)
@@ -68,7 +69,9 @@ theorem v26_folded_endpoint_taylor_lower {rho : ℝ}
   have hs0 : 0 ≤ s := v26_fold_nonneg hrho0 hrho1
   have hsh : s ≤ (1 / 2 : ℝ) := v26_fold_le_half
   have h314pi : (314 / 100 : ℝ) < Real.pi := by
-    nlinarith [Real.pi_gt_d20]
+    calc
+      (314 / 100 : ℝ) < (31415926 / 10000000 : ℝ) := by norm_num
+      _ < Real.pi := v21_pi_lower
   have hx0 : 0 ≤ (314 / 100 : ℝ) * s := mul_nonneg (by norm_num) hs0
   have hx8 : (314 / 100 : ℝ) * s ≤ (8 / 5 : ℝ) := by
     nlinarith
@@ -111,7 +114,6 @@ theorem v26_sine_chord_taylor {t rho : ℝ}
     (v26P7 ((314 / 100 : ℝ) * v26Fold rho) / rho) * t
         = (t / rho) * v26P7 ((314 / 100 : ℝ) * v26Fold rho) := by
           field_simp [hrho0.ne']
-          ring
     _ ≤ (t / rho) * Real.sin (Real.pi * rho) := hmul
     _ ≤ Real.sin (Real.pi * t) := hchord
 
