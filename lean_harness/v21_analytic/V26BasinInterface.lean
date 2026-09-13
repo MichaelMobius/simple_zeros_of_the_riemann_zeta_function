@@ -78,7 +78,7 @@ theorem v26_pressure_symmetry :
     v26Pressure (5 : Fin 6) = v26Pressure (0 : Fin 6) ∧
     v26Pressure (4 : Fin 6) = v26Pressure (1 : Fin 6) ∧
     v26Pressure (3 : Fin 6) = v26Pressure (2 : Fin 6) := by
-  norm_num [v26Pressure, Matrix.cons_val]
+  simp [v26Pressure, Matrix.cons_val_succ']
 
 /-- Once localization and the basin micro-floors are established analytically,
 a strict counterexample must belong to the exact 511-word survivor set. -/
