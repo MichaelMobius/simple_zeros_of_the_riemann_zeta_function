@@ -102,6 +102,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26QuadraticCore
 
+      - name: Verify first exact R0 discard
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26Round0Prototype
+
       - name: Verify v26 basin interface
         if: github.ref_name == 'v26-lean-verification'
         run: |
