@@ -1,6 +1,8 @@
 import HurtadoZeta23.V26WordBridge
 import Mathlib.Tactic
 
+noncomputable section
+
 namespace HurtadoZeta23
 
 /-- Rational endpoints of the seven A basins, used at positions 0 and 5. -/
