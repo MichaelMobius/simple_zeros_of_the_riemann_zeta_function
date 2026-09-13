@@ -96,6 +96,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26WordBridge
 
+      - name: Verify v26 rational quadratic core
+        if: github.ref_name == 'v26-lean-verification'
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26QuadraticCore
+
       - name: Verify v26 basin interface
         if: github.ref_name == 'v26-lean-verification'
         run: |
