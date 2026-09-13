@@ -45,9 +45,7 @@ theorem v26_ratio_amplitude_sq_lower
   have hleft : 0 ≤ U / (U ^ 2 - d0) :=
     div_nonneg hU.le hUd.le
   have hs := pow_le_pow_left₀ hleft hrat 2
-  have hxd : (x ^ 2 - dk) ≠ 0 := (sub_pos.mpr hxdk).ne'
-  have hUd0 : (U ^ 2 - d0) ≠ 0 := hUd.ne'
-  convert hs using 1 <;> field_simp [hxd, hUd0] <;> ring
+  simpa [div_pow] using hs
 
 /-- Adding the nonnegative `c^2` numerator can only increase the exact
 amplitude. -/

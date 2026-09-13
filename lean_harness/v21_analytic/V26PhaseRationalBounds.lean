@@ -37,11 +37,9 @@ theorem v26_exact_phase_factor_le_rational {L : ℝ} (hL : 0 < L) :
   have hleft :
       v26c / (Real.pi * L ^ 2) = (v26c / Real.pi) / L ^ 2 := by
     field_simp [Real.pi_ne_zero, hL.ne']
-    ring
   have hright :
       (193 : ℝ) / (3140 * L ^ 2) = (193 / 3140 : ℝ) / L ^ 2 := by
     field_simp [hL.ne']
-    ring
   unfold v26Mrat
   rw [hleft, hright]
   linarith
