@@ -78,10 +78,11 @@ jobs:
             lake build HurtadoZeta23.V21FinalAssembly
           fi
 
-      - name: Build v26 exact finite layer
+      - name: Build v26 verification layer
         if: github.ref_name == 'v26-lean-verification'
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Word511Certificate
           lake build HurtadoZeta23.V26WordBridge
           lake build HurtadoZeta23.V26BasinInterface
+          lake build HurtadoZeta23.V26TaylorExtension
