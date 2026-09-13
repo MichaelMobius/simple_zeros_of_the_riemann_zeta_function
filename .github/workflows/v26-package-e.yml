@@ -1,0 +1,88 @@
+name: v26 package E final five closure
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'certification/v26_exact/generate_v26_final_five_lean.py'
+      - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
+      - 'lean_harness/v21_analytic/V26Final*.lean'
+      - '.github/workflows/v26-package-e.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: v26-package-e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  package-e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore Lean build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+          restore-keys: |
+            v26-package-d-zeta23-${{ runner.os }}-fbdc36b-lean433rc2-v1
+          save-always: true
+
+      - name: Regenerate exact historical rational certificate
+        run: |
+          export V26_CERT_OUT="$RUNNER_TEMP/v21_rational_bootstrap_certificate.json"
+          python certification/v26_exact/v21_rational_bootstrap_verify.py
+          echo "5234366c615d599a7afd3f85bf82cb04272a158171e5e5fb144fcf23941b0eb4  $V26_CERT_OUT" | sha256sum -c -
+
+      - name: Generate final five Lean certificates
+        run: |
+          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' /tmp/formal-math/zeta23/HurtadoZeta23/V26FinalFive*.lean; then
+            echo 'Forbidden proof shortcut found in generated final-five certificate'
+            exit 1
+          fi
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Kernel-check final five exact minima
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalFiveMinimaGenerated
