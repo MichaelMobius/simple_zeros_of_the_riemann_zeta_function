@@ -135,7 +135,8 @@ def pilot_data():
     return word, intervals, contracted, qtxt, M, b, c, used, qmin, xstar, L, D, a, gap, rad2, radius, center
 
 
-def emit_block_theorem(idx21: int, i: int, r: int, expr: str, cell_idx: int | None) -> str:
+def emit_block_theorem(idx21: int, i: int, r: int, expr: str,
+                       cell_idx: int | None, intervals) -> str:
     s = bsum(i, r)
     target = f"{expr} ≤ limitingWeight ({s})"
     if cell_idx is None:
@@ -145,14 +146,13 @@ def emit_block_theorem(idx21: int, i: int, r: int, expr: str, cell_idx: int | No
             f"  exact v26_R0_cell_{cell_idx:03d} (x := {s})\n"
             f"    {lower_proof(i, r)} {upper_proof(i, r)}"
         )
+    bounds = []
+    for j in range(6):
+        L, U = intervals[(j, 1)]
+        bounds.append(f"    (h{j} : {ql(L)} ≤ x{j} ∧ x{j} ≤ {ql(U)})")
     return f'''theorem v26_E3_R0_survivor_pilot_block_{idx21:02d}
     (x0 x1 x2 x3 x4 x5 : ℝ)
-    (h0 : {ql(pilot_data()[1][(0,1)][0])} ≤ x0 ∧ x0 ≤ {ql(pilot_data()[1][(0,1)][1])})
-    (h1 : {ql(pilot_data()[1][(1,1)][0])} ≤ x1 ∧ x1 ≤ {ql(pilot_data()[1][(1,1)][1])})
-    (h2 : {ql(pilot_data()[1][(2,1)][0])} ≤ x2 ∧ x2 ≤ {ql(pilot_data()[1][(2,1)][1])})
-    (h3 : {ql(pilot_data()[1][(3,1)][0])} ≤ x3 ∧ x3 ≤ {ql(pilot_data()[1][(3,1)][1])})
-    (h4 : {ql(pilot_data()[1][(4,1)][0])} ≤ x4 ∧ x4 ≤ {ql(pilot_data()[1][(4,1)][1])})
-    (h5 : {ql(pilot_data()[1][(5,1)][0])} ≤ x5 ∧ x5 ≤ {ql(pilot_data()[1][(5,1)][1])}) :
+{chr(10).join(bounds)} :
     {target} := by
 {proof}
 '''
@@ -183,7 +183,8 @@ def emit() -> str:
             else:
                 cell_idx = None
                 expr = "0"
-            block_theorems.append(emit_block_theorem(idx21, i, r, expr, cell_idx))
+            block_theorems.append(
+                emit_block_theorem(idx21, i, r, expr, cell_idx, intervals))
             hn = f"hb{idx21:02d}"
             hnames.append(hn)
             bassign.append(f"    ({block_name(r, i)} := {expr})")
@@ -337,10 +338,11 @@ def main():
     ns = ap.parse_args()
     out = Path(ns.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    word, *_ = pilot_data()
+    data = pilot_data()
+    word = data[0]
     path = out / "V26R0SurvivorPilotGenerated.lean"
     path.write_text(emit(), encoding="utf-8")
-    _word, _intervals, contracted, *_rest = pilot_data()
+    contracted = data[2]
     print("R0 SURVIVOR CONTRACTION PILOT GENERATION OK")
     print("word:", wcode(word))
     print("contracted x0:", v.qstr(contracted[(0, 1)][0]), v.qstr(contracted[(0, 1)][1]))
