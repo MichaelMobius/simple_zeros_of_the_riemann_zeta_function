@@ -94,11 +94,8 @@ def v26FinalBox_{wc} (x0 x1 x2 x3 x4 x5 : ℝ) : Prop :=
     {box_def(w, intervals)}
 
 /-- On the exact R2 box, the final strong-convexity quadratic is a lower
-bound for the six-gap functional.  This proof expands 21 certified block
-minorants with large exact rational coefficients, so its tactic elaboration
-is allowed to run without the default heartbeat cap; the resulting term is
-still checked by the Lean kernel. -/
-set_option maxHeartbeats 0 in
+bound for the six-gap functional.  After the 21 block lower bounds are
+instantiated, this is a purely linear positive weighted sum of inequalities. -/
 theorem v26_final_Q_le_gapF_{wc}
     (x0 x1 x2 x3 x4 x5 : ℝ)
     (hbox : v26FinalBox_{wc} x0 x1 x2 x3 x4 x5) :
@@ -108,7 +105,7 @@ theorem v26_final_Q_le_gapF_{wc}
 {chr(10).join(strong)}
   unfold v26FinalQ_{wc} v26GapF
   simp [v26Pressure, Matrix.cons_val_succ']
-  nlinarith [{hws}]
+  linarith [{hws}]
 
 /-- The exact R2 box for `{wc}` contains no strict counterexample. -/
 theorem v26_no_counterexample_final_{wc}
