@@ -9,6 +9,7 @@ on:
       - 'certification/v26_exact/generate_v26_bootstrap_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26QuadraticCore.lean'
+      - 'lean_harness/v21_analytic/V26QuadraticSix.lean'
       - 'lean_harness/v21_analytic/V26GapBlockLower.lean'
       - 'lean_harness/v21_analytic/V26BasinInterface.lean'
       - 'lean_harness/v21_analytic/V26OneBodyCellTools.lean'
@@ -82,6 +83,11 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake exe cache get
+
+      - name: Kernel-check six-term Cauchy wrapper
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26QuadraticSix
 
       - name: Kernel-check survivor contraction pilot
         run: |
