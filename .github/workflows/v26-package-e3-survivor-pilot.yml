@@ -5,6 +5,7 @@ on:
     branches: [v26-package-e-staging]
     paths:
       - 'certification/v26_exact/generate_v26_r0_survivor_pilot.py'
+      - 'certification/v26_exact/generate_v26_r0_survivor_allblocks_pilot.py'
       - 'certification/v26_exact/generate_v26_r0_cell_catalog.py'
       - 'certification/v26_exact/generate_v26_bootstrap_lean.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
@@ -62,19 +63,23 @@ jobs:
           path: /tmp/formal-math/zeta23/.lake/build
           key: v26-package-e3-survivor-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
+            v26-package-e3-survivor-${{ runner.os }}-
             v26-package-e3-zeta23-${{ runner.os }}-
             v26-package-e-zeta23-${{ runner.os }}-
             v26-package-d-zeta23-${{ runner.os }}-
 
-      - name: Generate R0 catalog and survivor contraction pilot
+      - name: Generate R0 catalog and survivor contraction pilots
         run: |
           python certification/v26_exact/generate_v26_r0_cell_catalog.py \
             --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
           python certification/v26_exact/generate_v26_r0_survivor_pilot.py \
             --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_r0_survivor_allblocks_pilot.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
           if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
               /tmp/formal-math/zeta23/HurtadoZeta23/V26R0CellCatalog*Generated.lean \
-              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0SurvivorPilotGenerated.lean; then
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0SurvivorPilotGenerated.lean \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0SurvivorAllBlocksPilotGenerated.lean; then
             echo 'Forbidden proof shortcut found in survivor contraction pilot'
             exit 1
           fi
@@ -89,10 +94,15 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26QuadraticSix
 
-      - name: Kernel-check survivor contraction pilot
+      - name: Kernel-check one-block survivor contraction pilot
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26R0SurvivorPilotGenerated
+
+      - name: Kernel-check all 21 survivor contraction blocks
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R0SurvivorAllBlocksPilotGenerated
 
       - name: Save Lean build cache
         if: always()
