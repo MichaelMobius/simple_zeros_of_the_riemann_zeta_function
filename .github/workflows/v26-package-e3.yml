@@ -4,8 +4,10 @@ on:
   push:
     branches: [v26-package-e-staging]
     paths:
+      - 'certification/v26_exact/generate_v26_r0_cell_catalog.py'
       - 'certification/v26_exact/generate_v26_r0_analytic_prototype.py'
       - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
+      - 'lean_harness/v21_analytic/V26GapBlockLower.lean'
       - 'lean_harness/v21_analytic/V26Round0Prototype.lean'
       - 'lean_harness/v21_analytic/V26QuadraticCore.lean'
       - 'lean_harness/v21_analytic/V26OneBodyCellTools.lean'
@@ -63,16 +65,20 @@ jobs:
           path: /tmp/formal-math/zeta23/.lake/build
           key: v26-package-e3-zeta23-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
+            v26-package-e3-zeta23-${{ runner.os }}-
             v26-package-e-zeta23-${{ runner.os }}-
             v26-package-d-zeta23-${{ runner.os }}-
 
-      - name: Generate R0 analytic discard prototype
+      - name: Generate reusable R0 analytic cell catalog and prototype
         run: |
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
           python certification/v26_exact/generate_v26_r0_analytic_prototype.py \
             --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
-          if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0CellCatalog*Generated.lean \
               /tmp/formal-math/zeta23/HurtadoZeta23/V26Round0AnalyticPrototypeGenerated.lean; then
-            echo 'Forbidden proof shortcut found in generated E3 prototype'
+            echo 'Forbidden proof shortcut found in generated E3 certificate'
             exit 1
           fi
 
@@ -81,7 +87,24 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
+      - name: Kernel-check generic block assembly
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26GapBlockLower
+
+      - name: Kernel-check all 190 reusable R0 analytic cells
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R0CellCatalogGenerated
+
       - name: Kernel-check generated R0 analytic discard prototype
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26Round0AnalyticPrototypeGenerated
+
+      - name: Save Lean build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-zeta23-${{ runner.os }}-${{ github.sha }}
