@@ -135,17 +135,41 @@ def pilot_data():
     return word, intervals, contracted, qtxt, M, b, c, used, qmin, xstar, L, D, a, gap, rad2, radius, center
 
 
+def emit_block_theorem(idx21: int, i: int, r: int, expr: str, cell_idx: int | None) -> str:
+    s = bsum(i, r)
+    target = f"{expr} ≤ limitingWeight ({s})"
+    if cell_idx is None:
+        proof = f"  exact v26_limitingWeight_nonneg ({s})"
+    else:
+        proof = (
+            f"  exact v26_R0_cell_{cell_idx:03d} (x := {s})\n"
+            f"    {lower_proof(i, r)} {upper_proof(i, r)}"
+        )
+    return f'''theorem v26_E3_R0_survivor_pilot_block_{idx21:02d}
+    (x0 x1 x2 x3 x4 x5 : ℝ)
+    (h0 : {ql(pilot_data()[1][(0,1)][0])} ≤ x0 ∧ x0 ≤ {ql(pilot_data()[1][(0,1)][1])})
+    (h1 : {ql(pilot_data()[1][(1,1)][0])} ≤ x1 ∧ x1 ≤ {ql(pilot_data()[1][(1,1)][1])})
+    (h2 : {ql(pilot_data()[1][(2,1)][0])} ≤ x2 ∧ x2 ≤ {ql(pilot_data()[1][(2,1)][1])})
+    (h3 : {ql(pilot_data()[1][(3,1)][0])} ≤ x3 ∧ x3 ≤ {ql(pilot_data()[1][(3,1)][1])})
+    (h4 : {ql(pilot_data()[1][(4,1)][0])} ≤ x4 ∧ x4 ≤ {ql(pilot_data()[1][(4,1)][1])})
+    (h5 : {ql(pilot_data()[1][(5,1)][0])} ≤ x5 ∧ x5 ≤ {ql(pilot_data()[1][(5,1)][1])}) :
+    {target} := by
+{proof}
+'''
+
+
 def emit() -> str:
     (word, intervals, contracted, qtxt, M, b, c, used, qmin, xstar,
      L, D, a, gap, rad2, radius, center) = pilot_data()
     wc = wcode(word)
     used_by_key = {(i, r): (N, alpha, eta) for i, r, N, alpha, eta, _rho in used}
 
-    proofs = []
+    block_theorems = []
     hnames = []
     bassign = []
     exprs = []
-    k = 0
+    idx21 = 0
+    used_count = 0
     for r in range(1, 7):
         for i in range(7 - r):
             s = bsum(i, r)
@@ -153,38 +177,44 @@ def emit() -> str:
                 N, alpha, eta = used_by_key[(i, r)]
                 cellL, cellU = intervals[(i, r)]
                 key = catalog.cell_key(cellL, cellU, N, alpha, eta)
-                idx = catalog.CELL_INDEX[key]
-                hn = f"hm{k}"
+                cell_idx = catalog.CELL_INDEX[key]
                 expr = minor_expr(N, alpha, eta, s)
-                proofs.append(
-                    f"  have {hn} := v26_R0_cell_{idx:03d} (x := {s})\n"
-                    f"    {lower_proof(i, r)} {upper_proof(i, r)}"
-                )
-                k += 1
+                used_count += 1
             else:
-                hn = f"hn_{i}_{r}"
+                cell_idx = None
                 expr = "0"
-                proofs.append(f"  have {hn} := v26_limitingWeight_nonneg ({s})")
+            block_theorems.append(emit_block_theorem(idx21, i, r, expr, cell_idx))
+            hn = f"hb{idx21:02d}"
             hnames.append(hn)
             bassign.append(f"    ({block_name(r, i)} := {expr})")
             exprs.append(expr)
+            idx21 += 1
 
-    assert k == len(used)
+    assert idx21 == 21
+    assert used_count == len(used)
     assembly = assembled_lower(exprs)
     sostxt = boot.sos_expr(M, xstar)
     z = [z_expr(L, xstar, j) for j in range(6)]
     energy = " +\n      ".join(f"{ql(D[j])} * ({z[j]}) ^ 2" for j in range(6))
-    lin = " + ".join(f"{ql(a[j])} * ({z[j]})" for j in range(6)).replace("+ - ", "- ")
+    lin = " + ".join(f"{ql(a[j])} * ({z[j]})" for j in range(6))
     coeff = " + ".join(f"({ql(a[j])}) ^ 2 / {ql(D[j])}" for j in range(6))
-    avec = "![" + ", ".join(ql(x) for x in a) + "]"
-    yvec = "![" + ", ".join(f"({e})" for e in z) + "]"
-    dvec = "![" + ", ".join(ql(x) for x in D) + "]"
     newL, newU = contracted[(0, 1)]
+    block_calls = "\n".join(
+        f"  have {hn} := v26_E3_R0_survivor_pilot_block_{j:02d} x0 x1 x2 x3 x4 x5 h0 h1 h2 h3 h4 h5"
+        for j, hn in enumerate(hnames)
+    )
+    cauchy_args = "\n".join(
+        [f"    (a{j} := {ql(a[j])})" for j in range(6)]
+        + [f"    (y{j} := {z[j]})" for j in range(6)]
+        + [f"    (d{j} := {ql(D[j])})" for j in range(6)]
+        + [f"    (gap := {ql(gap)})"]
+    )
+    positive_ds = " ".join("(by norm_num)" for _ in range(6))
 
     return f'''import HurtadoZeta23.V26R0CellCatalogGenerated
 import HurtadoZeta23.V26GapBlockLower
 import HurtadoZeta23.V26BasinInterface
-import HurtadoZeta23.V26QuadraticCore
+import HurtadoZeta23.V26QuadraticSix
 import Mathlib.Tactic
 
 noncomputable section
@@ -220,8 +250,10 @@ theorem v26_E3_R0_survivor_pilot_Q_eq_assembled
     v26E3R0SurvivorPilotQ x0 x1 x2 x3 x4 x5 =
       v26E3R0SurvivorPilotAssembled x0 x1 x2 x3 x4 x5 := by
   unfold v26E3R0SurvivorPilotQ v26E3R0SurvivorPilotAssembled
-  simp [v26Pressure, v21RootRight, Matrix.cons_val_succ']
+  simp [v26Pressure, v21RootRight]
   ring
+
+{chr(10).join(block_theorems)}
 
 theorem v26_E3_R0_survivor_pilot_assembled_le_gapF
     (x0 x1 x2 x3 x4 x5 : ℝ)
@@ -233,7 +265,7 @@ theorem v26_E3_R0_survivor_pilot_assembled_le_gapF
     v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi] at hbox
   norm_num at hbox
   rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
-{chr(10).join(proofs)}
+{block_calls}
   unfold v26E3R0SurvivorPilotAssembled
   exact v26_gapF_lower_of_block_lowers
     (weight := limitingWeight)
@@ -273,21 +305,14 @@ theorem v26_E3_R0_survivor_pilot_contract_x0
       {energy} ≤ {ql(gap)} := by
     have h := le_of_lt hsoslt
     simpa [v26E3R0SurvivorPilotSOS] using h
-  have hcs := v26_weighted_cauchy_of_energy
-    (a := {avec})
-    (y := {yvec})
-    (d := {dvec})
-    (by
-      intro i
-      fin_cases i <;> norm_num)
-    (gap := {ql(gap)})
-    (by
-      simpa [Fin.sum_univ_succ] using henergy)
+  have hcs := v26_weighted_cauchy6_of_energy
+{cauchy_args}
+    {positive_ds}
+    henergy
   have hsq : (x0 - {ql(center)}) ^ 2 ≤ {ql(rad2)} := by
     calc
       (x0 - {ql(center)}) ^ 2 = ({lin}) ^ 2 := by ring
-      _ ≤ {ql(gap)} * ({coeff}) := by
-        simpa [Fin.sum_univ_succ] using hcs
+      _ ≤ {ql(gap)} * ({coeff}) := hcs
       _ = {ql(rad2)} := by norm_num
   have habs : |x0 - {ql(center)}| < {ql(radius)} := by
     exact v26_abs_lt_radius_of_sq_le
