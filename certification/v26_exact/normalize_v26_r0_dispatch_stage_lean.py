@@ -6,13 +6,16 @@ The first dispatch draft certified one large literal Finset equality
 Package D already contains the published 231-code table `v26Round1Codes` and
 its predicate `v26InRound1`.  This normalizer keeps literal chunk Finsets only
 for routing to per-word theorems, but replaces the large partition theorem by
-two small closed finite propositions:
+two finite digitwise propositions:
 
 * literal 231 survivor table <-> `v26InRound1`;
 * Package-D 511 membership + not Round1 -> literal 280 discard table.
 
-Both are ordinary kernel `decide`, never `native_decide`.  The aggregate
-reduction then returns `v26InRound1 w` as the canonical stage fact.
+The closed certificates quantify over the six bounded `Fin` coordinates
+separately.  Lean has computable Decidable instances for those finite
+quantifiers, unlike the previous direct `∀ w : V26BasinWord` formulation.
+Both are ordinary kernel `decide`, never `native_decide`.  Small wrappers then
+recover the corresponding statements for an arbitrary basin word.
 """
 from pathlib import Path
 import argparse
@@ -24,25 +27,46 @@ BASE_OLD_RE = re.compile(
     re.S,
 )
 
-BASE_NEW = r'''/-- The generated literal 231-word routing table is exactly the published
-Round1 code predicate already present in Package D. -/
-theorem v26_E3_R0_survivorWords_iff_round1 :
-    ∀ w : V26BasinWord,
-      (w ∈ v26E3R0SurvivorWords ↔ v26InRound1 w) := by
+BASE_NEW = r'''/-- Digitwise finite certificate: the generated literal 231-word routing
+table is exactly the published Round1 code predicate already present in
+Package D. -/
+theorem v26_E3_R0_survivorWords_iff_round1_digits :
+    ∀ a : Fin 7, ∀ b : Fin 5, ∀ c : Fin 6,
+    ∀ d : Fin 6, ∀ e : Fin 5, ∀ f : Fin 7,
+      ((a, b, c, d, e, f) ∈ v26E3R0SurvivorWords ↔
+        v26InRound1 (a, b, c, d, e, f)) := by
   set_option maxHeartbeats 0 in
   set_option maxRecDepth 100000 in
   decide
 
-/-- If a Package-D 511 survivor is not in the published Round1 code table,
-it belongs to the exact generated 280-word discard routing table. -/
-theorem v26_E3_R0_discard_of_511_not_round1 :
-    ∀ w : V26BasinWord,
-      w ∈ v26SurvivorWords →
-      ¬ v26InRound1 w →
-      w ∈ v26E3R0DiscardWords := by
+/-- Word-level wrapper around the digitwise Round1 routing certificate. -/
+theorem v26_E3_R0_survivorWords_iff_round1
+    (w : V26BasinWord) :
+    w ∈ v26E3R0SurvivorWords ↔ v26InRound1 w := by
+  rcases w with ⟨a, b, c, d, e, f⟩
+  exact v26_E3_R0_survivorWords_iff_round1_digits a b c d e f
+
+/-- Digitwise finite certificate for the exact 280-word discarded remainder of
+the Package-D 511-word set. -/
+theorem v26_E3_R0_discard_of_511_not_round1_digits :
+    ∀ a : Fin 7, ∀ b : Fin 5, ∀ c : Fin 6,
+    ∀ d : Fin 6, ∀ e : Fin 5, ∀ f : Fin 7,
+      (a, b, c, d, e, f) ∈ v26SurvivorWords →
+      ¬ v26InRound1 (a, b, c, d, e, f) →
+      (a, b, c, d, e, f) ∈ v26E3R0DiscardWords := by
   set_option maxHeartbeats 0 in
   set_option maxRecDepth 100000 in
   decide
+
+/-- Word-level wrapper around the digitwise discarded-remainder certificate. -/
+theorem v26_E3_R0_discard_of_511_not_round1
+    (w : V26BasinWord)
+    (hmem : w ∈ v26SurvivorWords)
+    (hnot : ¬ v26InRound1 w) :
+    w ∈ v26E3R0DiscardWords := by
+  rcases w with ⟨a, b, c, d, e, f⟩
+  exact v26_E3_R0_discard_of_511_not_round1_digits
+    a b c d e f hmem hnot
 '''
 
 AGG_RE = re.compile(
@@ -104,6 +128,7 @@ def main():
 
     print("R0 DISPATCH STAGE NORMALIZATION OK")
     print("canonical survivor predicate: v26InRound1")
+    print("finite certificates: digitwise Fin quantifiers")
 
 
 if __name__ == "__main__":
