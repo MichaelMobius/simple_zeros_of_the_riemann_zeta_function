@@ -7,7 +7,9 @@ exact `(L,U,N,alpha,eta)` data computed by `v21_rational_bootstrap_verify.py`
 and emits one kernel-checkable Lean theorem per distinct cell.
 
 Python is not trusted: every emitted theorem rechecks the rational analytic
-minorant through `v26_certified_cell_minorant`.
+minorant through `v26_certified_cell_minorant`.  The certified phase center is
+kept as `v21RootRight N` inside the analytic catalog; conversion to the
+historical rational spelling is postponed to the purely algebraic Q identity.
 """
 from __future__ import annotations
 
@@ -70,16 +72,13 @@ def theorem(i: int, cell) -> str:
     return f'''/-- R0 analytic cell #{i}: phase index {N}. -/
 theorem v26_R0_cell_{i:03d} {{x : ℝ}}
     (hL : {ql(L)} ≤ x) (hU : x ≤ {ql(U)}) :
-    {ql(alpha)} * (x - {ql(v.q[N])}) ^ 2 - {ql(eta)} ≤ limitingWeight x := by
-  have hraw :
-      {ql(alpha)} * (x - v21RootRight {N}) ^ 2 - {ql(eta)} ≤ limitingWeight x := by
-    apply v26_certified_cell_minorant
-      (N := {N}) (L := {ql(L)}) (U := {ql(U)}) (x := x)
-      (alpha := {ql(alpha)}) (eta := {ql(eta)})
-      (by norm_num) (by norm_num) (by linarith) hL hU
-    all_goals norm_num [v26CellLstar, v26CellEps, v26CellRho, v26Mrat, v21RootRight,
-      v26Araw, v26AmplitudeFloor, v26ChordCoeff, v26Fold, v26P7, v26d0]
-  simpa [v21RootRight] using hraw
+    {ql(alpha)} * (x - v21RootRight {N}) ^ 2 - {ql(eta)} ≤ limitingWeight x := by
+  apply v26_certified_cell_minorant
+    (N := {N}) (L := {ql(L)}) (U := {ql(U)}) (x := x)
+    (alpha := {ql(alpha)}) (eta := {ql(eta)})
+    (by norm_num) (by norm_num) (by linarith) hL hU
+  all_goals norm_num [v26CellLstar, v26CellEps, v26CellRho, v26Mrat, v21RootRight,
+    v26Araw, v26AmplitudeFloor, v26ChordCoeff, v26Fold, v26P7, v26d0]
 '''
 
 
