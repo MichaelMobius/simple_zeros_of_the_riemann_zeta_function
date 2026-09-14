@@ -6,8 +6,8 @@ namespace HurtadoZeta23
 
 /-- End-to-end Package-D + Package-E3/R0 consequence.  Every strict hard-core
 counterexample first localizes to one of the 511 Package-D basin words and is
-then reduced by the exact R0 rational bootstrap to one of the 231 surviving
-words together with that word's exact contracted 21-block box. -/
+then reduced by the exact R0 rational bootstrap to the published 231-code
+Round1 set together with that word's exact contracted 21-block box. -/
 theorem v26_counterexample_mem_231_limitingWeight
     (g0 g1 g2 g3 g4 g5 : ℝ)
     (h0 : v26HardCorePoint < g0)
@@ -19,7 +19,7 @@ theorem v26_counterexample_mem_231_limitingWeight
     (hsum : g0 + g1 + g2 + g3 + g4 + g5 < (1437 / 100 : ℝ))
     (hbad : v26GapF limitingWeight g0 g1 g2 g3 g4 g5 < v26Delta) :
     ∃ w : V26BasinWord,
-      w ∈ v26E3R0SurvivorWords ∧
+      v26InRound1 w ∧
       v26E3R0ContractedBox w g0 g1 g2 g3 g4 g5 := by
   rcases v26_counterexample_mem_511_limitingWeight
       g0 g1 g2 g3 g4 g5 h0 h1 h2 h3 h4 h5 hsum hbad with
