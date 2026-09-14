@@ -5,6 +5,7 @@ on:
     branches: [v26-package-e-staging]
     paths:
       - 'certification/v26_exact/generate_v26_r0_dispatch.py'
+      - 'certification/v26_exact/normalize_v26_r0_dispatch_lean.py'
       - '.github/workflows/v26-package-e3-r0-dispatch-pilot.yml'
   workflow_dispatch:
 
@@ -54,6 +55,7 @@ jobs:
           path: /tmp/formal-math/zeta23/.lake/build
           key: v26-package-e3-dispatch-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
+            v26-package-e3-dispatch-${{ runner.os }}-
             v26-package-e3-survivors-${{ runner.os }}-
             v26-package-e3-zeta23-${{ runner.os }}-
             v26-package-e-zeta23-${{ runner.os }}-
@@ -67,6 +69,7 @@ jobs:
           python certification/v26_exact/generate_v26_r0_analytic_discards.py --out-dir "$OUT"
           python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
           python certification/v26_exact/generate_v26_r0_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/normalize_v26_r0_dispatch_lean.py --out-dir "$OUT"
           if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
               "$OUT"/V26R0Dispatch*Generated.lean; then
             echo 'Forbidden proof shortcut found in R0 dispatch'
