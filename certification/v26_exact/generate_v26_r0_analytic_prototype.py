@@ -57,12 +57,6 @@ def word_type() -> str:
     return "(" + ", ".join(f"({a} : Fin {n})" for a, n in zip(vals, tys)) + ")"
 
 
-def hbox_change() -> str:
-    box = [v.basins[i][WORD[i] - 1] for i in range(6)]
-    pieces = [f"(({ql(L)} ≤ x{i} ∧ x{i} ≤ {ql(U)}))" for i, (L, U) in enumerate(box)]
-    return " ∧\n    ".join(pieces)
-
-
 def emit_minor(k: int, item) -> str:
     i, r, N, alpha, eta, _rho = item
     L, U = INTERVALS[(i, r)]
@@ -114,14 +108,14 @@ def v26E3Word111114 : V26BasinWord := {word_type()}
 
 /-- The historical rounded R0 quadratic is an analytic lower bound for the
 actual six-gap functional throughout the Package-D basin box. -/
-set_option maxHeartbeats 0 in
 theorem v26_E3_R0_111114_Q_le_gapF
     (x0 x1 x2 x3 x4 x5 : ℝ)
     (hbox : v26InWordBox v26E3Word111114 x0 x1 x2 x3 x4 x5) :
     v26R0Q111114 x0 x1 x2 x3 x4 x5 ≤
       v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := by
-  change
-    {hbox_change()} at hbox
+  norm_num [v26InWordBox, v26E3Word111114,
+    v26InA, v26InB, v26InC,
+    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi] at hbox
   rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
 {minors}
 {chr(10).join(omitted)}
