@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate one end-to-end analytic R0 discard bridge for word 111114.
 
-This is the scaling prototype for Package E3.  All interval/minorant data are
-recomputed with the exact historical verifier.  Python only serializes the
-certificate: Lean rechecks every rational cell obligation, Q <= F, and the
-contradiction with the already kernel-checked rational discard theorem.
+This is the scaling prototype for Package E3.  Exact analytic cell proofs are
+reused from the deduplicated R0 catalog; the generated theorem only derives the
+21 block bounds from the Package-D basin box, assembles them into Q <= F, and
+combines that with the already kernel-checked rational discard certificate.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from fractions import Fraction as Q
 from pathlib import Path
 import argparse
 import importlib.util
+import generate_v26_r0_cell_catalog as catalog
 
 HERE = Path(__file__).resolve().parent
 VERIFIER = HERE / "v21_rational_bootstrap_verify.py"
@@ -41,6 +42,10 @@ def bsum(i: int, r: int) -> str:
     return " + ".join(f"x{j}" for j in range(i, i + r))
 
 
+def block_name(r: int, i: int) -> str:
+    return f"b{r - 1}{i}"
+
+
 def lower_proof(i: int, r: int) -> str:
     hs = ", ".join(f"h{j}.1" for j in range(i, i + r))
     return f"(by linarith [{hs}])"
@@ -57,46 +62,64 @@ def word_type() -> str:
     return "(" + ", ".join(f"({a} : Fin {n})" for a, n in zip(vals, tys)) + ")"
 
 
-def emit_minor(k: int, item) -> str:
-    i, r, N, alpha, eta, _rho = item
-    L, U = INTERVALS[(i, r)]
-    x = bsum(i, r)
-    low = lower_proof(i, r)
-    up = upper_proof(i, r)
-    hard = lower_proof(i, r)
-    return f'''  have hm{k} :
-      {ql(alpha)} * ({x} - {ql(v.q[N])}) ^ 2 - {ql(eta)} ≤
-        limitingWeight ({x}) := by
-    apply v26_certified_cell_minorant
-      (N := {N}) (L := {ql(L)}) (U := {ql(U)}) (x := {x})
-      (alpha := {ql(alpha)}) (eta := {ql(eta)})
-      (by norm_num) (by norm_num) {hard} {low} {up}
-    all_goals norm_num [v26CellLstar, v26CellEps, v26CellRho, v26Mrat, v21RootRight,
-      v26Araw, v26AmplitudeFloor, v26ChordCoeff, v26Fold, v26P7, v26d0]
-'''
+def minor_expr(N: int, alpha: Q, eta: Q, x: str) -> str:
+    return f"{ql(alpha)} * (({x}) - {ql(v.q[N])}) ^ 2 - {ql(eta)}"
+
+
+def assembled_lower(exprs: list[str]) -> str:
+    assert len(exprs) == 21
+    p = [f"({e})" for e in exprs]
+    pressure = " +\n      ".join(f"v26Pressure {i} * x{i}" for i in range(6))
+    return (
+        pressure
+        + " +\n      (1 / 3 : ℝ) * (" + " + ".join(p[0:6]) + ")"
+        + " +\n      (2 / 5 : ℝ) * (" + " + ".join(p[6:11]) + ")"
+        + " +\n      (1 / 2 : ℝ) * (" + " + ".join(p[11:15]) + ")"
+        + " +\n      (2 / 3 : ℝ) * (" + " + ".join(p[15:18]) + ")"
+        + " +\n      " + p[18] + " + " + p[19] + " + 2 * " + p[20]
+    )
 
 
 INTERVALS = v.initial_intervals(WORD)
 _M, _b, _c, USED = v.build_Q(WORD, INTERVALS)
-USED_KEYS = {(i, r) for i, r, *_ in USED}
+USED_BY_KEY = {(i, r): (N, alpha, eta) for i, r, N, alpha, eta, _rho in USED}
 
 
 def emit() -> str:
-    minors = "\n".join(emit_minor(k, item) for k, item in enumerate(USED))
-    omitted = []
+    proofs = []
+    exprs = []
+    hnames = []
+    bassign = []
+    k = 0
     for r in range(1, 7):
         for i in range(7 - r):
-            if (i, r) not in USED_KEYS:
-                x = bsum(i, r)
-                omitted.append(
-                    f"  have hn_{i}_{r} := v26_limitingWeight_nonneg ({x})"
+            x = bsum(i, r)
+            if (i, r) in USED_BY_KEY:
+                N, alpha, eta = USED_BY_KEY[(i, r)]
+                L, U = INTERVALS[(i, r)]
+                key = catalog.cell_key(L, U, N, alpha, eta)
+                idx = catalog.CELL_INDEX[key]
+                hname = f"hm{k}"
+                expr = minor_expr(N, alpha, eta, x)
+                proofs.append(
+                    f"  have {hname} := v26_R0_cell_{idx:03d} (x := {x})\n"
+                    f"    {lower_proof(i, r)} {upper_proof(i, r)}"
                 )
-    hm_names = ", ".join(f"hm{k}" for k in range(len(USED)))
-    hn_names = ", ".join(f"hn_{i}_{r}" for r in range(1, 7)
-                         for i in range(7 - r) if (i, r) not in USED_KEYS)
-    extra = hm_names + (", " + hn_names if hn_names else "")
+                k += 1
+            else:
+                hname = f"hn_{i}_{r}"
+                expr = "0"
+                proofs.append(f"  have {hname} := v26_limitingWeight_nonneg ({x})")
+            exprs.append(expr)
+            hnames.append(hname)
+            bassign.append(f"    ({block_name(r, i)} := {expr})")
+
+    assert len(exprs) == 21
+    assert k == len(USED) == 19
+    lower = assembled_lower(exprs)
     return f'''import HurtadoZeta23.V26Round0Prototype
-import HurtadoZeta23.V26OneBodyCellTools
+import HurtadoZeta23.V26R0CellCatalogGenerated
+import HurtadoZeta23.V26GapBlockLower
 import HurtadoZeta23.V26BasinInterface
 import Mathlib.Tactic
 
@@ -115,13 +138,22 @@ theorem v26_E3_R0_111114_Q_le_gapF
       v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := by
   norm_num [v26InWordBox, v26E3Word111114,
     v26InA, v26InB, v26InC,
-    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi] at hbox
+    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi,
+    Matrix.cons_val_succ'] at hbox
   rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
-{minors}
-{chr(10).join(omitted)}
-  unfold v26R0Q111114 v26GapF
-  simp [v26Pressure, Matrix.cons_val_succ']
-  linarith [{extra}]
+{chr(10).join(proofs)}
+  have hdom := v26_gapF_lower_of_block_lowers
+    (weight := limitingWeight)
+    (g0 := x0) (g1 := x1) (g2 := x2) (g3 := x3) (g4 := x4) (g5 := x5)
+{chr(10).join(bassign)}
+    {' '.join(hnames)}
+  calc
+    v26R0Q111114 x0 x1 x2 x3 x4 x5 =
+      {lower} := by
+        unfold v26R0Q111114
+        simp [v26Pressure, Matrix.cons_val_succ']
+        ring
+    _ ≤ v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := hdom
 
 /-- Hence the discarded word 111114 contains no strict counterexample. -/
 theorem v26_E3_R0_111114_no_counterexample
@@ -148,7 +180,7 @@ def main() -> None:
     path.write_text(src, encoding="utf-8")
     print("E3 R0 ANALYTIC PROTOTYPE GENERATION OK")
     print("word: 111114")
-    print("used minorants:", len(USED))
+    print("used catalog minorants:", len(USED))
     print("omitted nonnegative terms:", 21 - len(USED))
 
 
