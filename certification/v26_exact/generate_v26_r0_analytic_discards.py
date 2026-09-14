@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Generate analytic Q<=F bridges for all 280 discarded R0 words.
 
-This is Package E3's first full transport/discard layer.  It reuses:
+This is Package E3's first full transport/discard layer. It reuses:
   * the exact rational discard theorems from generate_v26_bootstrap_lean.py;
   * the 190 deduplicated analytic cell theorems from the R0 cell catalog;
   * the generic 21-block positive-weight assembly lemma.
 
 For every discarded word, Lean proves from its actual Package-D A-B-C-C-B-A
 box that the historical rounded quadratic is below v26GapF limitingWeight and
-therefore cannot contain a strict counterexample.  Python only serializes exact
+therefore cannot contain a strict counterexample. Python only serializes exact
 Fraction data; all implications are kernel checked.
 """
 from __future__ import annotations
@@ -75,7 +75,7 @@ def word_value(w) -> str:
 
 
 def minor_expr(N: int, alpha: Q, eta: Q, x: str) -> str:
-    return f"{ql(alpha)} * (({x}) - {ql(v.q[N])}) ^ 2 - {ql(eta)}"
+    return f"{ql(alpha)} * (({x}) - v21RootRight {N}) ^ 2 - {ql(eta)}"
 
 
 def assembled_lower(exprs: list[str]) -> str:
@@ -145,7 +145,7 @@ theorem v26_E3_R0_Q_eq_assembled_{wc}
     v26Q_R0_{wc} x0 x1 x2 x3 x4 x5 =
       {assembled} x0 x1 x2 x3 x4 x5 := by
   unfold v26Q_R0_{wc} {assembled}
-  simp [v26Pressure, Matrix.cons_val_succ']
+  simp [v26Pressure, v21RootRight, Matrix.cons_val_succ']
   ring
 
 /-- The assembled R0 minorant for `{wc}` is below the actual six-gap
@@ -155,10 +155,10 @@ theorem v26_E3_R0_assembled_le_gapF_{wc}
     (hbox : v26InWordBox {word_def} x0 x1 x2 x3 x4 x5) :
     {assembled} x0 x1 x2 x3 x4 x5 ≤
       v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := by
-  norm_num [v26InWordBox, {word_def},
+  simp [v26InWordBox, {word_def},
     v26InA, v26InB, v26InC,
-    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi,
-    Matrix.cons_val_succ'] at hbox
+    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi] at hbox
+  norm_num at hbox
   rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
 {chr(10).join(proofs)}
   unfold {assembled}
