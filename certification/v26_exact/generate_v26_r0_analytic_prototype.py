@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate one end-to-end analytic R0 discard bridge for word 111114.
 
-This is the scaling prototype for Package E3.  Exact analytic cell proofs are
-reused from the deduplicated R0 catalog; the generated theorem only derives the
-21 block bounds from the Package-D basin box, assembles them into Q <= F, and
-combines that with the already kernel-checked rational discard certificate.
+This is the scaling prototype for Package E3. Exact analytic cell proofs are
+reused from the deduplicated R0 catalog; the generated theorems derive the
+21 block bounds from the Package-D basin box, assemble them into Q <= F, and
+combine that with the already kernel-checked rational discard certificate.
 """
 from __future__ import annotations
 
@@ -63,7 +63,7 @@ def word_type() -> str:
 
 
 def minor_expr(N: int, alpha: Q, eta: Q, x: str) -> str:
-    return f"{ql(alpha)} * (({x}) - {ql(v.q[N])}) ^ 2 - {ql(eta)}"
+    return f"{ql(alpha)} * (({x}) - v21RootRight {N}) ^ 2 - {ql(eta)}"
 
 
 def assembled_lower(exprs: list[str]) -> str:
@@ -129,31 +129,50 @@ namespace HurtadoZeta23
 /-- Concrete A-B-C-C-B-A word with published code 111114. -/
 def v26E3Word111114 : V26BasinWord := {word_type()}
 
-/-- The historical rounded R0 quadratic is an analytic lower bound for the
-actual six-gap functional throughout the Package-D basin box. -/
+/-- Historical R0 block-minorant assembly for the pilot word. -/
+def v26E3R0Assembled111114 (x0 x1 x2 x3 x4 x5 : ℝ) : ℝ :=
+  {lower}
+
+/-- Pure algebra: the historical rounded R0 quadratic is exactly the generated
+21-block lower assembly. Kept separate so `ring` never sees the analytic box
+proof state. -/
+theorem v26_E3_R0_111114_Q_eq_assembled
+    (x0 x1 x2 x3 x4 x5 : ℝ) :
+    v26R0Q111114 x0 x1 x2 x3 x4 x5 =
+      v26E3R0Assembled111114 x0 x1 x2 x3 x4 x5 := by
+  unfold v26R0Q111114 v26E3R0Assembled111114
+  simp [v26Pressure, v21RootRight, Matrix.cons_val_succ']
+  ring
+
+/-- The generated 21-block assembly is below the actual six-gap functional
+throughout the exact Package-D basin box. -/
+theorem v26_E3_R0_111114_assembled_le_gapF
+    (x0 x1 x2 x3 x4 x5 : ℝ)
+    (hbox : v26InWordBox v26E3Word111114 x0 x1 x2 x3 x4 x5) :
+    v26E3R0Assembled111114 x0 x1 x2 x3 x4 x5 ≤
+      v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := by
+  simp [v26InWordBox, v26E3Word111114,
+    v26InA, v26InB, v26InC,
+    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi] at hbox
+  norm_num at hbox
+  rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
+{chr(10).join(proofs)}
+  unfold v26E3R0Assembled111114
+  exact v26_gapF_lower_of_block_lowers
+    (weight := limitingWeight)
+    (g0 := x0) (g1 := x1) (g2 := x2) (g3 := x3) (g4 := x4) (g5 := x5)
+{chr(10).join(bassign)}
+    {' '.join(hnames)}
+
+/-- Analytic domination of the historical rounded R0 quadratic on the pilot
+Package-D basin box. -/
 theorem v26_E3_R0_111114_Q_le_gapF
     (x0 x1 x2 x3 x4 x5 : ℝ)
     (hbox : v26InWordBox v26E3Word111114 x0 x1 x2 x3 x4 x5) :
     v26R0Q111114 x0 x1 x2 x3 x4 x5 ≤
       v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := by
-  norm_num [v26InWordBox, v26E3Word111114,
-    v26InA, v26InB, v26InC,
-    v26ALo, v26AHi, v26BLo, v26BHi, v26CLo, v26CHi,
-    Matrix.cons_val_succ'] at hbox
-  rcases hbox with ⟨h0, h1, h2, h3, h4, h5⟩
-{chr(10).join(proofs)}
-  have hdom := v26_gapF_lower_of_block_lowers
-    (weight := limitingWeight)
-    (g0 := x0) (g1 := x1) (g2 := x2) (g3 := x3) (g4 := x4) (g5 := x5)
-{chr(10).join(bassign)}
-    {' '.join(hnames)}
-  calc
-    v26R0Q111114 x0 x1 x2 x3 x4 x5 =
-      {lower} := by
-        unfold v26R0Q111114
-        simp [v26Pressure, Matrix.cons_val_succ']
-        ring
-    _ ≤ v26GapF limitingWeight x0 x1 x2 x3 x4 x5 := hdom
+  rw [v26_E3_R0_111114_Q_eq_assembled]
+  exact v26_E3_R0_111114_assembled_le_gapF x0 x1 x2 x3 x4 x5 hbox
 
 /-- Hence the discarded word 111114 contains no strict counterexample. -/
 theorem v26_E3_R0_111114_no_counterexample
