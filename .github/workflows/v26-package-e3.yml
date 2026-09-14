@@ -4,7 +4,8 @@ on:
   push:
     branches: [v26-package-e-staging]
     paths:
-      - 'lean_harness/v21_analytic/V26Round0AnalyticPrototype.lean'
+      - 'certification/v26_exact/generate_v26_r0_analytic_prototype.py'
+      - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
       - 'lean_harness/v21_analytic/V26Round0Prototype.lean'
       - 'lean_harness/v21_analytic/V26QuadraticCore.lean'
       - 'lean_harness/v21_analytic/V26OneBodyCellTools.lean'
@@ -65,11 +66,13 @@ jobs:
             v26-package-e-zeta23-${{ runner.os }}-
             v26-package-d-zeta23-${{ runner.os }}-
 
-      - name: Reject proof shortcuts
+      - name: Generate R0 analytic discard prototype
         run: |
+          python certification/v26_exact/generate_v26_r0_analytic_prototype.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
           if grep -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
-              lean_harness/v21_analytic/V26Round0AnalyticPrototype.lean; then
-            echo 'Forbidden proof shortcut found in E3 prototype'
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26Round0AnalyticPrototypeGenerated.lean; then
+            echo 'Forbidden proof shortcut found in generated E3 prototype'
             exit 1
           fi
 
@@ -78,7 +81,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Kernel-check R0 analytic discard prototype
+      - name: Kernel-check generated R0 analytic discard prototype
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26Round0AnalyticPrototype
+          lake build HurtadoZeta23.V26Round0AnalyticPrototypeGenerated
