@@ -51,9 +51,10 @@ jobs:
           path: /tmp/formal-math/zeta23/.lake/build
           key: v26-package-e3-code-dispatch-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
+            v26-package-e3-code-dispatch-${{ runner.os }}-
             v26-package-e3-word-code-${{ runner.os }}-
-            v26-package-e3-discard03-${{ runner.os }}-
             v26-package-e3-survivors-${{ runner.os }}-
+            v26-package-e3-discard03-${{ runner.os }}-
             v26-package-e3-zeta23-${{ runner.os }}-
             v26-package-e-zeta23-${{ runner.os }}-
       - name: Generate Nat-code dispatch inputs
@@ -77,50 +78,6 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26R0CodeDispatchBaseGenerated
-      - name: Kernel-check first Nat-code discard chunk
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0CodeDispatchDiscard00Generated
-      - name: Kernel-check survivor certificate 111111
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111111Generated
-      - name: Kernel-check survivor certificate 111112
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111112Generated
-      - name: Kernel-check survivor certificate 111113
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111113Generated
-      - name: Kernel-check survivor certificate 111121
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111121Generated
-      - name: Kernel-check survivor certificate 111122
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111122Generated
-      - name: Kernel-check survivor certificate 111123
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111123Generated
-      - name: Kernel-check survivor certificate 111131
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111131Generated
-      - name: Kernel-check survivor certificate 111132
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111132Generated
-      - name: Kernel-check survivor certificate 111211
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111211Generated
-      - name: Kernel-check survivor certificate 111212
-        run: |
-          cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0Survivor111212Generated
       - name: Kernel-check first Nat-code survivor chunk
         run: |
           cd /tmp/formal-math/zeta23
@@ -128,10 +85,15 @@ jobs:
           lake build HurtadoZeta23.V26R0CodeDispatchSurvivor00Generated > "$GITHUB_WORKSPACE/survivor00.log" 2>&1
           status=$?
           echo '--- Lean diagnostics ---'
-          grep -n -E 'error:|unsolved goals|type mismatch|application type mismatch|failed to synthesize|unknown identifier' "$GITHUB_WORKSPACE/survivor00.log" | tail -n 60 || true
+          grep -n -E 'error:|unsolved goals|type mismatch|application type mismatch|failed to synthesize|unknown identifier|maximum heartbeats|maximum recursion' "$GITHUB_WORKSPACE/survivor00.log" | tail -n 60 || true
           echo '--- Lean tail ---'
           tail -n 120 "$GITHUB_WORKSPACE/survivor00.log"
           exit "$status"
+      - name: Kernel-check first Nat-code discard chunk
+        if: success()
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R0CodeDispatchDiscard00Generated
       - name: Upload survivor00 Lean diagnostic
         if: always()
         uses: actions/upload-artifact@v4
