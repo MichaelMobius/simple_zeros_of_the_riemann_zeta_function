@@ -137,7 +137,7 @@ theorem v26_E3_R0_survivorCodes_eq_round1 :
 inside the 511 Package-D code image. -/
 theorem v26_E3_R0_discardCodes_exact :
     v26E3R0DiscardCodes =
-      (v26SurvivorWords.image v26WordCode) \ v26Round1Codes := by
+      (v26SurvivorWords.image v26WordCode) \\ v26Round1Codes := by
   decide
 
 end HurtadoZeta23
@@ -159,12 +159,18 @@ def emit_discard_chunk(idx: int, codes: list[str], chunk_name: str) -> str:
     exact v26_E3_R0_no_counterexample_{code}
       g0 g1 g2 g3 g4 g5 hbox hbad''')
     rcases = " | ".join(f"hcode{i}" for i in range(len(codes)))
-    # Rename each branch's selected equality to the common local name hcode.
     branch_text = []
     for i, body in enumerate(cases):
-        branch_text.append(body.replace("have hwEq", f"have hcode : v26WordCode w = {codes[i]} := hcode{i}\n    have hwEq", 1))
+        branch_text.append(body.replace(
+            "have hwEq",
+            f"have hcode : v26WordCode w = {codes[i]} := hcode{i}\n    have hwEq",
+            1,
+        ))
     return f'''import HurtadoZeta23.V26R0CodeDispatchBaseGenerated
 import HurtadoZeta23.V26R0AnalyticDiscards{idx:02d}Generated
+
+set_option maxHeartbeats 0
+set_option maxRecDepth 100000
 
 namespace HurtadoZeta23
 
@@ -200,6 +206,9 @@ def emit_survivor_chunk(idx: int, items, codes: list[str], chunk_name: str) -> s
     rcases = " | ".join(f"hcode{i}" for i in range(len(codes)))
     return f'''{chr(10).join(imports)}
 
+set_option maxHeartbeats 0
+set_option maxRecDepth 100000
+
 namespace HurtadoZeta23
 
 /-- Nat-code dispatch over R0 survivor chunk {idx}. -/
@@ -219,17 +228,28 @@ end HurtadoZeta23
 
 
 def emit_aggregate(snames, dnames):
-    imports = [f"import HurtadoZeta23.V26R0CodeDispatchDiscard{i:02d}Generated" for i in range(len(dnames))]
-    imports += [f"import HurtadoZeta23.V26R0CodeDispatchSurvivor{i:02d}Generated" for i in range(len(snames))]
+    imports = [
+        f"import HurtadoZeta23.V26R0CodeDispatchDiscard{i:02d}Generated"
+        for i in range(len(dnames))
+    ]
+    imports += [
+        f"import HurtadoZeta23.V26R0CodeDispatchSurvivor{i:02d}Generated"
+        for i in range(len(snames))
+    ]
     d_rcases = " | ".join(f"hd{i:02d}" for i in range(len(dnames)))
     d_calls = "\n".join(
         f"  · exact v26_E3_R0_no_bad_discard_code_chunk_{i:02d} w hd{i:02d} g0 g1 g2 g3 g4 g5 hbox hbad"
-        for i in range(len(dnames)))
+        for i in range(len(dnames))
+    )
     s_rcases = " | ".join(f"hs{i:02d}" for i in range(len(snames)))
     s_calls = "\n".join(
         f"  · exact v26_E3_R0_contract_survivor_code_chunk_{i:02d} w hs{i:02d} g0 g1 g2 g3 g4 g5 hbox hbad"
-        for i in range(len(snames)))
+        for i in range(len(snames))
+    )
     return f'''{chr(10).join(imports)}
+
+set_option maxHeartbeats 0
+set_option maxRecDepth 100000
 
 namespace HurtadoZeta23
 
@@ -273,7 +293,7 @@ theorem v26_E3_R0_reduce_511_to_231
       exact Finset.mem_image.mpr ⟨w, hmem, rfl⟩
     have hnot : v26WordCode w ∉ v26Round1Codes := hs
     have hdiff : v26WordCode w ∈
-        (v26SurvivorWords.image v26WordCode) \ v26Round1Codes :=
+        (v26SurvivorWords.image v26WordCode) \\ v26Round1Codes :=
       Finset.mem_sdiff.mpr ⟨h511, hnot⟩
     have hd : v26WordCode w ∈ v26E3R0DiscardCodes := by
       rw [v26_E3_R0_discardCodes_exact]
@@ -295,13 +315,15 @@ def write(out_dir: Path):
     p.write_text(base, encoding="utf-8")
     files.append(p)
 
-    ditems = [x[0] for x in discards]
     for i, codes in enumerate(dchunks):
         p = out_dir / f"V26R0CodeDispatchDiscard{i:02d}Generated.lean"
         p.write_text(emit_discard_chunk(i, codes, dnames[i]), encoding="utf-8")
         files.append(p)
 
-    sitems = [survivors[i:i + SURVIVOR_CHUNK] for i in range(0, len(survivors), SURVIVOR_CHUNK)]
+    sitems = [
+        survivors[i:i + SURVIVOR_CHUNK]
+        for i in range(0, len(survivors), SURVIVOR_CHUNK)
+    ]
     for i, (items, codes) in enumerate(zip(sitems, schunks)):
         p = out_dir / f"V26R0CodeDispatchSurvivor{i:02d}Generated.lean"
         p.write_text(emit_survivor_chunk(i, items, codes, snames[i]), encoding="utf-8")
@@ -318,12 +340,17 @@ def write(out_dir: Path):
         "discard_chunks": len(dchunks),
         "survivor_chunks": len(schunks),
         "files": {
-            x.name: {"bytes": len(x.read_bytes()), "sha256": hashlib.sha256(x.read_bytes()).hexdigest()}
+            x.name: {
+                "bytes": len(x.read_bytes()),
+                "sha256": hashlib.sha256(x.read_bytes()).hexdigest(),
+            }
             for x in files
         },
     }
     (out_dir / "v26_r0_code_dispatch_manifest.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     return manifest
 
 
