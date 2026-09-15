@@ -124,7 +124,21 @@ jobs:
       - name: Kernel-check first Nat-code survivor chunk
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26R0CodeDispatchSurvivor00Generated
+          set +e
+          lake build HurtadoZeta23.V26R0CodeDispatchSurvivor00Generated > "$GITHUB_WORKSPACE/survivor00.log" 2>&1
+          status=$?
+          echo '--- Lean diagnostics ---'
+          grep -n -E 'error:|unsolved goals|type mismatch|application type mismatch|failed to synthesize|unknown identifier' "$GITHUB_WORKSPACE/survivor00.log" | tail -n 60 || true
+          echo '--- Lean tail ---'
+          tail -n 120 "$GITHUB_WORKSPACE/survivor00.log"
+          exit "$status"
+      - name: Upload survivor00 Lean diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: survivor00-lean-diagnostic
+          path: survivor00.log
+          if-no-files-found: warn
       - name: Save Lean build cache
         if: always()
         uses: actions/cache/save@v4
