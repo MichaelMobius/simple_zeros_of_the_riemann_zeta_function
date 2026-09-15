@@ -190,7 +190,10 @@ def emit_survivor_chunk(idx: int, items, codes: list[str], chunk_name: str) -> s
         assert wcode(word) == code
         imports.append(f"import HurtadoZeta23.V26R0Survivor{code}Generated")
         branches.append(f'''  · have hcode : v26WordCode w = {code} := hcode{j}
-    {code_to_word_eq(code, f"v26E3R0_{code}Word").lstrip()}
+    have hwEq : w = v26E3R0_{code}Word := by
+      apply v26_wordCode_injective
+      simpa [v26E3R0_{code}Word, v26WordCode] using hcode
+    rw [hwEq] at hbox ⊢
     have hc := v26_E3_R0_{code}_contract_all g0 g1 g2 g3 g4 g5 hbox hbad
     simpa [v26E3R0ContractedBox, v26E3R0_{code}Word,
       v26E3R0_{code}ContractedBox, v26WordCode] using hc''')
