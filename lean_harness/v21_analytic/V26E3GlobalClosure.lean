@@ -80,4 +80,18 @@ theorem v26_article_seven_point_inequality : ArticleSevenPointInequality := by
   exact v21_article_of_gap_hard_core
     v20_kernel_signed_claim v26_gap_hard_core_claim
 
+/-- Global refinement with no external seven-point certificate argument. -/
+noncomputable def v26GlobalRefinement : V17GlobalRefinement :=
+  v20GlobalRefinement v26_article_seven_point_inequality
+
+/-- Published epsilon form with both historical numerical frontiers discharged
+inside Lean: the signed kernel enclosure is analytic (v20), and the six-gap
+certificate is the exact rational E3 closure (v26). -/
+theorem v26_published_eps_form :
+    ∀ ε > 0, ∃ T₀ : ℝ, ∀ T ≥ T₀,
+      (v17PublishedConstant - ε) *
+          (Zeta23.Ncount T (2 * T) : ℝ)
+        ≤ Zeta23.N0simple T (2 * T) := by
+  exact v20_published_eps_form v26_article_seven_point_inequality
+
 end HurtadoZeta23
