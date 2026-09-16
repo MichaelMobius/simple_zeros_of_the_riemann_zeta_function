@@ -1,5 +1,7 @@
 import HurtadoZeta23.V26PackageD
 import HurtadoZeta23.V26E3BootstrapClosureGenerated
+import HurtadoZeta23.V21GapFunctional
+import HurtadoZeta23.V20FinalAssembly
 
 noncomputable section
 namespace HurtadoZeta23
@@ -40,5 +42,42 @@ theorem v26_E3_no_strict_hardcore_counterexample
   have hge := v26_no_hardcore_counterexample_limitingWeight
     g0 g1 g2 g3 g4 g5 h0 h1 h2 h3 h4 h5 hsum
   linarith
+
+/-- The finite-certificate target is exactly the article's historical delta. -/
+theorem v26_delta_eq_article_delta : v26Delta = delta := by
+  norm_num [v26Delta, delta]
+
+/-- The v26 six-gap functional is definitionally the same seven-point gap
+functional used by the article, after specializing the abstract weight to
+`limitingWeight`.  This theorem keeps the notation bridge explicit. -/
+theorem v26_gapF_eq_v21_gapF
+    (g0 g1 g2 g3 g4 g5 : ℝ) :
+    v26GapF limitingWeight g0 g1 g2 g3 g4 g5 =
+      v21GapF g0 g1 g2 g3 g4 g5 := by
+  simp [v26GapF, v21GapF, v26Pressure, pressure]
+
+/-- The completed v26 finite closure discharges the exact six-variable hard
+core proposition previously left as the numerical heart of the article. -/
+theorem v26_gap_hard_core_claim : V21GapHardCoreClaim := by
+  intro g0 g1 g2 g3 g4 g5 h0 h1 h2 h3 h4 h5 hsum
+  have hge := v26_no_hardcore_counterexample_limitingWeight
+    g0 g1 g2 g3 g4 g5
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h0)
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h1)
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h2)
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h3)
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h4)
+    (by simpa [v26HardCorePoint, v17KernelCertPoint] using h5)
+    hsum
+  rw [v26_delta_eq_article_delta] at hge
+  rw [v26_gapF_eq_v21_gapF] at hge
+  exact hge
+
+/-- Fully internal replacement for the archived Arb/FLINT seven-point
+certificate: the article's seven-point inequality now follows from the
+analytic kernel theorem and the exact rational E3 finite closure. -/
+theorem v26_article_seven_point_inequality : ArticleSevenPointInequality := by
+  exact v21_article_of_gap_hard_core
+    v20_kernel_signed_claim v26_gap_hard_core_claim
 
 end HurtadoZeta23
