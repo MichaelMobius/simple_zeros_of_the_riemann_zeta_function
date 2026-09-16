@@ -1,4 +1,5 @@
 import HurtadoZeta23.V26WordBridge
+import HurtadoZeta23.V26BasinInterface
 import HurtadoZeta23.V21GapFunctional
 
 noncomputable section
