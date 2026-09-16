@@ -6,6 +6,8 @@ import HurtadoZeta23.V20FinalAssembly
 noncomputable section
 namespace HurtadoZeta23
 
+/-! Current-head integration wrapper for the complete v26 E3 closure. -/
+
 /-- Package D + full Package E3 finite closure.  Under the exact hard-core
 geometric hypotheses used by Package D, the limiting six-gap functional cannot
 fall strictly below `v26Delta`. -/
