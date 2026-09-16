@@ -51,6 +51,17 @@ jobs:
           roots = ["HurtadoZeta23"]
           EOF
 
+      - name: Restore green end-to-end Lean cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-final-trust-audit-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-end-to-end-${{ runner.os }}-
+            v26-package-e3-r2-closure-${{ runner.os }}-
+            v26-package-e3-r2-catalog-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+
       - name: Generate complete E3 certificate stack
         run: |
           OUT=/tmp/formal-math/zeta23/HurtadoZeta23
