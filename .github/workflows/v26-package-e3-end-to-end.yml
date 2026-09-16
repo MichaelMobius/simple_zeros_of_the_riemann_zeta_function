@@ -7,6 +7,7 @@ on:
       - 'certification/v26_exact/generate_v26_r2_membership_dispatch.py'
       - 'certification/v26_exact/generate_v26_r2_final_closure.py'
       - 'certification/v26_exact/generate_v26_e3_bootstrap_closure.py'
+      - 'lean_harness/v21_analytic/V26E3GlobalClosure.lean'
       - '.github/workflows/v26-package-e3-end-to-end.yml'
   workflow_dispatch:
 
@@ -131,6 +132,11 @@ jobs:
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoZeta23.V26E3BootstrapClosureGenerated
+
+      - name: Kernel-check Package D plus full E3 global closure
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26E3GlobalClosure
 
       - name: Upload E3 end-to-end manifests
         if: always()
