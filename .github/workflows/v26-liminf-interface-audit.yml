@@ -1,0 +1,50 @@
+name: v26 epsilon-to-liminf interface audit
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - '.github/workflows/v26-liminf-interface-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  interface-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct complete HurtadoZeta23 source overlay
+        run: |
+          mkdir -p /tmp/v26-interface/HurtadoZeta23
+          cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C /tmp/v26-interface
+          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C /tmp/v26-interface
+          find lean_harness -name '*.lean' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "/tmp/v26-interface/HurtadoZeta23/$(basename "$f")"
+          done
+
+      - name: Audit published asymptotic interface
+        run: |
+          {
+            echo '=== declarations/usages mentioning liminf ==='
+            grep -RniE '\bliminf\b|Filter\.liminf|liminf_' /tmp/v26-interface/HurtadoZeta23 --include='*.lean' || true
+            echo
+            echo '=== published epsilon bridge ==='
+            grep -RniE 'v17_published_eps_form_from_global_refinement|v17PublishedConstant|published_eps_form' /tmp/v26-interface/HurtadoZeta23 --include='*.lean' || true
+          } | tee /tmp/v26-liminf-interface-report.txt
+
+          if ! grep -q 'v17_published_eps_form_from_global_refinement' /tmp/v26-liminf-interface-report.txt; then
+            echo 'ERROR: expected epsilon bridge definition/use was not found'
+            exit 1
+          fi
+
+      - name: Upload interface report
+        uses: actions/upload-artifact@v4
+        with:
+          name: v26-liminf-interface-report
+          path: /tmp/v26-liminf-interface-report.txt
+          if-no-files-found: error
