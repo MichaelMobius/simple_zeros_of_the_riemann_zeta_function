@@ -1,7 +1,7 @@
 import HurtadoZeta23.V26E3GlobalClosure
 import HurtadoZeta23.ArticleBlockErrorSmall
 import Zeta23.Statement.SeamClosed
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Order.LiminfLimsup
 import Mathlib.Tactic
 
 noncomputable section
