@@ -60,6 +60,11 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
+      - name: Build the new ratio prerequisite not present in the E3 cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.ArticleBlockErrorSmall
+
       - name: Typecheck only the new liminf wrapper
         run: |
           cd /tmp/formal-math/zeta23
