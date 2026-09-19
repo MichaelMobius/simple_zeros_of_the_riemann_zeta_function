@@ -1,0 +1,113 @@
+name: v26 final trust audit
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'lean_harness/v21_analytic/V26FinalTrustAudit.lean'
+      - 'lean_harness/v21_analytic/V26E3GlobalClosure.lean'
+      - 'lean_harness/v21_analytic/V26E3ArticleBridge.lean'
+      - '.github/workflows/v26-final-trust-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trust-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore green end-to-end Lean cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-final-trust-audit-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-end-to-end-${{ runner.os }}-
+            v26-package-e3-r2-closure-${{ runner.os }}-
+            v26-package-e3-r2-catalog-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+
+      - name: Generate complete E3 certificate stack
+        run: |
+          OUT=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir "$OUT"
+          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir "$OUT"
+          python certification/v26_exact/generate_v26_final_strong_lower_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_bridge_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_final_closure.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_e3_bootstrap_closure.py --out-dir "$OUT"
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Kernel-check final theorem and print axioms
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake env lean HurtadoZeta23/V26FinalTrustAudit.lean 2>&1 | tee /tmp/v26-final-axioms.log
+
+      - name: Reject sorryAx in final dependency report
+        run: |
+          if grep -n 'sorryAx' /tmp/v26-final-axioms.log; then
+            echo 'ERROR: final theorem depends on sorryAx'
+            exit 1
+          fi
+          echo 'No sorryAx reported for audited final theorems.'
+
+      - name: Upload axiom report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v26-final-axiom-report
+          path: /tmp/v26-final-axioms.log
+          if-no-files-found: error

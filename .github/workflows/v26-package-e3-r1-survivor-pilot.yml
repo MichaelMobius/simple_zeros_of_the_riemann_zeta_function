@@ -1,0 +1,114 @@
+name: v26 package E3 R1 survivor contraction pilot
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'certification/v26_exact/generate_v26_r1_survivor_contractions.py'
+      - '.github/workflows/v26-package-e3-r1-survivor-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r1-survivor-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+      - name: Restore Lean build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-r1-survivor-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-code-dispatch-${{ runner.os }}-
+            v26-package-e3-survivors-${{ runner.os }}-
+            v26-package-e3-r1-catalog-${{ runner.os }}-
+            v26-package-e3-zeta23-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+      - name: Generate R1 survivor inputs
+        run: |
+          OUT=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_survivor_contractions.py --out-dir "$OUT"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('/tmp/formal-math/zeta23/HurtadoZeta23/v26_r1_survivor_contractions_manifest.json')
+          m = json.loads(p.read_text())
+          assert m['survivor_count'] == 23, m['survivor_count']
+          assert len(m['modules']) == 23
+          print('first module:', m['modules'][0])
+          print('codes:', ', '.join(m['codes']))
+          PY
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+              "$OUT"/V26R1Survivor*Generated.lean; then
+            echo 'Forbidden proof shortcut found in R1 survivor contractions'
+            exit 1
+          fi
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+      - name: Kernel-check first R1 survivor contraction
+        run: |
+          cd /tmp/formal-math/zeta23
+          MODULE=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          m = json.loads(Path('HurtadoZeta23/v26_r1_survivor_contractions_manifest.json').read_text())
+          print(m['modules'][0])
+          PY
+          )
+          echo "building $MODULE"
+          set +e
+          lake build "HurtadoZeta23.$MODULE" > "$GITHUB_WORKSPACE/r1-survivor.log" 2>&1
+          status=$?
+          grep -n -E 'error:|unsolved goals|type mismatch|application type mismatch|failed to synthesize|unknown identifier|maximum heartbeats|maximum recursion' "$GITHUB_WORKSPACE/r1-survivor.log" | tail -n 80 || true
+          tail -n 140 "$GITHUB_WORKSPACE/r1-survivor.log"
+          exit "$status"
+      - name: Upload R1 survivor diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r1-survivor-lean-diagnostic
+          path: r1-survivor.log
+          if-no-files-found: warn
+      - name: Save Lean build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-r1-survivor-${{ runner.os }}-${{ github.sha }}

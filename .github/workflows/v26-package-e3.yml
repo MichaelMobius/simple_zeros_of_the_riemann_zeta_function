@@ -1,0 +1,128 @@
+name: v26 package E3 R0 transport
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'certification/v26_exact/generate_v26_bootstrap_lean.py'
+      - 'certification/v26_exact/generate_v26_r0_cell_catalog.py'
+      - 'certification/v26_exact/generate_v26_r0_analytic_prototype.py'
+      - 'certification/v26_exact/generate_v26_r0_analytic_discards.py'
+      - 'certification/v26_exact/v21_rational_bootstrap_verify.py'
+      - 'lean_harness/v21_analytic/V26GapBlockLower.lean'
+      - 'lean_harness/v21_analytic/V26Round0Prototype.lean'
+      - 'lean_harness/v21_analytic/V26QuadraticCore.lean'
+      - 'lean_harness/v21_analytic/V26OneBodyCellTools.lean'
+      - 'lean_harness/v21_analytic/V26BasinInterface.lean'
+      - '.github/workflows/v26-package-e3.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: v26-package-e3-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  e3-r0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore Lean build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-zeta23-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-zeta23-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+            v26-package-d-zeta23-${{ runner.os }}-
+
+      - name: Generate exact bootstrap and R0 analytic certificates
+        run: |
+          python certification/v26_exact/generate_v26_bootstrap_lean.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_r0_analytic_prototype.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_r0_analytic_discards.py \
+            --out-dir /tmp/formal-math/zeta23/HurtadoZeta23
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26Bootstrap*.lean \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0CellCatalog*Generated.lean \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26Round0AnalyticPrototypeGenerated.lean \
+              /tmp/formal-math/zeta23/HurtadoZeta23/V26R0AnalyticDiscards*Generated.lean; then
+            echo 'Forbidden proof shortcut found in generated E3 certificate'
+            exit 1
+          fi
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Kernel-check generic block assembly
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26GapBlockLower
+
+      - name: Kernel-check all 190 reusable R0 analytic cells
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R0CellCatalogGenerated
+
+      - name: Kernel-check exact bootstrap discard certificates
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26BootstrapDiscardGenerated
+
+      - name: Kernel-check R0 analytic pilot
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26Round0AnalyticPrototypeGenerated
+
+      - name: Kernel-check all 280 R0 analytic discard bridges
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R0AnalyticDiscardsGenerated
+
+      - name: Save Lean build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-zeta23-${{ runner.os }}-${{ github.sha }}

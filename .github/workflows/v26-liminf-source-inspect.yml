@@ -1,0 +1,46 @@
+name: v26 liminf source inspect
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - '.github/workflows/v26-liminf-source-inspect.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct source overlay
+        run: |
+          mkdir -p /tmp/v26-inspect/HurtadoZeta23
+          cat lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C /tmp/v26-inspect
+          cat lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C /tmp/v26-inspect
+          find lean_harness -name '*.lean' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "/tmp/v26-inspect/HurtadoZeta23/$(basename "$f")"
+          done
+
+      - name: Print endgame and count interfaces
+        run: |
+          {
+            echo '===== V17Endgame.lean ====='
+            sed -n '1,180p' /tmp/v26-inspect/HurtadoZeta23/V17Endgame.lean
+            echo '===== Endgame.lean ====='
+            sed -n '1,150p' /tmp/v26-inspect/HurtadoZeta23/Endgame.lean
+            echo '===== globalN/globalS/count definitions ====='
+            grep -RniE 'def globalN|abbrev globalN|def globalS|abbrev globalS|Ncount|N0simple|eventually.*N|N.*pos|zero.*count' /tmp/v26-inspect/HurtadoZeta23 --include='*.lean' | head -250 || true
+          } | tee /tmp/v26-liminf-source-inspect.txt
+
+      - name: Upload source inspect
+        uses: actions/upload-artifact@v4
+        with:
+          name: v26-liminf-source-inspect
+          path: /tmp/v26-liminf-source-inspect.txt
+          if-no-files-found: error

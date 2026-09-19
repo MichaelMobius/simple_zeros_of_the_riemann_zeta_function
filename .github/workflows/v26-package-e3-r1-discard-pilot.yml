@@ -1,0 +1,94 @@
+name: v26 package E3 R1 analytic discard pilot
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'certification/v26_exact/generate_v26_r1_discard_pilot.py'
+      - 'certification/v26_exact/normalize_v26_r1_discard_pilot.py'
+      - '.github/workflows/v26-package-e3-r1-discard-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r1-discard-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore Lean build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-r1-discard-pilot-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-r1-discard-pilot-${{ runner.os }}-
+            v26-package-e3-r1-catalog-${{ runner.os }}-
+            v26-package-e3-survivors-${{ runner.os }}-
+            v26-package-e3-zeta23-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+
+      - name: Generate exact inputs for R1 discard pilot
+        run: |
+          OUT=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_discard_pilot.py --out-dir "$OUT"
+          python certification/v26_exact/normalize_v26_r1_discard_pilot.py --out-dir "$OUT"
+          if grep -R -n -E '\b(sorry|admit|axiom|opaque|unsafe|native_decide)\b' \
+              "$OUT"/V26R1DiscardPilotGenerated.lean; then
+            echo 'Forbidden proof shortcut found in R1 discard pilot'
+            exit 1
+          fi
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Kernel-check R1 analytic discard pilot
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26R1DiscardPilotGenerated
+
+      - name: Save Lean build cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-package-e3-r1-discard-pilot-${{ runner.os }}-${{ github.sha }}

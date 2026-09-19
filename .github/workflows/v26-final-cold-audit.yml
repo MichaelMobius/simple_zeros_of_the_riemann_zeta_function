@@ -1,0 +1,148 @@
+name: v26 final cold rebuild audit
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - '.github/workflows/v26-final-cold-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cold-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Reconstruct HurtadoZeta23 source overlay
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_analytic/part*.b64 | base64 -d > /tmp/hurtado-analytic.tar.gz
+          tar -xzf /tmp/hurtado-analytic.tar.gz -C .
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado-adj.tar.gz
+          tar -xzf /tmp/hurtado-adj.tar.gz -C .
+          find "$GITHUB_WORKSPACE"/lean_harness -name '*.lean' -not -path '*/v20_analytic/*' -not -path '*/v21_analytic/*' -print0 | while IFS= read -r -d '' f; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
+          cp "$GITHUB_WORKSPACE"/lean_harness/v20_analytic/*.lean HurtadoZeta23/
+          cp "$GITHUB_WORKSPACE"/lean_harness/v21_analytic/*.lean HurtadoZeta23/
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoZeta23"
+          roots = ["HurtadoZeta23"]
+          EOF
+
+      - name: Restore base/end-to-end cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/formal-math/zeta23/.lake/build
+          key: v26-final-cold-audit-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            v26-package-e3-end-to-end-${{ runner.os }}-
+            v26-package-e3-r2-closure-${{ runner.os }}-
+            v26-package-e-zeta23-${{ runner.os }}-
+
+      - name: Generate complete exact E3 certificate stack
+        run: |
+          OUT=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir "$OUT"
+          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir "$OUT"
+          python certification/v26_exact/generate_v26_final_strong_lower_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_bridge_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_final_closure.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_e3_bootstrap_closure.py --out-dir "$OUT"
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Purge every cached HurtadoZeta23 build artifact
+        run: |
+          cd /tmp/formal-math/zeta23
+          echo 'Cached HurtadoZeta23 artifacts before purge:'
+          find .lake/build -path '*HurtadoZeta23*' -print | head -100 || true
+          find .lake/build -depth -path '*HurtadoZeta23*' -delete
+          if find .lake/build -path '*HurtadoZeta23*' -print -quit | grep -q .; then
+            echo 'ERROR: HurtadoZeta23 cache artifacts survived purge'
+            exit 1
+          fi
+          echo 'Cold-audit purge complete.'
+
+      - name: Cold rebuild final theorem dependency graph
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoZeta23.V26FinalTrustAudit 2>&1 | tee /tmp/v26-final-cold-build.log
+
+      - name: Kernel-check final theorem and print axioms from cold rebuild
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake env lean HurtadoZeta23/V26FinalTrustAudit.lean 2>&1 | tee /tmp/v26-final-cold-axioms.log
+
+      - name: Enforce final trust boundary
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path('/tmp/v26-final-cold-axioms.log').read_text()
+          if 'sorryAx' in text:
+              raise SystemExit('ERROR: final theorem depends on sorryAx')
+
+          allowed = {'propext', 'Classical.choice', 'Quot.sound'}
+          names = [
+              'HurtadoZeta23.v26_article_seven_point_inequality',
+              'HurtadoZeta23.v26_published_eps_form',
+          ]
+          for name in names:
+              pat = rf"'{re.escape(name)}' depends on axioms: \[(.*?)\]"
+              m = re.search(pat, text)
+              if not m:
+                  raise SystemExit(f'ERROR: missing axiom report for {name}')
+              axioms = {x.strip() for x in m.group(1).split(',') if x.strip()}
+              unexpected = axioms - allowed
+              if unexpected:
+                  raise SystemExit(f'ERROR: unexpected axioms for {name}: {sorted(unexpected)}')
+              print(f'{name}: allowed axioms only: {sorted(axioms)}')
+          print('COLD TRUST AUDIT OK: no sorryAx and no project-specific/external axioms.')
+          PY
+
+      - name: Upload cold audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v26-final-cold-audit-reports
+          path: |
+            /tmp/v26-final-cold-build.log
+            /tmp/v26-final-cold-axioms.log
+          if-no-files-found: warn
