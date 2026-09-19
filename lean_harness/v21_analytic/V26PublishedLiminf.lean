@@ -15,7 +15,7 @@ namespace HurtadoZeta23
 /-- The dyadic zero count tends to infinity, hence is eventually at least one.
 This is derived directly from the canonical Riemann--von Mangoldt theorem,
 rather than through the historical article-error wrapper. -/
-theorem v26_eventually_one_le_globalN :
+theorem v26_v26_eventually_one_le_globalN :
     ∀ᶠ T : ℝ in atTop,
       (1 : ℝ) ≤ (Zeta23.Ncount T (2 * T) : ℝ) := by
   have hNtop :
@@ -28,11 +28,20 @@ theorem v26_eventually_one_le_globalN :
   exact hNtop.eventually_ge_atTop (1 : ℝ)
 
 /-- The dyadic proportion of simple critical-line zeros.  The denominator is
-nonzero eventually by `v26_eventually_one_le_globalN`; values at small heights
+nonzero eventually by `v26_v26_eventually_one_le_globalN`; values at small heights
 are irrelevant to the `atTop` liminf. -/
 def v26SimpleRatio (T : ℝ) : ℝ :=
   (Zeta23.N0simple T (2 * T) : ℝ) /
     (Zeta23.Ncount T (2 * T) : ℝ)
+
+/-- Eventually the dyadic zero count is at least one.  This is proved on the
+lightweight v17/v26 import path, avoiding the historical 262-point assembly. -/
+theorem v26_v26_eventually_one_le_globalN :
+    ∀ᶠ T : ℝ in atTop,
+      (1 : ℝ) ≤ globalN T := by
+  have h :=
+    zetaDyadicN_tendsto_atTop.eventually_ge_atTop (1 : ℝ)
+  simpa [zetaDyadicN, globalN] using h
 
 /-- The published epsilon-form implies the corresponding eventual lower bound
 for the normalized ratio. -/
@@ -41,7 +50,7 @@ theorem v26_eventually_publishedConstant_sub_eps_le_ratio
     ∀ᶠ T : ℝ in atTop,
       v17PublishedConstant - ε ≤ v26SimpleRatio T := by
   rcases v26_published_eps_form ε hε with ⟨T₀, hT₀⟩
-  filter_upwards [eventually_ge_atTop T₀, v26_eventually_one_le_globalN]
+  filter_upwards [eventually_ge_atTop T₀, v26_v26_eventually_one_le_globalN]
     with T hT hN1
   have hmain := hT₀ T hT
   have hNpos : 0 < (Zeta23.Ncount T (2 * T) : ℝ) :=
@@ -53,7 +62,7 @@ theorem v26_eventually_publishedConstant_sub_eps_le_ratio
 trivial counting chain `N₀ˢ ≤ N`. -/
 theorem v26_eventually_simpleRatio_le_one :
     ∀ᶠ T : ℝ in atTop, v26SimpleRatio T ≤ 1 := by
-  filter_upwards [v26_eventually_one_le_globalN] with T hN1
+  filter_upwards [v26_v26_eventually_one_le_globalN] with T hN1
   have hNpos : 0 < (Zeta23.Ncount T (2 * T) : ℝ) :=
     lt_of_lt_of_le zero_lt_one hN1
   have hchain := Zeta23.trivial_chain₀ T (2 * T)
