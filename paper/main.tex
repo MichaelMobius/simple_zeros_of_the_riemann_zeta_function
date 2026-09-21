@@ -141,22 +141,28 @@ presents the subsequent refinement as AI-generated.  We cite the
 human-maintained artifacts and treat model use as provenance rather than
 mathematical authorship.
 
-As of 9 September 2026, several contemporaneous public computational artifacts report numerically
-larger values.  Ojha's research repository~\cite{Ojha26} currently reports a
-certified candidate bound
+As of 21 September 2026, several contemporaneous public computational
+artifacts report numerically larger values in closely related settings.
+Ojha's research repository~\cite{Ojha26} reports the dyadic candidate
 \[
  0.6733127422722459\ldots,
 \]
 and explicitly labels the theorem claim a record candidate pending expert
 review and end-to-end formalization.  Devine's Zenodo preprint~\cite{Devine26}
-reports the unconditional value
+reports the dyadic value
 \[
  0.673399.
 \]
-Neither artifact is an input to the present proof.  Their proof architectures
-and validation status differ from ours, so we make no claim here that the
-numerical value of Theorem~\ref{thm:main} is the largest publicly reported
-bound.
+Gebendorfer's research draft~\cite{Gebendorfer26} reports
+$0.6734760237\ldots$ using an expanded analytic window and joint
+position-pressure vectors.  That draft uses the full-height ratio
+$N_{\rm sc}(T)/N(T)$ rather than the dyadic ratio of
+Theorem~\ref{thm:main}, and identifies itself as an internally checked
+research draft pending independent review.  We therefore cite it as
+methodologically relevant contemporary work rather than treat the numerical
+values as directly interchangeable.  None of these artifacts is an input to
+the present proof, and we make no claim that the numerical value of
+Theorem~\ref{thm:main} is the largest publicly reported bound.
 
 The contribution of the present paper is explicit and layered.  We do not
 claim the finite-compression/rank--trace mechanism, the stability-enhanced
@@ -188,9 +194,11 @@ this gives
 \]
 Second, an adjacent-pair pinching argument supplies an independent lower bound
 for the Gram defect in terms of the consecutive-gap kernel energies.  Together
-with a scalar Montgomery--Taylor kernel inequality now proved analytically in
-Lean, this permits \(m=450\) and yields Theorem~\ref{thm:main}.  No new
-seven-point local certificate is required.
+with a scalar Montgomery--Taylor kernel inequality proved analytically in
+Lean, this permits \(m=450\) and yields Theorem~\ref{thm:main}.  Thus the
+numerical improvement in the main theorem comes from the global pressure
+accounting and the additional Gram-defect information, with
+\eqref{eq:local-cert-intro} as the fixed local inequality.
 
 \begin{theorem}[Main theorem]\label{thm:main}
 With
@@ -3986,6 +3994,13 @@ GitHub repository \texttt{learademacher/ai-refines-ai-zeta-bound}.
 The repository records Jo's artifact as upstream provenance and reports use
 of GPT-5.6 Sol in the refinement workflow.
 
+
+\bibitem{Gebendorfer26}
+J.~J.~Gebendorfer,
+\emph{An expanded window and joint position pressures for simple
+critical-line zeros},
+research draft, 7 September 2026,
+Zenodo, DOI \texttt{10.5281/zenodo.22643957}.
 
 \bibitem{Hurtado26Artifact}
 M.~Hurtado,
