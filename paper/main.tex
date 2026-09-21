@@ -55,9 +55,8 @@ The proof uses the certified position-weighted seven-point inequality
  \qquad
  p=\frac1{10^7}(2714,3733,3553,3553,3733,2714),
  \qquad
- \beta:=\sum_{j=1}^6p_j=\frac1{500},
+ \beta:=\sum_{j=1}^6p_j=\frac1{500}.
 \]
-without requiring a new seven-point branch-and-bound computation.
 
 Two refinements are introduced.  First, the pressure carried by each relative
 gap position is retained through the block summation and the shifted-block
@@ -1502,9 +1501,13 @@ and proves
  C_{\rm pub}
  =\frac{1125000H_{\rm MT}-2220}{1120671}.
 \]
-Here \texttt{Zeta23.N0simple} and \texttt{Zeta23.Ncount} are the formal
-counterparts of \(N_0^s\) and \(N\) used in the paper.  Eventual positivity
-of the denominator is derived directly from the formalized
+Here \texttt{Zeta23.Ncount}\((T_1,T_2)\) counts nontrivial zeta zeros with
+\(T_1<\Im\rho\le T_2\), with analytic multiplicity, while
+\texttt{Zeta23.N0simple}\((T_1,T_2)\) counts the simple zeros in the same
+half-open ordinate window that lie on \(\Re\rho=1/2\).  Thus at
+\((T_1,T_2)=(T,2T)\) these are exactly the counting functions \(N(T,2T)\)
+and \(N_0^s(T,2T)\) used in the paper, including the endpoint convention.
+Eventual positivity of the denominator is derived directly from the formalized
 Riemann--von Mangoldt theorem, and the trivial counting chain gives
 \(R(T)\le1\) eventually.
 
