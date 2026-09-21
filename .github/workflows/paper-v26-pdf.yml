@@ -1,0 +1,48 @@
+name: paper v26 PDF
+
+on:
+  push:
+    branches: [v26-package-e-staging]
+    paths:
+      - 'paper/main.tex'
+      - '.github/workflows/paper-v26-pdf.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+
+      - name: Build PDF
+        run: |
+          cd paper
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+
+      - name: Upload built PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-v26-pdf
+          path: paper/main.pdf
+          if-no-files-found: error
+
+      - name: Commit regenerated PDF
+        run: |
+          if git diff --quiet -- paper/main.pdf; then
+            echo "paper/main.pdf is already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/main.pdf
+          git commit -m "build(paper): regenerate v26 PDF"
+          git push origin HEAD:v26-package-e-staging
