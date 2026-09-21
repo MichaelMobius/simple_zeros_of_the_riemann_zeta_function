@@ -1362,13 +1362,16 @@ be the normalized ordinates of the retained central set
  S^\circ=N_0^s(T,2T)-o(N(T,2T)).
 \]
 
-For each residue class of the starting index modulo \(m=450\), partition the
-corresponding tail into disjoint full consecutive blocks of size \(m\) and a
-remainder of fewer than \(m\) points.  Pinching \(M^\circ\) to these
-principal blocks and the remainder gives, for each residue class, an upper
-bound of \(\mathcal D(M^\circ)\) for the sum of the full-block defects.
-As the residue class varies, every consecutive \(m\)-point block with start
-index \(1,\ldots,S^\circ-m+1\) occurs exactly once.  Summing the \(m\)
+For each residue class \(r\) of the starting index modulo \(m=450\),
+first restrict \(M^\circ\) to the principal tail beginning at \(r\).  The
+defect of this tail is at most \(\mathcal D(M^\circ)\), by the same
+pinching/majorization principle used above.  Partition the tail into disjoint
+full consecutive blocks of size \(m\) and one trailing remainder of fewer than
+\(m\) points.  Pinching the tail into those principal blocks and the remainder
+shows that the sum of the full-block defects is at most the tail defect, hence
+at most \(\mathcal D(M^\circ)\).  As \(r\) varies through the \(m\) residue
+classes, every consecutive \(m\)-point block with start index
+\(1,\ldots,S^\circ-m+1\) occurs exactly once.  Summing the \(m\)
 pinching inequalities and applying Proposition~\ref{prop:blockstab450}
 therefore gives
 \begin{equation}\label{eq:shifted-exact}
