@@ -1,4 +1,4 @@
-% Manuscript revision v20: v17 quantitative theorem with v20 analytic Lean certification and publication/trust-boundary hardening.
+% Manuscript revision v26: exact rational finite closure, analytic kernel certification, and literal liminf theorem.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -29,7 +29,7 @@
 
 \title{Pressure-preserving refinements for simple zeros of the Riemann zeta function}
 \author{Michael Hurtado}
-\date{September 9, 2026}
+\date{September 21, 2026}
 
 \begin{document}
 \maketitle
@@ -81,15 +81,22 @@ The additional signed kernel inequality
 is proved analytically in Lean from exact integral identities, directed Taylor
 bounds for sine and cosine, certified bounds for \(\pi\) already available in
 Mathlib, and exact rational arithmetic.  Positivity and monotonicity then give
-\(w(89/100)>2937/100000\).  The accompanying exact-arithmetic verifier is
-retained as an independent reproducibility check of the scalar inequality,
-the pressure mass, the contradiction margin, and the final constant.  The v20
-Lean wrapper kernel-checks the published epsilon-form theorem from a single
-explicit external certificate proposition, the archived seven-point claim;
-the signed scalar claim is discharged internally.  The written mathematical
-derivation below does not invoke the recent Alpöge--Furman theorem as a premise;
-the software provenance and exact formal trust boundary are stated separately
-in Section~\ref{sec:trust}.
+\(w(89/100)>2937/100000\).  The accompanying exact-arithmetic verifier is retained as an independent
+reproducibility check of the scalar inequality, the pressure mass, the
+contradiction margin, and the final constant.  In the current v26 Lean
+development, both numerical frontiers that remained external in the v20
+wrapper are discharged internally: the signed scalar kernel claim is proved
+analytically, and the six-gap hard core behind the seven-point inequality is
+closed by an exact rational finite certificate.  The finite closure reduces
+511 bootstrap codes to 231, then 23, then 5 survivors and rules out the final
+five inside Lean.  This yields the article seven-point inequality, the
+published epsilon-form theorem, and finally the literal liminf statement above.
+Eventual positivity of the denominator is derived from the formalized
+Riemann--von Mangoldt theorem.  The archived Arb/FLINT computation is retained
+as an independent historical reproducibility check rather than as a formal
+hypothesis.  The written mathematical derivation below does not invoke the
+recent Alpöge--Furman theorem as a premise; the software provenance and exact
+formal trust boundary are stated separately in Section~\ref{sec:trust}.
 \end{abstract}
 
 \section{Introduction and statement of novelty}
@@ -224,13 +231,15 @@ communicated by Alpöge--Furman supplies the immediate unconditional
 finite-compression/rank--trace comparison point~\cite{AlpogeFurman26,Anthropic26}.
 Jo's repository is the public upstream artifact for the stability-enhanced
 seven-point draft used here; Rademacher's repository records that provenance
-and strengthens its uniform finite certificate.  The position-weighted
-seven-point certificate \eqref{eq:p}--\eqref{eq:local-cert-intro} is frozen in
-our earlier artifact~\cite{Hurtado26Artifact}.  The new claims of the present
-version are restricted to the exact pressure-preserving global accounting, the
+and strengthens its uniform finite certificate.  The position-weighted seven-point inequality
+\eqref{eq:p}--\eqref{eq:local-cert-intro} is frozen in our earlier
+artifact~\cite{Hurtado26Artifact}, and its numerical target
+\(\delta=39/10000\) is unchanged.  The new mathematical claims of the
+present version remain the exact pressure-preserving global accounting, the
 adjacent-pair defect lemma, the scalar kernel enclosure used with that lemma,
-and the resulting constant.  The seven-point branch-and-bound certificate is
-reused unchanged.
+and the resulting constant.  What changes in v26 is the formal trust boundary:
+an exact rational E3 closure now discharges the six-gap hard core in Lean and
+removes the archived seven-point proposition from the published theorem path.
 
 \begin{center}
 \small
@@ -247,15 +256,22 @@ Claude (Anthropic), verified and communicated by Alpöge--Furman
 Theorem~\ref{thm:main}\\
 Stability-enhanced rank--trace and seven-point architecture & Jo~\cite{Jo26}\\
 Uniform seven-point strengthening & Rademacher~\cite{Rademacher26}\\
-Position-weighted seven-point certificate \(39/10000\) & Hurtado, earlier frozen
-artifact~\cite{Hurtado26Artifact}\\
+Position-weighted seven-point inequality \(39/10000\) & Hurtado, earlier frozen
+artifact~\cite{Hurtado26Artifact}; archived Arb/FLINT branch-and-bound retained
+as independent reproducibility evidence\\
 Exact pressure preservation, adjacent-pair pinching, scalar kernel argument and
 \(m=450\) assembly & Present paper\\
 Lean base library & Anthropic \texttt{formal-math/zeta23}, pinned commit recorded
 in Section~\ref{sec:trust}~\cite{AnthropicFormal26}\\
-Lean v17 refinement layer and v20 analytic signed-kernel wrapper &
-\texttt{HurtadoZeta23} modules in the present repository; v20 discharges the
-previous signed-kernel certificate input internally\\
+Lean analytic signed-kernel closure & \texttt{HurtadoZeta23} v20 modules;
+exact integral identities, directed trigonometric bounds, and rational
+arithmetic discharge the former signed-kernel certificate input\\
+Lean exact seven-point closure (v26) & \texttt{HurtadoZeta23} v26 modules;
+exact rational E3 reduction \(511\to231\to23\to5\to\varnothing\) discharges
+the six-gap hard core and yields the article seven-point inequality\\
+Lean published endpoint (v26) & \texttt{v26\_published\_eps\_form} and
+\texttt{v26\_published\_liminf}; the literal liminf wrapper uses formalized
+Riemann--von Mangoldt to obtain eventual positivity of \(N(T,2T)\)\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -850,7 +866,7 @@ so \(q_r\le\sum_jp_j=\beta\).  Every global gap belongs to at least one of
 the consecutive seven-point windows, hence \(q_r\ge\min_jp_j\).
 \end{proof}
 
-\begin{proposition}[Computer-assisted seven-point inequality]\label{prop:cert}
+\begin{proposition}[Seven-point inequality and certification]\label{prop:cert}
 For the pressure vector \eqref{eq:p}, every $g_1,\ldots,g_6\ge0$ satisfies
 \begin{align}
  &\frac{2714(g_1+g_6)+3733(g_2+g_5)+3553(g_3+g_4)}{10^7}\nonumber\\
@@ -862,8 +878,22 @@ For the pressure vector \eqref{eq:p}, every $g_1,\ldots,g_6\ge0$ satisfies
 \end{align}
 \end{proposition}
 
-\begin{proof}[Computer-assisted proof]
-The archived verifier performs exhaustive interval branch-and-bound with
+\begin{proof}[Exact formal certificate and independent archived check]
+The current v26 formal certificate proves the same inequality by an exact
+rational finite closure.  Package~D first reduces any hypothetical strict
+counterexample to the six-gap hard-core region and assigns it to one of 511
+bootstrap cells.  The generated E3 certificates then perform exact
+discard/contraction rounds
+\[
+ 511\longrightarrow231\longrightarrow23\longrightarrow5,
+\]
+after which exact rational lower bounds close the final five survivors.  These
+modules compose to \texttt{v26\_E3\_close\_511}, then to
+\texttt{v26\_gap\_hard\_core\_claim}, and finally to
+\texttt{v26\_article\_seven\_point\_inequality}.  No Arb/FLINT enclosure
+is invoked by this Lean theorem path.
+
+As an independent historical certification route, the archived verifier performs exhaustive interval branch-and-bound with
 Arb/FLINT through \texttt{python-flint}.  The pressure coefficients, target,
 and grid endpoints are represented by exact rationals.  The verifier
 reconstructs rigorous Arb enclosures for $w$ and its required derivatives from
@@ -890,7 +920,7 @@ the pressure term alone.  The current default-branch hardening copy of the
 verifier checks this exact rational identity before constructing the finite
 branch-and-bound search and aborts if it fails.  This additional assertion is
 not retroactively part of the frozen verifier whose SHA-256 is recorded in
-Appendix~\ref{app:cert}; the archived run remains the certificate of record,
+Appendix~\ref{app:cert}; the archived run remains an independent historical certificate,
 while the v19 assertion makes the domain reduction explicit and fail-closed
 in the current reproducibility copy.
 
@@ -1462,68 +1492,82 @@ is correctly cited as \emph{Hilbert's inequality}, J. London Math. Soc. (2)
 introduction provide context; the particular first/second-moment route used
 here is reconstructed directly in Appendix~\ref{app:inputIII}.
 
-Proposition~\ref{prop:cert} is computer-assisted.  Its trust base includes the
-frozen artifact release snapshot~\cite{Hurtado26Artifact}, the frozen verifier,
-\texttt{python-flint}, FLINT/Arb and their dependencies, and the correctness
-of the execution environment.  The 128- and 256-bit runs are
-replications of the same implementation at different working precisions, not
-algorithmically independent verifiers.
+Proposition~\ref{prop:cert} now has two distinct certification layers.  The
+historical Arb/FLINT route remains publicly archived and independently
+reproducible; its trust base includes the frozen artifact
+release~\cite{Hurtado26Artifact}, the verifier, \texttt{python-flint},
+FLINT/Arb and their dependencies, and the correctness of the execution
+environment.  The 128- and 256-bit runs are replications of the same
+implementation at different working precisions, not algorithmically
+independent verifiers.
 
-The refinement from the previous constant to Theorem~\ref{thm:main} introduces
-no new seven-point branch-and-bound certificate.  The historical
-\texttt{verify\_improved\_bound.py} calculation remains useful as an independent
-reproducibility check for the scalar value, contradiction margin, and displayed
-decimals, but the signed inequality
+The current v26 Lean theorem path does not use that archived interval
+computation as a premise.  The analytic signed-kernel frontier was already
+discharged in v20.  In v26, Package~D reduces a strict counterexample to the
+six-gap hard core, and the exact rational E3 stack closes the finite problem
+through the chain
 \[
- \frac{171389}{1000000}<k(89/100)
+ 511\longrightarrow231\longrightarrow23\longrightarrow5
+ \longrightarrow\varnothing .
 \]
-is no longer an external mathematical trust input in v20.
+The resulting theorem \texttt{v26\_gap\_hard\_core\_claim} feeds
+\texttt{v26\_article\_seven\_point\_inequality}; hence
+\texttt{v26\_published\_eps\_form} has no
+\texttt{ArchivedSevenPointClaim} argument.
 
-The v20 formalization has one explicit external certificate proposition in its
-published wrapper.  The Lean root \texttt{HurtadoZeta23.V20FinalAssembly}
-contains \texttt{v20\_published\_eps\_form}, whose sole certificate argument is
-\texttt{ArchivedSevenPointClaim}.  The previous
-\texttt{V17KernelSignedCertPointClaim} is derived internally from
-\texttt{HurtadoZeta23.v20\_kernel\_signed\_89\_100}, proved analytically in
-\texttt{V20KernelSignedAnalytic}.  Thus the archived seven-point finite
-inequality remains the only explicit external mathematical certificate
-frontier of the v20 wrapper.  A theorem parameter such as
-\texttt{ArchivedSevenPointClaim} is a mathematical hypothesis of that wrapper,
-not a Lean kernel axiom.
+The literal published endpoint is formalized separately in
+\texttt{V26PublishedLiminf}.  It defines the ratio
+\[
+ T\longmapsto
+ \frac{N_0^s(T,2T)}{N(T,2T)}
+\]
+and derives eventual positivity of the denominator directly from the
+formalized Riemann--von Mangoldt theorem.  From
+\texttt{v26\_published\_eps\_form} it obtains the eventual lower bound for
+every positive \(\varepsilon\), bounds the ratio above by one using the
+trivial counting chain, and concludes
+\[
+ \texttt{v17PublishedConstant}
+ \le \liminf_{T\to\infty}
+ \frac{N_0^s(T,2T)}{N(T,2T)}.
+\]
 
-The transitive axiom audit is also explicit.  For
-\texttt{v17\_pairMultiplicitySumNat\_450},
-\texttt{v20\_kernel\_signed\_89\_100},
-\texttt{v20\_kernel\_signed\_claim}, and
-\texttt{v20\_published\_eps\_form}, the accepted \texttt{\#print axioms}
-closure is exactly
+The transitive axiom audit for
+\texttt{v20\_kernel\_signed\_claim},
+\texttt{v26\_article\_seven\_point\_inequality},
+\texttt{v26\_published\_eps\_form}, and
+\texttt{v26\_published\_liminf} reports exactly
 \[
  \{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
 \]
-The CI rejects any additional axiom, including \texttt{sorryAx} or a
-\texttt{\_native.native\_decide.ax\_...} primitive.  During this audit an
-inherited \texttt{native\_decide} proof of the finite identity
-\(\sum_{x<449}(450-(1+x))=101025\) was found in the effective v17 overlay and
-replaced by a symbolic proof using bounded natural arithmetic,
-\texttt{Finset.sum\_range\_reflect}, and \texttt{Finset.sum\_range\_id}.  This
-statement concerns the audited v20 closure; it is not a claim that every
-historical module in the repository is globally free of \texttt{native\_decide}.
+The CI checks the final theorem path and rejects \texttt{sorryAx}.  Earlier in
+the project, an inherited \texttt{native\_decide} proof of the finite
+identity \(\sum_{x<449}(450-(1+x))=101025\) was replaced by a symbolic proof
+using bounded natural arithmetic, \texttt{Finset.sum\_range\_reflect}, and
+\texttt{Finset.sum\_range\_id}.  The present audit concerns the v26 theorem
+closure; it is not a claim that every historical module in the repository is
+globally free of \texttt{native\_decide}.
 
-The v20 \texttt{HurtadoZeta23} modules retain a distinct software provenance:
+The v26 \texttt{HurtadoZeta23} modules retain a distinct software provenance:
 they compile as an overlay on the pinned Anthropic
 \texttt{formal-math/zeta23} source tree at commit
 \texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
 together with the pinned Lean/Mathlib toolchain recorded in the repository.
-Consequently the manuscript's logical derivation without importing the
-Alpöge--Furman theorem as a premise must not be conflated with clean-room
-software independence of the formalization.
+The proof state described here was independently reproduced by GitHub Actions
+for project commit
+\texttt{e0f67e112f59b31a4278e1d56377f5e4f1628836}.  Consequently the
+manuscript's logical derivation without importing the Alpöge--Furman theorem as
+a premise must not be conflated with clean-room software independence of the
+formalization.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
-optimality theorem.  Thus the written mathematical proof is self-contained relative to the
-classical analytic and matrix results just listed and to the stated Arb/FLINT
-certificate; it does not claim to reprove those classical theorems from first
-principles.  The separate Lean verification should be read with the software
-provenance in the preceding paragraph.
+optimality theorem.  Thus the written mathematical proof is self-contained
+relative to the classical analytic and matrix results just listed; it does not
+claim to reprove those classical theorems from first principles.  The archived
+Arb/FLINT certificate remains an independent reproducibility artifact, whereas
+the current v26 Lean theorem path closes the finite seven-point step internally.
+The formal verification should be read with the software provenance in the
+preceding paragraph.
 
 \appendix
 
@@ -3342,9 +3386,33 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 
 
 
-\section{Certificate metadata}\label{app:cert}
+\section{Certificate metadata and formal verification}\label{app:cert}
 
-\paragraph{Code and certificate availability.}
+\paragraph{Current v26 formal certificate.}
+The current formal theorem path is recorded on branch
+\texttt{v26-package-e-staging}.  The proof code audited before this manuscript
+update is commit
+\texttt{e0f67e112f59b31a4278e1d56377f5e4f1628836}.  Its generated exact E3
+stack closes the finite chain
+\[
+511\longrightarrow231\longrightarrow23\longrightarrow5
+\longrightarrow\varnothing,
+\]
+and the composed Lean theorems reach both the published epsilon form and the
+literal liminf theorem.  For that exact commit, the GitHub Actions workflows
+\texttt{v26 published liminf theorem} and
+\texttt{v26 published liminf smoke} both completed successfully.  The former
+reconstructed the pinned \texttt{formal-math/zeta23} overlay, generated the
+complete exact E3 stack, kernel-checked
+\texttt{HurtadoZeta23.V26PublishedLiminf}, and recorded the axiom report; the
+latter independently typechecked the literal liminf wrapper.  The reported
+axiom closure of \texttt{v26\_published\_liminf} is
+\[
+\{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\},
+\]
+with no \texttt{sorryAx}.
+
+\paragraph{Historical Arb/FLINT certificate.}
 The complete Arb/FLINT verifier, the archived 256-bit certification run,
 machine-readable parameters, execution logs, environment information,
 SHA-256 hashes, and reproduction instructions are publicly available in the
@@ -3454,7 +3522,8 @@ The contradiction margin is the positive rational
 As an independent non-Lean reproducibility check, the accompanying script
 \texttt{verify\_improved\_bound.py} verifies these identities and rigorously
 encloses the transcendental quantities entering the final decimal bound; the
-signed kernel inequality itself is also proved analytically in Lean v20.
+signed kernel inequality itself is proved analytically in Lean v20 and is
+incorporated into the v26 closed theorem path.
 
 \begin{thebibliography}{99}
 
