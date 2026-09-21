@@ -269,8 +269,8 @@ arithmetic discharge the former signed-kernel certificate input\\
 Lean exact seven-point closure (v26) & \texttt{HurtadoZeta23} v26 modules;
 exact rational E3 reduction \(511\to231\to23\to5\to\varnothing\) discharges
 the six-gap hard core and yields the article seven-point inequality\\
-Lean published endpoint (v26) & \texttt{v26\_published\_eps\_form} and
-\texttt{v26\_published\_liminf}; the literal liminf wrapper uses formalized
+Lean published endpoint (v26) & \path{v26_published_eps_form} and
+\path{v26_published_liminf}; the literal liminf wrapper uses formalized
 Riemann--von Mangoldt to obtain eventual positivity of \(N(T,2T)\)\\
 \bottomrule
 \end{tabular}
@@ -888,9 +888,9 @@ discard/contraction rounds
  511\longrightarrow231\longrightarrow23\longrightarrow5,
 \]
 after which exact rational lower bounds close the final five survivors.  These
-modules compose to \texttt{v26\_E3\_close\_511}, then to
-\texttt{v26\_gap\_hard\_core\_claim}, and finally to
-\texttt{v26\_article\_seven\_point\_inequality}.  No Arb/FLINT enclosure
+modules compose to \path{v26_E3_close_511}, then to
+\path{v26_gap_hard_core_claim}, and finally to
+\path{v26_article_seven_point_inequality}.  No Arb/FLINT enclosure
 is invoked by this Lean theorem path.
 
 As an independent historical certification route, the archived verifier performs exhaustive interval branch-and-bound with
@@ -1119,7 +1119,7 @@ then obtains directed rational bounds for the elementary transcendental terms
 from alternating Taylor estimates and certified bounds for \(\pi\), proves the
 denominator positive, and closes the resulting strict rational inequality.
 As an independent non-Lean reproducibility check,
-\texttt{verify\_improved\_bound.py} certifies the same signed inequality by
+\path{verify_improved_bound.py} certifies the same signed inequality by
 exact rational comparisons and rigorous enclosures.
 In particular \(k(g_0)>0\), and the preceding monotonicity shows that
 \(k(g)\ge k(g_0)>0\) for \(0\le g\le g_0\).  Squaring therefore preserves the
@@ -1510,9 +1510,9 @@ through the chain
  511\longrightarrow231\longrightarrow23\longrightarrow5
  \longrightarrow\varnothing .
 \]
-The resulting theorem \texttt{v26\_gap\_hard\_core\_claim} feeds
-\texttt{v26\_article\_seven\_point\_inequality}; hence
-\texttt{v26\_published\_eps\_form} has no
+The resulting theorem \path{v26_gap_hard_core_claim} feeds
+\path{v26_article_seven_point_inequality}; hence
+\path{v26_published_eps_form} has no
 \texttt{ArchivedSevenPointClaim} argument.
 
 The literal published endpoint is formalized separately in
@@ -1523,7 +1523,7 @@ The literal published endpoint is formalized separately in
 \]
 and derives eventual positivity of the denominator directly from the
 formalized Riemann--von Mangoldt theorem.  From
-\texttt{v26\_published\_eps\_form} it obtains the eventual lower bound for
+\path{v26_published_eps_form} it obtains the eventual lower bound for
 every positive \(\varepsilon\), bounds the ratio above by one using the
 trivial counting chain, and concludes
 \[
@@ -1533,32 +1533,38 @@ trivial counting chain, and concludes
 \]
 
 The transitive axiom audit for
-\texttt{v20\_kernel\_signed\_claim},
-\texttt{v26\_article\_seven\_point\_inequality},
-\texttt{v26\_published\_eps\_form}, and
-\texttt{v26\_published\_liminf} reports exactly
+\path{v20_kernel_signed_claim},
+\path{v26_article_seven_point_inequality},
+\path{v26_published_eps_form}, and
+\path{v26_published_liminf} reports exactly
 \[
  \{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
 \]
 The CI checks the final theorem path and rejects \texttt{sorryAx}.  Earlier in
 the project, an inherited \texttt{native\_decide} proof of the finite
 identity \(\sum_{x<449}(450-(1+x))=101025\) was replaced by a symbolic proof
-using bounded natural arithmetic, \texttt{Finset.sum\_range\_reflect}, and
-\texttt{Finset.sum\_range\_id}.  The present audit concerns the v26 theorem
+using bounded natural arithmetic, \path{Finset.sum_range_reflect}, and
+\path{Finset.sum_range_id}.  The present audit concerns the v26 theorem
 closure; it is not a claim that every historical module in the repository is
 globally free of \texttt{native\_decide}.
 
 The v26 \texttt{HurtadoZeta23} modules retain a distinct software provenance:
 they compile as an overlay on the pinned Anthropic
 \texttt{formal-math/zeta23} source tree at commit
-\texttt{fbdc36bbf17d20af3fd0447c6d1a8a02773c9844}~\cite{AnthropicFormal26},
+\begin{center}
+\small\ttfamily
+fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+\end{center}
 together with the pinned Lean/Mathlib toolchain recorded in the repository.
 The proof state described here was independently reproduced by GitHub Actions
 for project commit
-\texttt{e0f67e112f59b31a4278e1d56377f5e4f1628836}.  Consequently the
-manuscript's logical derivation without importing the Alpöge--Furman theorem as
-a premise must not be conflated with clean-room software independence of the
-formalization.
+\begin{center}
+\small\ttfamily
+e0f67e112f59b31a4278e1d56377f5e4f1628836
+\end{center}
+Consequently the manuscript's logical derivation without importing the
+Alpöge--Furman theorem as a premise must not be conflated with clean-room
+software independence of the formalization.
 
 The pressure vector \eqref{eq:p} is an explicit certified improvement, not an
 optimality theorem.  Thus the written mathematical proof is self-contained
@@ -3404,9 +3410,9 @@ literal liminf theorem.  For that exact commit, the GitHub Actions workflows
 \texttt{v26 published liminf smoke} both completed successfully.  The former
 reconstructed the pinned \texttt{formal-math/zeta23} overlay, generated the
 complete exact E3 stack, kernel-checked
-\texttt{HurtadoZeta23.V26PublishedLiminf}, and recorded the axiom report; the
+\path{HurtadoZeta23.V26PublishedLiminf}, and recorded the axiom report; the
 latter independently typechecked the literal liminf wrapper.  The reported
-axiom closure of \texttt{v26\_published\_liminf} is
+axiom closure of \path{v26_published_liminf} is
 \[
 \{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\},
 \]
@@ -3520,7 +3526,7 @@ The contradiction margin is the positive rational
  \frac{6363}{30868750}>0.
 \]
 As an independent non-Lean reproducibility check, the accompanying script
-\texttt{verify\_improved\_bound.py} verifies these identities and rigorously
+\path{verify_improved_bound.py} verifies these identities and rigorously
 encloses the transcendental quantities entering the final decimal bound; the
 signed kernel inequality itself is proved analytically in Lean v20 and is
 incorporated into the v26 closed theorem path.
