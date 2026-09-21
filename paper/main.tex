@@ -457,9 +457,10 @@ proposition.  Its four assertions are derived in
 Appendices~\ref{app:inputI}--\ref{app:inputIV} from the trust base stated below.
 
 \begin{proposition}[Analytic/Gabor package]\label{prop:analytic-package}
-Let the zeros in $I'$ be partitioned into simple critical-line zeros
-$\cS_1$, distinct multiple critical-line zeros $\cS_2$, and unordered
-horizontal pairs
+Let $N(I')$ denote the number of nontrivial zeros with ordinates in $I'$,
+counted with analytic multiplicity.  Partition the distinct zeros in $I'$
+into simple critical-line zeros $\cS_1$, distinct multiple critical-line
+zeros $\cS_2$, and unordered horizontal pairs
 \[
  \{\rho,\rho^\sharp\},\qquad \rho^\sharp=1-\overline\rho,
 \]
@@ -534,7 +535,7 @@ The stability-enhanced rank--trace inequality used next is due to
 Jo~\cite{Jo26}; we include the proof to fix the normalization and the
 precise defect functional used in the present argument.
 
-Define the convex function
+Define
 \begin{equation}\label{eq:Psi}
  \Psi(t)=
  \begin{cases}
@@ -544,7 +545,10 @@ Define the convex function
  \qquad
  \cD(M):=\tr\Psi(M)
 \end{equation}
-for $M\succeq0$.
+for $M\succeq0$.  The function $\Psi$ is nonnegative and convex on
+$[0,\infty)$: its derivative on $[0,2]$ is $2(t-1)$, the affine branch has
+slope $2$, and the one-sided derivatives agree at $t=2$.  This is the only
+convexity property required by the pinching arguments below.
 
 \begin{lemma}[Stability-enhanced rank--trace inequality]\label{lem:stable}
 Let $V$ be a $d\times r$ matrix whose columns have norm at most one.  Put
@@ -563,8 +567,17 @@ Since $\tr((P-Q_-)Q_+)=\tr(PQ_+)\ge0$,
  \|P+Q\|_{\Frob}^2
  \ge \|P-Q_-\|_{\Frob}^2+\|Q_+\|_{\Frob}^2.
 \]
-If $q>0$, then $q^2\ge4q-4$; summing over the at most $b$ positive
-eigenvalues of $Q$ gives
+If $q>0$, then
+\[
+ q^2-(4q-4)=(q-2)^2\ge0.
+\]
+If $Q_+$ has $k\le b$ positive eigenvalues, summing this inequality gives
+\[
+ \|Q_+\|_{\Frob}^2
+ \ge4\tr Q_+-4k
+ \ge4\tr Q_+-4b.
+\]
+Thus
 \begin{equation}\label{eq:qplus}
  \|Q_+\|_{\Frob}^2\ge4\tr Q_+-4b.
 \end{equation}
