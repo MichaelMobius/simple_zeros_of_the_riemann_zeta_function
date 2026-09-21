@@ -3196,8 +3196,12 @@ are real and even; modulus squares may be retained throughout.
 
 Let $L\to\infty$, put
 \[
- h=\frac{2\pi}{L},\qquad \tau_k=kh,
+ h=\frac{2\pi}{L},\qquad \tau_k=T+kh.
 \]
+Thus the infinite lattice is the translate of the critical lattice by the
+left endpoint $T$, exactly as in the finite sampling family used in the main
+argument.  The translation plays no role in the aliasing calculation because
+all nonzero dual-lattice terms vanish.
 and let $\phi_L\in C_c^2(\mathbb R)$ be a real tapered window with exact support
 $[-L/2,L/2]$.  Write
 \[
@@ -3222,9 +3226,15 @@ The required form of Input IV is the following.
 
 \begin{theorem}[Self-contained Input IV]\label{aiv:thm:IV}
 Fix $R>0$.  Let $\gamma,\gamma'$ be points whose normalized coordinates
-$x=L\gamma/(2\pi)$ and $x'=L\gamma'/(2\pi)$ are at least $L^2$ grid cells
-from both ends of the finite sampling interval, and suppose
-$|x-x'|\le R$.  Then the normalized finite-grid Gram entry satisfies
+\[
+ x=\frac{\gamma-T}{h}
+   =\frac{L(\gamma-T)}{2\pi},
+ \qquad
+ x'=\frac{\gamma'-T}{h}
+   =\frac{L(\gamma'-T)}{2\pi}
+\]
+are at least $L^2$ grid cells from both ends of the finite sampling interval,
+and suppose $|x-x'|\le R$.  Then the normalized finite-grid Gram entry satisfies
 \[
  \frac{1}{a_LL^2}
  \sum_{\tau_j\ {\rm in\ the\ finite\ grid}}
@@ -3239,8 +3249,8 @@ uniformly for $|x-x'|\le R$.
 \subsection{The infinite-grid identity}
 
 \begin{lemma}[Critical-grid Poisson identity]\label{aiv:lem:poisson}
-Assume $\phi\in L^2(\R)$ is compactly supported in an interval of length at
-most $L$ and is sufficiently regular for Poisson summation.  Then
+Assume $\phi\in C_c^2(\R)$ is supported in an interval of length at most
+$L$, and let $\tau_k=T+2\pi k/L$.  Then
 \[
  \sum_{k\in\mathbb Z}
  \widehat\phi(\tau-\tau_k)
@@ -3267,19 +3277,23 @@ gives
  \int_{\R}\phi(u)\overline{\phi(u-s)}
  e^{-i(\tau-\tau')u}\,du.
 \]
-Poisson summation on the lattice $h\mathbb Z$, $h=2\pi/L$, gives
+Because $\phi\in C_c^2$, the function $F_{\tau,\tau'}$ decays like
+$O(|\xi|^{-4})$, while its Fourier transform is compactly supported; hence
+the Poisson summation formula applies absolutely.  On the shifted lattice
+$T+h\mathbb Z$, $h=2\pi/L$, it gives
 \[
- \sum_{k\in\mathbb Z}F_{\tau,\tau'}(kh)
+ \sum_{k\in\mathbb Z}F_{\tau,\tau'}(T+kh)
  =
  \frac1h\sum_{m\in\mathbb Z}
- \widehat F_{\tau,\tau'}(mL).
+ e^{imLT}\widehat F_{\tau,\tau'}(mL).
 \]
 Because $\phi$ is supported in an interval of length at most $L$, the
 translated supports of $\phi(u)$ and $\phi(u-mL)$ are disjoint for
-$m\ne0$, apart from endpoints of measure zero.  Thus only $m=0$ survives.
+$m\ne0$, apart from endpoints of measure zero.  Thus every nonzero
+dual-lattice term vanishes; the phase $e^{imLT}$ is therefore irrelevant.
 Since $1/h=L/(2\pi)$,
 \[
- \sum_{k\in\mathbb Z}F_{\tau,\tau'}(kh)
+ \sum_{k\in\mathbb Z}F_{\tau,\tau'}(T+kh)
  =
  L\int_{\R}|\phi(u)|^2e^{-i(\tau-\tau')u}\,du.
 \]
@@ -3363,14 +3377,27 @@ Moreover, uniformly for $|x|\le R$,
 \end{lemma}
 
 \begin{proof}
-Put $u=Lt$.  Outside a set of $t$-measure $O(L^{-1})$ arising from the
-fixed-width taper,
+Put $u=Lt$ and
+$f_L(t)=\phi_L(Lt)^2\mathbf 1_{[-1/2,1/2]}(t)$.  Outside a set of
+$t$-measure $O(L^{-1})$ arising from the fixed-width taper,
 \[
- \phi_L(Lt)^2=\cos(\sqrt2 t)
+ f_L(t)=\cos(\sqrt2 t).
 \]
-on $[-1/2,1/2]$.  Uniform boundedness of the window makes the taper
-contribution $O(L^{-1})$ after normalization.  Dominated convergence,
-uniformly for $|x|\le R$, gives
+Uniform boundedness of the window therefore gives
+\[
+ \left\|f_L-\cos(\sqrt2\,\cdot)\right\|_{L^1([-1/2,1/2])}
+ =O(L^{-1}).
+\]
+In particular, for every real $x$,
+\[
+ \left|
+ \int_{-1/2}^{1/2}
+ (f_L(t)-\cos(\sqrt2 t))e^{-i2\pi xt}\,dt
+ \right|
+ \le O(L^{-1}),
+\]
+so the Fourier convergence is uniform on every compact set (indeed uniformly
+in all $x$).  Consequently
 \[
  a_L
  =
@@ -3385,8 +3412,10 @@ and
  \int_{-1/2}^{1/2}
  \cos(\sqrt2 t)e^{-i2\pi xt}\,dt+o(1).
 \]
-The odd imaginary part vanishes.  Dividing by $a_L=K(0)+o(1)$ proves the
-claim.
+The odd imaginary part vanishes.  Since
+$K(0)=\sqrt2\sin(1/\sqrt2)>0$, one also has $a_L\ge K(0)/2$ for all
+sufficiently large $L$.  Division by $a_L$ is therefore uniform and proves
+the claim.
 \end{proof}
 
 The overlap has the explicit form
