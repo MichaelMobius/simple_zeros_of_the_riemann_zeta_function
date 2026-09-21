@@ -2245,8 +2245,8 @@ the external theorem used here is
 \end{align}
 Here $z_\rho=-i(\rho-\tfrac12)$ and zeros are counted with multiplicity.
 This is the standard Guinand--Weil explicit formula in the present Fourier
-normalization; see Weil~\cite{Weil52} and, for a modern formulation with
-explicit strip hypotheses, Iwaniec--Kowalski~\cite[Theorem~5.12]{IK04}.
+normalization; see Weil~\cite{Weil52} and the explicit-formula discussion in
+Iwaniec--Kowalski~\cite[\S5.5]{IK04}.
 We apply it to
 $q=f*\widetilde g$, $\widetilde g(u)=\overline{g(-u)}$.
 Since $f,g\in C_c^2([-L/2,L/2])$, one has
@@ -2914,9 +2914,13 @@ We use the weighted Montgomery--Vaughan Hilbert inequality
 \delta_r=\min_{s\ne r}|\lambda_r-\lambda_s|,
 \]
 with an absolute implied constant; no sharp constant is needed.
-For $\lambda_n=\log n$,
-$\delta_n^{-1}\ll n$, since adjacent integers already have logarithmic
-spacing $\gg1/n$.  Hence
+Only prime powers contribute, because $a_n=\Lambda(n)/\sqrt n$.  Apply the
+Montgomery--Vaughan inequality to the distinct frequencies
+$\lambda_n=\log n$ over those prime powers.  If $n'$ is the nearest distinct
+prime power to $n$, then $|n'-n|\ge1$, and
+$|\log n'-\log n|\ge\log(1+1/n)\ge1/(2n)$ after interchanging the two
+indices if necessary.  Thus
+$\delta_n^{-1}\le2n$.  Hence
 \[
  \sum_{n\le X}\frac{a_n^2}{\delta_n}
  \ll\sum_{n\le X}\Lambda(n)^2\ll XL,
