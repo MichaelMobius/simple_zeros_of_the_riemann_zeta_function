@@ -34,15 +34,6 @@ def v26SimpleRatio (T : ℝ) : ℝ :=
   (Zeta23.N0simple T (2 * T) : ℝ) /
     (Zeta23.Ncount T (2 * T) : ℝ)
 
-/-- Eventually the dyadic zero count is at least one.  This is proved on the
-lightweight v17/v26 import path, avoiding the historical 262-point assembly. -/
-theorem v26_v26_eventually_one_le_globalN :
-    ∀ᶠ T : ℝ in atTop,
-      (1 : ℝ) ≤ globalN T := by
-  have h :=
-    zetaDyadicN_tendsto_atTop.eventually_ge_atTop (1 : ℝ)
-  simpa [zetaDyadicN, globalN] using h
-
 /-- The published epsilon-form implies the corresponding eventual lower bound
 for the normalized ratio. -/
 theorem v26_eventually_publishedConstant_sub_eps_le_ratio
