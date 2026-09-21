@@ -905,12 +905,11 @@ the pressure term alone.  The independent verifier checks this rational
 identity before beginning the finite search.
 
 The 256-bit run reports \texttt{verified=true}, with $1{,}119{,}372$
-visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same frozen
-verifier also succeeds at 128-bit working precision.  The complete 256-bit
-artifact is publicly archived in the frozen release snapshot
-\cite{Hurtado26Artifact}, identified by its release tag, commit SHA, and
-cryptographic hashes.  Appendix~\ref{app:cert} records the hashes and
-environment.
+visited nodes, $559{,}038$ splits, and maximum depth $39$.  The same verifier
+also succeeds at 128-bit working precision.  The complete 256-bit artifact is
+stored in the companion repository snapshot~\cite{Hurtado26Artifact},
+including the verifier, execution log, environment lock, and cryptographic
+hashes.  Appendix~\ref{app:cert} records the corresponding metadata.
 \end{proof}
 
 \begin{corollary}[Coarse span consequence]\label{cor:energy}
@@ -3740,14 +3739,13 @@ of GPT-5.6 Sol in the refinement workflow.
 
 \bibitem{Hurtado26Artifact}
 M.~Hurtado,
-\emph{Reproducibility artifact for ``A position-weighted refinement for
-simple zeros of the Riemann zeta function''},
-release \texttt{v1.0.0-paper}, 13 August 2026,
-GitHub repository
+\emph{Reproducibility artifact for the position-weighted seven-point
+inequality and formal simple-zero bound},
+companion GitHub repository
 \url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function},
-release snapshot
-\url{https://github.com/MichaelMobius/simple_zeros_of_the_riemann_zeta_function/releases/tag/v1.0.0-paper},
-commit \texttt{c57f53e}.
+formal-verification snapshot
+\texttt{e0f67e112f59b31a4278e1d56377f5e4f1628836};
+the interval certificate is stored under \texttt{certification/arb\_256}.
 
 \end{thebibliography}
 
