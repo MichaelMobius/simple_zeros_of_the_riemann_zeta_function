@@ -2772,7 +2772,10 @@ $B^2\ll\ell^2+X$ to obtain \eqref{aiii:eq:end-final}.
 \end{proof}
 
 At $L=\ell$ and $X\asymp T$, the error in \eqref{aiii:eq:end-final} is
-$o(TL\ell^2)$.
+indeed $o(TL\ell^2)$: its $X$-part is
+$O(T\ell^2\log\ell)$, smaller than the target $T\ell^3$ by the factor
+$O(\log\ell/\ell)$, while the remaining
+$O(\ell^4\log\ell)$ term is smaller still.
 
 
 \subsection{Evaluation of the continuous second moment}
@@ -2924,12 +2927,21 @@ Combining \eqref{aiii:eq:D}--\eqref{aiii:eq:O1},
  +O(L^2X).
 \end{equation}
 
-By Stieltjes partial summation from \eqref{aiii:eq:primepower2}, and using
-$\|g'\|_\infty\le\|(\phi^2)'\|_1=O(1)$,
+By Stieltjes partial summation from \eqref{aiii:eq:primepower2},
 \begin{equation}\label{aiii:eq:partial}
  \sum_{n\le X}\frac{\Lambda(n)^2}{n}g(\log n)
  =\int_0^L y g(y)\,dy+O(L^2).
 \end{equation}
+For completeness, write
+$A_2(x)=\sum_{n\le x}\Lambda(n)^2/n
+=\tfrac12\log^2x+O(\log x)$.  Since the window is uniformly bounded,
+$\|g\|_\infty\ll L$ and
+$\|g'\|_\infty\le
+\|(\phi^2)'\|_1\|\phi^2\|_\infty=O(1)$.
+Integration by parts against the $O(\log x)$ remainder, after the change of
+variables $y=\log x$, contributes
+$O(L\|g\|_\infty+\int_0^L y|g'(y)|\,dy)=O(L^2)$.
+The main term is exactly $\int_0^L yg(y)\,dy$.
 
 \subsubsection{Mixed and pole terms}
 
@@ -2964,9 +2976,22 @@ $y\ge\log2$,
  \left|\int_I m(\tau')e^{iy\tau'}d\tau'\right|
  \ll\frac{\ell L}{y}.
 \]
-Substitution of the defining formula for $P_X$ and
-$\sum_{n\le X}\Lambda(n)/(\sqrt n\log n)\ll\sqrt X/L$ yields
-$\mathcal M[\mu,P_X]\ll\ell\sqrt X$.
+Substitution of the defining formula for $P_X$ gives
+\[
+ |\mathcal M[\mu,P_X]|
+ \ll \ell L
+ \sum_{n\le X}\frac{\Lambda(n)}{\sqrt n\log n}.
+\]
+The required weighted prime-power bound follows directly from
+\eqref{aiii:eq:primepower}: split at $\sqrt X$.  The range
+$n\le\sqrt X$ contributes $O(X^{1/4})$, while on
+$\sqrt X<n\le X$ one has $1/\log n\le2/L$, giving
+$O(\sqrt X/L)$.  Hence
+\[
+ \sum_{n\le X}\frac{\Lambda(n)}{\sqrt n\log n}
+ \ll\frac{\sqrt X}{L},
+\]
+and therefore $\mathcal M[\mu,P_X]\ll\ell\sqrt X$.
 
 For the remaining terms use on $I$
 \[
@@ -2996,26 +3021,43 @@ and
 
 \subsection{Scale-free limit}
 
-Assume the fixed-width tapered family satisfies
+Put $f_L(s):=\phi_L(Ls)^2$.  For the fixed-width tapered family used in
+the paper, $f_L$ is uniformly bounded, even, supported on
+$[-1/2,1/2]$, and
 \[
- \phi_L(Ls)^2=v(s)+o(1)
+ f_L\to v
 \]
-in $L^1([-1/2,1/2])$, with $v$ bounded and supported on
-$[-1/2,1/2]$.  Then
+in $L^1([-1/2,1/2])$, where $v$ is bounded, even, and supported on the same
+interval.  The uniform $L^\infty$ bound upgrades this to the convergence
+needed for the quadratic quantities:
 \[
  a\to A:=\int_{-1/2}^{1/2}v(s)\,ds,
  \qquad
  b\to B_v:=\int_{-1/2}^{1/2}v(s)^2\,ds.
 \]
-Writing
+Moreover
 \[
- G_v(r)=\int v(s)v(s-r)\,ds,
+ \frac{g(Lr)}{L}
+ =\int f_L(s)f_L(r-s)\,ds
+ \longrightarrow
+ G_v(r):=\int v(s)v(r-s)\,ds
 \]
-one has $g(Lr)=LG_v(r)+o(L)$ in $L^1$, and hence
-\begin{equation}\label{aiii:eq:J}
+in $L^1(\mathbb R)$, because convolution is continuous from
+$L^1\times L^1$ to $L^1$ and the family is uniformly $L^1$-bounded.
+Since all these functions are supported in $[-1,1]$, multiplication by
+$|r|$ preserves the convergence.  Consequently
+\begin{align}
  \frac{2}{L^3}\int_0^L yg(y)\,dy
- \to J_v:=\iint_{[-1/2,1/2]^2}|s-t|v(s)v(t)\,ds\,dt.
-\end{equation}
+ &=2\int_0^1 r\,\frac{g(Lr)}{L}\,dr \nonumber\\
+ &\longrightarrow
+ 2\int_0^1 rG_v(r)\,dr
+ =J_v,
+ \label{aiii:eq:J}
+\end{align}
+where
+\[
+ J_v:=\iint_{[-1/2,1/2]^2}|s-t|v(s)v(t)\,ds\,dt.
+\]
 
 Combining Proposition~\ref{aiii:prop:end}, \eqref{aiii:eq:arch}, \eqref{aiii:eq:prime},
 \eqref{aiii:eq:partial}, Proposition~\ref{aiii:prop:secondary}, and
@@ -3042,7 +3084,9 @@ Thus
  c_1(v)=\frac{A^2}{B_v+J_v}.
 \]
 Together with \eqref{aiii:eq:first}, this proves the two required prime-side
-moments for every admissible profile.
+moments for every profile arising from a uniformly bounded fixed-width tapered
+family as above.  In particular, Appendix~\ref{app:inputIV} verifies these
+hypotheses for the Montgomery--Taylor family used in the main argument.
 
 \subsection{Closing the Montgomery--Taylor optimization}
 
