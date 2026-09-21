@@ -3573,6 +3573,26 @@ Thus the numerator, denominator, constant, and limiting operation match the
 objects displayed in Theorem~\ref{thm:main}; this is the statement-alignment
 bridge between the paper theorem and the formal theorem.
 
+\paragraph{Seven-point statement alignment.}
+The formal local theorem is the same universal statement as
+Proposition~\ref{prop:cert}: for every six-tuple
+$g=(g_1,\ldots,g_6)\in\mathbb R_{\ge0}^6$,
+\[
+ \sum_{j=1}^6p_jg_j+
+ \sum_{r=1}^6\frac{2}{7-r}
+ \sum_{i=1}^{7-r}
+ w(g_i+\cdots+g_{i+r-1})
+ \ge\frac{39}{10000},
+\]
+with
+\[
+ p=10^{-7}(2714,3733,3553,3553,3733,2714)
+\]
+and with $w=k^2$ for the normalized limiting kernel of
+Section~\ref{sec:kernel}.  Thus the formal finite certificate, the local
+inequality used by Proposition~\ref{prop:redist}, and the displayed
+Proposition~\ref{prop:cert} have identical mathematical data.
+
 \paragraph{Finite-certificate map.}
 A strict six-gap counterexample is assigned to one of 511 bootstrap codes.
 The exact generated certificate then has the following accounting:
