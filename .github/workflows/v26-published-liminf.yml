@@ -4,7 +4,8 @@ on:
   push:
     branches: [v26-package-e-staging]
     paths:
-      - 'lean_harness/v21_analytic/V26PublishedLiminf.lean'
+      - 'lean_harness/**/*.lean'
+      - 'certification/v26_exact/**/*.py'
       - '.github/workflows/v26-published-liminf.yml'
   workflow_dispatch:
 
@@ -102,6 +103,28 @@ jobs:
             echo 'ERROR: literal liminf theorem depends on sorryAx'
             exit 1
           fi
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path("/tmp/v26-published-liminf-axioms.log").read_text()
+          m = re.search(
+              r"'HurtadoZeta23\.v26_published_liminf' depends on axioms: \[([^\]]*)\]",
+              text,
+          )
+          if m is None:
+              raise SystemExit("ERROR: could not parse liminf axiom report")
+          got = {x.strip() for x in m.group(1).split(",") if x.strip()}
+          expected = {"propext", "Classical.choice", "Quot.sound"}
+          if got != expected:
+              raise SystemExit(
+                  "ERROR: unexpected axiom closure: "
+                  + repr(sorted(got))
+                  + "; expected "
+                  + repr(sorted(expected))
+              )
+          print("Exact axiom whitelist OK:", ", ".join(sorted(got)))
+          PY
 
       - name: Upload liminf axiom report
         if: always()
