@@ -571,17 +571,25 @@ eigenvalues of $Q$ gives
 
 Let $p_1\ge\cdots\ge p_r\ge0$ be the eigenvalues of $M=V^*V$
 (counted with multiplicity, hence including any zeros).  The nonzero
-eigenvalues of $P=VV^*$ are the same; extend the eigenvalue list of $P$ by
-zeros as necessary.  Likewise write
-$n_1\ge n_2\ge\cdots\ge0$ for the eigenvalues of $Q_-$ and extend either
-list by zeros to a common length.  Von Neumann's trace inequality~\cite{Bhatia97} then implies
+eigenvalues of $P=VV^*$ are the same.  Pad the spectra of $P$ and $Q_-$ by
+zeros to a common length $q\ge\max\{d,r\}$, keeping both lists in
+nonincreasing order; thus $p_i=0$ for $i>r$.  Von Neumann's trace
+inequality~\cite{Bhatia97} gives
 \[
- \tr(PQ_-)\le\sum_{i\le r}p_i n_i.
+ \tr(PQ_-)\le\sum_{i=1}^{q}p_i n_i
+ =\sum_{i=1}^{r}p_i n_i.
 \]
-Consequently
+Using the spectral formulas for the Frobenius norm and trace therefore gives
 \[
  \|P-Q_-\|_{\Frob}^2+4\tr Q_-
- \ge\sum_{i\le r}\bigl((p_i-n_i)^2+4n_i\bigr).
+ \ge
+ \sum_{i=1}^{q}\bigl((p_i-n_i)^2+4n_i\bigr).
+\]
+For $i>r$ one has $p_i=0$, so the corresponding term is
+$n_i^2+4n_i\ge0$.  Dropping those terms yields
+\[
+ \|P-Q_-\|_{\Frob}^2+4\tr Q_-
+ \ge\sum_{i=1}^{r}\bigl((p_i-n_i)^2+4n_i\bigr).
 \]
 For fixed $p\ge0$,
 \[
@@ -630,7 +638,15 @@ Then
 
 \begin{proof}
 Apply Lemma~\ref{lem:stable} to $\widehat A=P_1+Q'$ with $r=s_1$ and
-$b=s_2+p$.  By \eqref{eq:Nlower} and \eqref{eq:index},
+$b=s_2+p$.  By \eqref{eq:Nlower},
+\[
+ 2N(I')\ge2s_1+4s_2+4p,
+\]
+hence
+\[
+ 3s_1+4s_2+4p\le s_1+2N(I').
+\]
+Together with \eqref{eq:index}, this gives
 \begin{align*}
  \|\widehat A\|_{\Frob}^2
  &\ge4\tr\widehat A-3s_1-4s_2-4p+\cD(M)\\
@@ -640,13 +656,20 @@ Hence
 \begin{equation}\label{eq:s1}
  s_1\ge4\tr\widehat A-\|\widehat A\|_{\Frob}^2-2N(I')+\cD(M).
 \end{equation}
-Apply the independently proved tail estimate~\eqref{eq:tail-input}.  Pinching $M$ to the
-retained central principal block and its complement does not increase
-$\tr\Psi$: by the standard pinching/majorization principle for Hermitian
-matrices~\cite{Bhatia97}, pinching is a random-unitary average and the spectral
-trace functional $X\mapsto\tr\Psi(X)$ is convex and unitarily invariant.
-No operator convexity of $\Psi$ is required.  Thus
-$\cD(M)\ge\cD(M^\circ)$.  Moreover,
+Apply the independently proved tail estimate~\eqref{eq:tail-input}.  Pinch
+$M$ to the retained central principal block and its complementary principal
+block.  By the standard pinching/majorization principle for Hermitian
+matrices~\cite{Bhatia97}, pinching is a random-unitary average and the
+spectral trace functional $X\mapsto\tr\Psi(X)$ is convex and unitarily
+invariant; no operator convexity of $\Psi$ is required.  Therefore
+\[
+ \cD(M)
+ \ge
+ \cD(M^\circ)+\cD(M^{\rm rest})
+ \ge
+ \cD(M^\circ),
+\]
+because $M\succeq0$ and $\Psi(t)\ge0$ for $t\ge0$.  Moreover,
 \[
  N(I')=N(T,2T)+o(N(T,2T)).
 \]
@@ -663,9 +686,20 @@ and hence
 \begin{equation}\label{eq:N0-from-s1}
  N_0^s(T,2T)\ge s_1-o(N(T,2T)).
 \end{equation}
-Substitution of \eqref{eq:tail-input}, \eqref{eq:TDmoments}, and
-\eqref{eq:c1} into \eqref{eq:s1}, followed by \eqref{eq:N0-from-s1}, gives
-\eqref{eq:global}.
+Substitution of \eqref{eq:tail-input} and \eqref{eq:TDmoments} into
+\eqref{eq:s1} gives
+\begin{align*}
+ s_1
+ &\ge
+ \left(4-\frac1{c_1^*}\right)N(T,2T)
+ -2N(I')+\cD(M^\circ)-o(N)\\
+ &=
+ \left(2-\frac1{c_1^*}\right)N(T,2T)
+ +\cD(M^\circ)-o(N),
+\end{align*}
+because $N(I')=N(T,2T)+o(N)$.  By \eqref{eq:c1},
+$2-1/c_1^*=H_{\rm MT}$.  Combining this with
+\eqref{eq:N0-from-s1} proves \eqref{eq:global}.
 \end{proof}
 
 \section{The limiting overlap kernel}\label{sec:kernel}
