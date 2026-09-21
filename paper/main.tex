@@ -2031,9 +2031,27 @@ Splitting at $j=T$ gives
 \[
  \ll \frac{\log T}{D_0^2}.
 \]
-The lower positive tail $0<\gamma<T-D_0$ is identical.  Zeros with
-$\gamma\le0$ are at distance $\gg T$ from $I$ and contribute
-$O(T^{-2}\log T)$, which is smaller.  Adding the three ranges proves the
+For the lower positive tail $0<\gamma<T-D_0$, group backwards from
+$T-D_0$.  The local zero-count estimate is at most $O(\log T)$ throughout
+this range, so
+\[
+ \sum_{0<\gamma<T-D_0}m_\rho\,
+ \operatorname{dist}(\gamma,I)^{-3}
+ \ll
+ \log T\sum_{j\ge0}(D_0+j)^{-3}
+ \ll\frac{\log T}{D_0^2}.
+\]
+For the negative tail, conjugation symmetry reduces the count in
+$[-u-1,-u)$ to the same $O(\log(u+3))$ bound as on the positive side.
+Since its distance from $I$ is at least $T+u$,
+\[
+ \sum_{\gamma\le0}m_\rho\,
+ \operatorname{dist}(\gamma,I)^{-3}
+ \ll
+ \sum_{j\ge0}\frac{\log(j+3)}{(T+j)^3}
+ \ll\frac{\log T}{T^2},
+\]
+which is smaller because $D_0=T^{1/2}$.  Adding the three ranges proves the
 claim.
 \end{proof}
 
@@ -2163,11 +2181,14 @@ and using the Appendix~\ref{app:inputIII} bound,
 \[
  \|\widehat G\|_{\Frob}\varepsilon
  =
- O(N^{1/2}T^{-1/2})
+ O\!\left((T\log T)^{1/2}T^{-1/2}\right)
+ =
+ O((\log T)^{1/2})
  =
  o(N).
 \]
-Substitution in \eqref{aii:eq:pert} proves the result.
+Thus every perturbation term in \eqref{aii:eq:pert} is $o(N)$, proving the
+result.
 \end{proof}
 
 \begin{remark}[Package closure]
