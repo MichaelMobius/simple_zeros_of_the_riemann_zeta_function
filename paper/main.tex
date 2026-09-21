@@ -1599,7 +1599,9 @@ exactly
 \[
  \{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
 \]
-The CI rejects \texttt{sorryAx}.  The formalization is built as an overlay on
+The CI enforces this exact three-element whitelist for the literal liminf
+theorem and also rejects \texttt{sorryAx}; any additional axiom causes the
+formal-verification workflow to fail.  The formalization is built as an overlay on
 the pinned Anthropic \texttt{formal-math/zeta23} source tree at commit
 \begin{center}
 \small\ttfamily
@@ -3788,9 +3790,10 @@ reconstructed the overlay, regenerated the complete E3 stack, kernel-checked
 the literal liminf theorem, and independently typechecked the endpoint wrapper.
 The reported axiom closure is
 \[
-\{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\},
+\{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
 \]
-with no \texttt{sorryAx}.
+The workflow checks equality with this exact whitelist and fails on any
+additional axiom or on \texttt{sorryAx}.
 
 \paragraph{Independent Arb/FLINT check.}
 The Arb/FLINT verifier supplies a separate reproducibility check of
