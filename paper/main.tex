@@ -920,8 +920,30 @@ For the pressure vector \eqref{eq:p}, every $g_1,\ldots,g_6\ge0$ satisfies
 \begin{proof}[Exact formal certificate and independent interval check]
 The companion Lean certificate proves the same inequality by combining the
 analytic signed-kernel theorem with an exact rational closure of the remaining
-six-gap hard core.  A hypothetical strict counterexample is first reduced to
-one of 511 bootstrap cells.  Exact discard/contraction certificates then give
+six-gap hard core.  The reduction to that hard core is explicit.  Since every
+pressure coefficient is at least $2714/10^7$, a total span of at least
+$14.37$ is already settled by the pressure term, with exact margin
+\[
+ \frac{2714}{10^7}\frac{1437}{100}
+ -\frac{39}{10000}
+ =
+ \frac{9}{500000000}>0.
+\]
+On the other hand, if any gap satisfies $0\le g_j\le0.89$, the analytic
+signed-kernel bound and monotonicity give
+\[
+ w(g_j)>\frac{2937}{100000},
+\]
+so its adjacent-pair contribution alone is
+$\frac13w(g_j)>39/10000$.  Thus a strict counterexample would have to satisfy
+\[
+ g_j>0.89\quad(1\le j\le6),
+ \qquad
+ g_1+\cdots+g_6<14.37.
+\]
+The one-body localization and rational micro-floor inequalities then place
+such a counterexample in one of 511 exact bootstrap cells.  Exact
+discard/contraction certificates give
 \[
  511\longrightarrow231\longrightarrow23\longrightarrow5,
 \]
@@ -3594,8 +3616,15 @@ inequality used by Proposition~\ref{prop:redist}, and the displayed
 Proposition~\ref{prop:cert} have identical mathematical data.
 
 \paragraph{Finite-certificate map.}
-A strict six-gap counterexample is assigned to one of 511 bootstrap codes.
-The exact generated certificate then has the following accounting:
+The analytically unresolved region is exactly
+\[
+ g_j>0.89\quad(1\le j\le6),
+ \qquad
+ g_1+\cdots+g_6<14.37.
+\]
+Within this compact hard core, the one-body localization and rational
+micro-floors assign every strict counterexample to one of 511 bootstrap
+codes.  The exact generated certificate then has the following accounting:
 \[
 \begin{array}{c|c|c}
 \text{stage} & \text{discarded} & \text{surviving}\\ \hline
