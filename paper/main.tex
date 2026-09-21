@@ -103,7 +103,7 @@ Let \(N(T,2T)\) denote the number of nontrivial zeros of \(\zeta(s)\) with
 ordinary ordinate in \((T,2T]\), counted with multiplicity, and let
 \(N_0^s(T,2T)\) denote the number of simple zeros on the critical line in the
 same interval. The quantitative study of \(N_0^s/N\) goes back to
-Montgomery's pair-correlation method and the Montgomery--Taylor optimization.
+Montgomery's pair-correlation method~\cite{Mon73,Mon75} and the Montgomery--Taylor optimization.
 Recent work has made the relevant finite-compression and zero-side inertia
 mechanism unconditional.  Alpöge and Furman~\cite{AlpogeFurman26}, communicating
 a proof discovered autonomously by Claude at Anthropic as recorded both by the
@@ -960,7 +960,8 @@ Proposition~\ref{prop:cert}; no Arb/FLINT enclosure is used in that theorem
 path.
 
 As an independent certification route, the Arb/FLINT verifier performs
-exhaustive interval branch-and-bound through \texttt{python-flint}.  The
+exhaustive interval branch-and-bound through \texttt{python-flint}, using
+Arb midpoint-radius interval arithmetic~\cite{Johansson17}.  The
 pressure coefficients, target, and grid endpoints are exact rationals.  The
 verifier reconstructs rigorous Arb enclosures for $w$ and its required
 derivatives from \eqref{eq:K}--\eqref{eq:kw}.  The grid mesh is $1/4000$.
