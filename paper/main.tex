@@ -3692,6 +3692,32 @@ The cell counts refer to distinct one-variable interval certificates; a
 single certified cell can be reused in many of the $21$ block positions and
 many six-dimensional boxes.
 
+Coverage of each round is itself proved in Lean, rather than trusted to the
+certificate generator.  The discard-code sets satisfy the exact set
+identities
+\[
+ D_0=S_{511}\setminus S_{231},\qquad
+ D_1=S_{231}\setminus S_{23},\qquad
+ D_2=S_{23}\setminus S_5,
+\]
+and the membership routers prove that a strict counterexample in the input
+set cannot belong to any discard code.  It must therefore lie in the next
+survivor set.  In particular, the three cardinality equalities
+\[
+511=280+231,qquad231=208+23,qquad23=18+5
+\]
+are not merely generator diagnostics; they are part of the checked finite
+routing.
+
+The Python scripts are certificate producers, not trusted proof components.
+They compute rational cells, quadratic coefficients, minimizers and proposed
+contractions, but the generated Lean files recheck the interval hypotheses,
+the one-variable minorants, the algebraic quadratic identities, positivity of
+the $LDL^t$ square coefficients, the discard inequalities, the contraction
+implications and the membership routing.  A faulty generated datum therefore
+causes elaboration or kernel checking to fail rather than becoming an
+additional mathematical assumption.
+
 The five terminal words are
 \[
 121212,\quad121221,\quad122121,\quad212121,\quad212212.
