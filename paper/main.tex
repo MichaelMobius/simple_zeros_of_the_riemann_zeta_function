@@ -2282,8 +2282,7 @@ where
  &=-\frac1\pi\sum_{n\le X}\frac{\Lambda(n)}{\sqrt n}
  \cos(\tau\log n),\\
  \Pi_X(\tau)
- &=\frac{1}{2\pi(1/4+\tau^2)}
- +\frac1\pi\Re\frac{X^{1/2+i\tau}-1}{1/2+i\tau}.
+ &=\frac1\pi\Re\frac{X^{1/2+i\tau}}{1/2+i\tau}.
 \end{align}
 More precisely,
 \[
@@ -2326,8 +2325,16 @@ while
  =
  2\Re\frac{X^s-1}{s}.
 \]
-Fourier inversion therefore gives exactly the density $\Pi_X$.  This proves the spectral identity with all signs and
-$2\pi$ factors fixed.
+After multiplication by the Fourier-inversion factor $1/(2\pi)$, the
+$-\Re(1/s)/\pi$ term here cancels the contribution
+$1/[2\pi(1/4+\tau^2)]$ from $e^{-|u|/2}$, because
+$\Re(1/s)=1/[2(1/4+\tau^2)]$.  Thus the pole density reduces to
+\[
+ \Pi_X(\tau)=\frac1\pi\Re\frac{X^s}{s},
+ \qquad s=\frac12+i\tau,
+\]
+which is the formula stated above.  This proves the spectral identity with
+all signs and $2\pi$ factors fixed.
 \end{proof}
 
 Stirling gives, uniformly for $\tau\in I$,
