@@ -3196,12 +3196,18 @@ are real and even; modulus squares may be retained throughout.
 
 Let $L\to\infty$, put
 \[
- h=\frac{2\pi}{L},\qquad \tau_k=T+kh.
+ h=\frac{2\pi}{L},\qquad
+ d=\left\lfloor\frac{T}{h}\right\rfloor,qquad
+ \tau_k=T+kh.
 \]
-Thus the infinite lattice is the translate of the critical lattice by the
-left endpoint $T$, exactly as in the finite sampling family used in the main
-argument.  The translation plays no role in the aliasing calculation because
-all nonzero dual-lattice terms vanish.
+The finite sampling grid is
+\[
+ \{\tau_j:0\le j<d\},
+\]
+and the infinite grid is its extension to $k\in\mathbb Z$.  This is exactly
+the translated critical lattice used in the main argument.  The translation
+plays no role in the aliasing calculation because all nonzero dual-lattice
+terms vanish.
 and let $\phi_L\in C_c^2(\mathbb R)$ be a real tapered window with exact support
 $[-L/2,L/2]$.  Write
 \[
@@ -3225,16 +3231,17 @@ Define
 The required form of Input IV is the following.
 
 \begin{theorem}[Self-contained Input IV]\label{aiv:thm:IV}
-Fix $R>0$.  Let $\gamma,\gamma'$ be points whose normalized coordinates
+Fix $R>0$.  Let $\gamma,\gamma'$ lie inside the finite sampling interval
+and have normalized coordinates
 \[
  x=\frac{\gamma-T}{h}
    =\frac{L(\gamma-T)}{2\pi},
  \qquad
  x'=\frac{\gamma'-T}{h}
-   =\frac{L(\gamma'-T)}{2\pi}
+   =\frac{L(\gamma'-T)}{2\pi}.
 \]
-are at least $L^2$ grid cells from both ends of the finite sampling interval,
-and suppose $|x-x'|\le R$.  Then the normalized finite-grid Gram entry satisfies
+Assume both points are at least $L^2$ grid cells from each finite-grid
+endpoint and that $|x-x'|\le R$.  Then the normalized finite-grid Gram entry satisfies
 \[
  \frac{1}{a_LL^2}
  \sum_{\tau_j\ {\rm in\ the\ finite\ grid}}
