@@ -52,6 +52,13 @@ jobs:
 
       - name: Commit regenerated PDF
         run: |
+          git fetch origin v26-package-e-staging
+          remote_head="$(git rev-parse origin/v26-package-e-staging)"
+          if [ "$remote_head" != "$GITHUB_SHA" ]; then
+            echo "Branch advanced to $remote_head while this run was building."
+            echo "Skipping PDF commit; the newer workflow run will publish the current PDF."
+            exit 0
+          fi
           if git diff --quiet -- paper/main.pdf; then
             echo "paper/main.pdf is already up to date"
             exit 0
