@@ -3622,26 +3622,98 @@ The analytically unresolved region is exactly
  \qquad
  g_1+\cdots+g_6<14.37.
 \]
-Within this compact hard core, the one-body localization and rational
-micro-floors assign every strict counterexample to one of 511 bootstrap
-codes.  The exact generated certificate then has the following accounting:
+The one-body localization partitions the six positions according to the
+symmetric pattern
 \[
-\begin{array}{c|c|c}
-\text{stage} & \text{discarded} & \text{surviving}\\ \hline
-R_0 & 280 & 231\\
-R_1 & 208 & 23\\
-R_2 & 18 & 5
+ A-B-C-C-B-A,
+\]
+with respectively $7,5,6,6,5,7$ rational basin choices, hence
+\[
+ 7\cdot5\cdot6\cdot6\cdot5\cdot7=44100
+\]
+raw basin words.  The certified one-body floors, in units of $10^{-6}$, are
+\[
+\begin{aligned}
+ \mu_A&=(286,550,817,1085,1353,1622,1890),\\
+ \mu_B&=(394,756,1123,1490,1859),\\
+ \mu_C&=(375,720,1069,1419,1770,2122).
+\end{aligned}
+\]
+For a word $(a,b,c,d,e,f)$ its one-body micro-energy is
+\[
+ \mu_A(a)+\mu_B(b)+\mu_C(c)+\mu_C(d)+\mu_B(e)+\mu_A(f).
+\]
+A strict counterexample must have this integer sum $<3900$, because
+$3900\cdot10^{-6}=39/10000$.  Exact finite enumeration of this condition
+reduces the $44100$ raw words to precisely $511$.
+
+Each subsequent round is a rational quadratic certification step.  For every
+current box and every one of the $21$ consecutive partial sums
+$s_{i,r}=g_i+\cdots+g_{i+r-1}$, the analytic cell catalog supplies a
+kernel-checked lower minorant of the form
+\[
+ w(s_{i,r})\ge
+ \alpha\,(s_{i,r}-q)^2-\eta,
+\]
+with rational $\alpha,q,\eta$.  After multiplying by the coefficient
+$2/(7-r)$ and adding the exact pressure term, these minorants assemble to a
+six-variable rational quadratic
+\[
+ Q_B(g)\le\mathcal F_p(g)
+\]
+throughout the box $B$.  Exact $LDL^t$ completion writes
+\[
+ Q_B(g)=q_B+\sum_j d_j\,L_j(g-g_B^*)^2,
+ \qquad d_j>0.
+\]
+If $q_B\ge39/10000$, the whole box is discarded.  Otherwise any strict
+counterexample in $B$ must satisfy
+\[
+ \sum_j d_j\,L_j(g-g_B^*)^2
+ <\frac{39}{10000}-q_B.
+\]
+Weighted Cauchy--Schwarz then gives rational bounds for each partial sum
+$s_{i,r}$; outward rational rounding produces a smaller certified box, which
+is the input to the next round.  Thus the \emph{surviving} cases are not
+sampled points: they are exact nested rational boxes containing every possible
+strict counterexample left by the previous round.
+
+The three rounds have the following kernel-checked accounting:
+\[
+\begin{array}{c|r|r|r|r}
+\text{round} & \text{input boxes} & \text{discarded}
+ & \text{contracted survivors} & \text{distinct minorant cells}\\ \hline
+R_0 & 511 & 280 & 231 & 190\\
+R_1 & 231 & 208 & 23 & 2433\\
+R_2 & 23 & 18 & 5 & 246
 \end{array}
 \]
+The cell counts refer to distinct one-variable interval certificates; a
+single certified cell can be reused in many of the $21$ block positions and
+many six-dimensional boxes.
+
 The five terminal words are
 \[
-121212,\quad121221,\quad122121,\quad212121,\quad212212,
+121212,\quad121221,\quad122121,\quad212121,\quad212212.
 \]
-and each is closed by an exact rational lower bound.  The composed certificate
-therefore establishes
+For these five boxes the final layer replaces the bootstrap minorants by
+strong-convexity lower bounds for the limiting weight.  The required
+curvature and anchor inequalities are subdivided into $113$ exact rational
+interval cells, which yield ten reusable strong lower bounds.  For each
+terminal word, $21$ such block bounds assemble to a final rational quadratic
+below $\mathcal F_p$.  Exact $LDL^t$ completion proves that the minimum of
+each final quadratic is strictly larger than $39/10000$.  The smallest of
+the five exact margins is
 \[
-511\longrightarrow231\longrightarrow23\longrightarrow5
-\longrightarrow\varnothing.
+ \frac{1191001492104159283646995579}
+ {1821262686688912135146560000000000}
+ >0.
+\]
+Consequently no strict counterexample remains, and the composed certificate
+establishes
+\[
+44100\longrightarrow511\longrightarrow231\longrightarrow23
+\longrightarrow5\longrightarrow\varnothing.
 \]
 Together with the analytic signed-kernel theorem, this yields
 Proposition~\ref{prop:cert}.
