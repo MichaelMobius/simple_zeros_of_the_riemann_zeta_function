@@ -1284,14 +1284,15 @@ be the normalized ordinates of the retained central set
  S^\circ=N_0^s(T,2T)-o(N(T,2T)).
 \]
 
-For each of the \(m=450\) offsets modulo \(m\), partition the ordered points
-into full consecutive blocks of size \(m\), with only \(O(m)\) endpoint
-points left over.  Pinching \(M^\circ\) to the full principal blocks and the
-remainder gives
-\[
- \mathcal D(M^\circ)\ge\sum_B\mathcal D(G_B).
-\]
-Summing over all offsets and applying Proposition~\ref{prop:blockstab450},
+For each residue class of the starting index modulo \(m=450\), partition the
+corresponding tail into disjoint full consecutive blocks of size \(m\) and a
+remainder of fewer than \(m\) points.  Pinching \(M^\circ\) to these
+principal blocks and the remainder gives, for each residue class, an upper
+bound of \(\mathcal D(M^\circ)\) for the sum of the full-block defects.
+As the residue class varies, every consecutive \(m\)-point block with start
+index \(1,\ldots,S^\circ-m+1\) occurs exactly once.  Summing the \(m\)
+pinching inequalities and applying Proposition~\ref{prop:blockstab450}
+therefore gives
 \begin{equation}\label{eq:shifted-exact}
  m\mathcal D(M^\circ)
  \ge
@@ -1299,12 +1300,14 @@ Summing over all offsets and applying Proposition~\ref{prop:blockstab450},
  -\sum_BP_B
  -o(N).
 \end{equation}
-Here the accumulated error is genuinely $o(N)$ rather than merely a
-blockwise notation: across all $m$ offsets there are $O(N)$ full blocks,
-and \eqref{eq:block-defect-uniform-error} bounds the error of each relevant
+The error here is genuinely $o(N)$ rather than merely blockwise.  Since
+\(S^\circ\le N(T,2T)\), there are $O(N)$ full blocks in total, and
+\eqref{eq:block-defect-uniform-error} bounds the error of every relevant
 block by $2m^2\eta_T(R)$ with the same \(\eta_T(R)\to0\).  Hence the
-total contribution is $O(N\eta_T(R))=o(N)$; endpoint blocks contribute
-only $O(1)$ because $m$ is fixed.
+accumulated contribution is $O(N\eta_T(R))=o(N)$.  The remainders have
+nonnegative defect and are simply discarded; the replacement of
+\(S^\circ-m+1\) by \(S^\circ\) later costs only $O(1)$ because \(m\)
+is fixed.
 
 The pressure term retains its exact positional mass.  For each fixed relative
 position \(r\), a given global gap can occupy that position in at most one
@@ -1373,7 +1376,9 @@ Thus
  \ge
  \left(H_{\rm MT}-\frac{37}{18750}\right)N-o(N).
 \]
-Dividing by \(N\) and passing to the lower limit gives
+Riemann--von Mangoldt gives \(N(T,2T)\to\infty\), so \(N>0\)
+eventually and every \(o(N)\) term becomes \(o(1)\) after division by
+\(N\).  Dividing by \(N\) and passing to the lower limit gives
 \begin{align*}
  \liminf_{T\to\infty}\frac{S}{N}
  &\ge
