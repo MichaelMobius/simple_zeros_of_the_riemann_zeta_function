@@ -3363,30 +3363,28 @@ Thus Input IV is proved independently from Poisson summation and elementary Four
 
 \paragraph{Formal theorem correspondence.}
 The companion Lean development formalizes the same dyadic ratio and constant
-as Theorem~\ref{thm:main}.  Its endpoint is the declaration
-\path{v26_published_liminf}, whose statement is
+as Theorem~\ref{thm:main}.  In the formal statement, the ratio is
 \[
- \texttt{v17PublishedConstant}
- \le
- \operatorname{liminf}_{T\to\infty}\texttt{v26SimpleRatio}(T).
-\]
-The definitions satisfy
-\[
- \texttt{v26SimpleRatio}(T)
+ R(T)
  =
  \frac{(\texttt{Zeta23.N0simple}\ T\ (2T):\mathbb R)}
       {(\texttt{Zeta23.Ncount}\ T\ (2T):\mathbb R)}
 \]
-and
+and the certified constant is
 \[
- \texttt{v17PublishedConstant}
+ C_{\rm pub}
  =
  \frac{1125000H_{\rm MT}-2220}{1120671}.
 \]
+The kernel-checked endpoint has the type
+\[
+ C_{\rm pub}
+ \le
+ \operatorname{liminf}_{T\to\infty}R(T).
+\]
 Thus the numerator, denominator, constant, and limiting operation match the
-objects displayed in Theorem~\ref{thm:main}.  The declaration names retain
-implementation prefixes for repository compatibility; they do not denote
-different mathematical statements.
+objects displayed in Theorem~\ref{thm:main}; this is the statement-alignment
+bridge between the paper theorem and the formal theorem.
 
 \paragraph{Finite-certificate map.}
 A strict six-gap counterexample is assigned to one of 511 bootstrap codes.
