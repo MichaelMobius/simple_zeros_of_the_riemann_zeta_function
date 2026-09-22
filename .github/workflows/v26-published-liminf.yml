@@ -2,7 +2,7 @@ name: v26 published liminf theorem
 
 on:
   push:
-    branches: [v26-package-e-staging]
+    branches: [main, v26-package-e-staging]
     paths:
       - 'lean_harness/**/*.lean'
       - 'certification/v26_exact/**/*.py'
