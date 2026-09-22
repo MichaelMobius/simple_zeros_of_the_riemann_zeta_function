@@ -4,6 +4,8 @@ on:
   push:
     branches: [v26-package-e-staging]
     paths:
+      - 'lean_harness/**/*.lean'
+      - 'certification/v26_exact/**/*.py'
       - '.github/workflows/v26-final-cold-audit.yml'
   workflow_dispatch:
 
@@ -102,12 +104,18 @@ jobs:
       - name: Cold rebuild final theorem dependency graph
         run: |
           cd /tmp/formal-math/zeta23
-          lake build HurtadoZeta23.V26FinalTrustAudit 2>&1 | tee /tmp/v26-final-cold-build.log
+          lake build HurtadoZeta23.V26FinalTrustAudit HurtadoZeta23.V26PublishedLiminf 2>&1 | tee /tmp/v26-final-cold-build.log
 
       - name: Kernel-check final theorem and print axioms from cold rebuild
         run: |
           cd /tmp/formal-math/zeta23
           lake env lean HurtadoZeta23/V26FinalTrustAudit.lean 2>&1 | tee /tmp/v26-final-cold-axioms.log
+          cat > /tmp/V26PublishedLiminfColdAudit.lean <<'EOF'
+          import HurtadoZeta23.V26PublishedLiminf
+          #check HurtadoZeta23.v26_published_liminf
+          #print axioms HurtadoZeta23.v26_published_liminf
+          EOF
+          lake env lean /tmp/V26PublishedLiminfColdAudit.lean 2>&1 | tee -a /tmp/v26-final-cold-axioms.log
 
       - name: Enforce final trust boundary
         run: |
@@ -119,10 +127,12 @@ jobs:
           if 'sorryAx' in text:
               raise SystemExit('ERROR: final theorem depends on sorryAx')
 
-          allowed = {'propext', 'Classical.choice', 'Quot.sound'}
+          expected = {'propext', 'Classical.choice', 'Quot.sound'}
           names = [
+              'HurtadoZeta23.v20_kernel_signed_claim',
               'HurtadoZeta23.v26_article_seven_point_inequality',
               'HurtadoZeta23.v26_published_eps_form',
+              'HurtadoZeta23.v26_published_liminf',
           ]
           for name in names:
               pat = rf"'{re.escape(name)}' depends on axioms: \[(.*?)\]"
@@ -130,11 +140,13 @@ jobs:
               if not m:
                   raise SystemExit(f'ERROR: missing axiom report for {name}')
               axioms = {x.strip() for x in m.group(1).split(',') if x.strip()}
-              unexpected = axioms - allowed
-              if unexpected:
-                  raise SystemExit(f'ERROR: unexpected axioms for {name}: {sorted(unexpected)}')
-              print(f'{name}: allowed axioms only: {sorted(axioms)}')
-          print('COLD TRUST AUDIT OK: no sorryAx and no project-specific/external axioms.')
+              if axioms != expected:
+                  raise SystemExit(
+                      f'ERROR: exact axiom closure mismatch for {name}: '
+                      f'{sorted(axioms)}; expected {sorted(expected)}'
+                  )
+              print(f'{name}: exact axiom whitelist OK: {sorted(axioms)}')
+          print('COLD TRUST AUDIT OK: exact whitelist and no sorryAx.')
           PY
 
       - name: Upload cold audit reports
