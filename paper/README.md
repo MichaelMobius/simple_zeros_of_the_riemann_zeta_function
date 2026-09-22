@@ -35,6 +35,9 @@ closure is required to be exactly
 
 and the workflow also rejects `sorryAx`.
 
+The exact source/PDF/formal-environment snapshot is recorded in
+`REPRODUCIBILITY.md`.
+
 For the independent Arb/FLINT interval-arithmetic reproduction of the
 seven-point inequality, see:
 
