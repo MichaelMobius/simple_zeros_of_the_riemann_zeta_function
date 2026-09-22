@@ -92,6 +92,7 @@ jobs:
       - name: Purge every cached HurtadoZeta23 build artifact
         run: |
           cd /tmp/formal-math/zeta23
+          mkdir -p .lake/build
           echo 'Cached HurtadoZeta23 artifacts before purge:'
           find .lake/build -path '*HurtadoZeta23*' -print | head -100 || true
           find .lake/build -depth -path '*HurtadoZeta23*' -delete
