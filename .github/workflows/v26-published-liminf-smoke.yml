@@ -56,6 +56,30 @@ jobs:
           restore-keys: |
             v26-package-e3-end-to-end-${{ runner.os }}-
 
+      - name: Generate exact E3 sources required by the endpoint
+        run: |
+          OUT=/tmp/formal-math/zeta23/HurtadoZeta23
+          python certification/v26_exact/generate_v26_bootstrap_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r0_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r1_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_cell_catalog.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_analytic_discards.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_survivor_contractions.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_membership_dispatch.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_five_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_interval_lean.py --out-dir "$OUT"
+          python certification/v26_exact/normalize_v26_final_interval_lean.py --dir "$OUT"
+          python certification/v26_exact/generate_v26_final_strong_lower_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_final_bridge_lean.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_r2_final_closure.py --out-dir "$OUT"
+          python certification/v26_exact/generate_v26_e3_bootstrap_closure.py --out-dir "$OUT"
+
       - name: Fetch mathlib cache
         run: |
           cd /tmp/formal-math/zeta23
@@ -64,4 +88,4 @@ jobs:
       - name: Typecheck literal liminf wrapper
         run: |
           cd /tmp/formal-math/zeta23
-          lake env lean HurtadoZeta23/V26PublishedLiminf.lean
+          lake build HurtadoZeta23.V26PublishedLiminf
