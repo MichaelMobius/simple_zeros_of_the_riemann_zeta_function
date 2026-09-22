@@ -35,7 +35,7 @@
 
 \title{Pressure-preserving refinements for simple zeros of the Riemann zeta function}
 \author{Michael Hurtado}
-\date{September 21, 2026}
+\date{September 22, 2026}
 
 \begin{document}
 \maketitle
@@ -127,6 +127,32 @@ For the optimized Montgomery--Taylor test family we write
  H_{\rm MT}:=\frac32-\frac1{\sqrt2}\cot\frac1{\sqrt2}
  =0.6725007036794116457\ldots .
 \end{equation}
+
+It is useful to separate this unconditional benchmark from the stronger
+conditional bounds available under RH.  Bui and Heath-Brown~\cite{BuiHB13}
+proved, assuming RH, that at least
+\[
+ \frac{19}{27}=0.703703\ldots
+\]
+of the zeros are simple.  Within the pair-correlation route itself,
+Chirre--Gon\c{c}alves--de Laat~\cite{CGdL20} used the Cohn--Elkies
+sphere-packing class of auxiliary functions together with semidefinite
+programming to improve the Montgomery--Taylor multiplicity estimate.  Their
+Corollary~2 gives, assuming RH,
+\[
+ N_s(T)\ge(0.6792+o(1))N(T),
+\]
+and, assuming GRH for Dirichlet $L$-functions,
+\[
+ N_s(T)\ge(0.6845+o(1))N(T).
+\]
+These are cumulative conditional statements rather than the unconditional
+dyadic statement of Theorem~\ref{thm:main}; under RH every nontrivial zero is
+on the critical line, so they provide natural conditional benchmarks but are
+not inputs to the present proof.  Their significance for the current method
+is structural: the gain comes from enlarging the admissible test-function
+class beyond the classical band-limited Montgomery--Taylor family, whereas
+the present paper removes RH by a finite-compression/inertia mechanism.
 
 Two very recent public computational manuscripts are especially close to the
 present argument. Jo's reproducible draft~\cite{Jo26} obtains
@@ -4001,6 +4027,19 @@ arXiv:2511.20059v2 (2025).
 D.~A.~Goldston and A.~I.~Suriajaya,
 \emph{Zeta zeros in a narrow vertical box},
 arXiv:2603.28104 (2026).
+
+\bibitem{BuiHB13}
+H.~M.~Bui and D.~R.~Heath-Brown,
+\emph{On simple zeros of the Riemann zeta-function},
+Bull. London Math. Soc. \textbf{45} (2013), no.~5, 953--961,
+doi:10.1112/blms/bdt026.
+
+\bibitem{CGdL20}
+A.~Chirre, F.~Gon\c{c}alves, and D.~de Laat,
+\emph{Pair correlation estimates for the zeros of the zeta function via
+semidefinite programming},
+Adv. Math. \textbf{361} (2020), 106926,
+doi:10.1016/j.aim.2019.106926.
 
 \bibitem{Johansson17}
 F.~Johansson,
