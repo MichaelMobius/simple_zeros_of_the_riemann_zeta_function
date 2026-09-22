@@ -3770,15 +3770,31 @@ curvature and anchor inequalities are subdivided into $113$ exact rational
 interval cells, which yield ten reusable strong lower bounds.  For each
 terminal word, $21$ such block bounds assemble to a final rational quadratic
 below $\mathcal F_p$.  Exact $LDL^t$ completion proves that the minimum of
-each final quadratic is strictly larger than $39/10000$.  The smallest of
-the five exact margins is
+each final quadratic is strictly larger than $39/10000$.
+
+The five exact margins $Q_{\min}-39/10000$ are
 \[
- \frac{1191001492104159283646995579}
- {1821262686688912135146560000000000}
- =6.5394272929921\ldots\times10^{-7}>0.
+\begin{aligned}
+m_{121212}=m_{212121}
+&=
+\frac{1191001492104159283646995579}
+     {1821262686688912135146560000000000}
+ =6.5394272929921\ldots\times10^{-7},\\
+m_{121221}=m_{122121}
+&=
+\frac{122261493153092324461322292173429}
+     {136541153466195789306295504800000000000}
+ =8.9541863423148\ldots\times10^{-7},\\
+m_{212212}
+&=
+\frac{10429603649012763691}
+     {1397723775304050000000000}
+ =7.4618489241510\ldots\times10^{-6}.
+\end{aligned}
 \]
-Consequently no strict counterexample remains, and the composed certificate
-establishes
+In particular all five margins exceed $1/2000000$, exactly as checked by the
+generated Lean inequalities.  Consequently no strict counterexample remains,
+and the composed certificate establishes
 \[
 44100\longrightarrow511\longrightarrow231\longrightarrow23
 \longrightarrow5\longrightarrow\varnothing.
