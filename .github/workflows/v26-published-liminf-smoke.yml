@@ -2,7 +2,7 @@ name: v26 published liminf smoke
 
 on:
   push:
-    branches: [v26-package-e-staging]
+    branches: [main, v26-package-e-staging]
     paths:
       - 'lean_harness/v21_analytic/V26PublishedLiminf.lean'
       - '.github/workflows/v26-published-liminf-smoke.yml'
