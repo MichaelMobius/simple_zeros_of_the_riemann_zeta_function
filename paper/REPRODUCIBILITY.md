@@ -5,11 +5,11 @@ the current article.
 
 ## Manuscript
 
-- Source commit: `0b56c61d93b0020351d66ca745d0c3a2de1faee7`
-- PDF regeneration commit: `588b3cf114fa50b1766e702321d6315241b2ba15`
-- `paper/main.tex` Git blob: `64d28a5aa09e1cc6d8955b12eba65fc8e9fa0499`
-- `paper/main.pdf` Git blob: `e6b82c240e9b42129dcd860f357211bbd43c0025`
-- PDF build workflow run: `35676850584` — success
+- Source commit: `b36bd542e77ea3d7fe5b64f5ebd75a1fb82b8286`
+- PDF regeneration commit: `8e7aadad72214dc7748f9036cabb25f640a58615`
+- `paper/main.tex` Git blob: `390947bf5e4dc167f1557daf20a0f13f20c228de`
+- `paper/main.pdf` Git blob: `d9da1b890bf15f385eb507d883d7a15bf5e18444`
+- PDF build workflow run: `35702544559` — success
 - The PDF workflow also checks for LaTeX errors, overfull boxes, and unresolved
   citations or cross-references before committing `main.pdf`.
 
@@ -29,6 +29,8 @@ the current article.
   ]
 - Exact axiom-whitelist workflow run:
   `35610878605` — success
+- Final cold-rebuild audit run:
+  `35677265641` — success
 - Required transitive axiom closure:
   `propext, Classical.choice, Quot.sound`
 - `sorryAx` is rejected by CI.
