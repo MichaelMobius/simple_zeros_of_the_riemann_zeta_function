@@ -30,18 +30,25 @@ private lemma research9_integral_cos_mul_cos
     intro s
     have h1 :=
       ((Real.hasDerivAt_sin ((a - b) * s)).comp s
-        (hasDerivAt_const_mul s (a - b))).div_const (a - b)
+        (hasDerivAt_const_mul (a - b))).div_const (a - b)
     have h2 :=
       ((Real.hasDerivAt_sin ((a + b) * s)).comp s
-        (hasDerivAt_const_mul s (a + b))).div_const (a + b)
+        (hasDerivAt_const_mul (a + b))).div_const (a + b)
     have h := (h1.add h2).div_const (2 : ℝ)
-    convert h using 1
-    · simp [F]
-    · rw [← Real.two_mul_cos_mul_cos]
-      field_simp [hsub, hadd]
-      ring
+    have hF :
+        HasDerivAt F
+          ((Real.cos ((a - b) * s) + Real.cos ((a + b) * s)) / 2) s := by
+      simpa [F, hsub, hadd] using h
+    have hp := Real.two_mul_cos_mul_cos (a * s) (b * s)
+    have hminus : a * s - b * s = (a - b) * s := by ring
+    have hplus : a * s + b * s = (a + b) * s := by ring
+    rw [hminus, hplus] at hp
+    convert hF using 1
+    nlinarith [hp]
   rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
-  · simp only [F, Real.sin_neg]
+  · dsimp [F]
+    ring_nf
+    simp only [Real.sin_neg]
     ring
   · intro s _
     exact hderiv s
@@ -52,6 +59,8 @@ theorem research9_integral_cos_mul_cos_sanity :
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos (3 * s) * Real.cos (2 * s))
       = Real.sin (1 / 2) + Real.sin (5 / 2) / 5 := by
-  simpa using research9_integral_cos_mul_cos (3 : ℝ) (2 : ℝ) (by norm_num) (by norm_num)
+  have h := research9_integral_cos_mul_cos (3 : ℝ) (2 : ℝ) (by norm_num) (by norm_num)
+  norm_num at h ⊢
+  exact h
 
 end HurtadoZeta23
