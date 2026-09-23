@@ -120,7 +120,7 @@ The scalar kernel condition reduces to
  =0.042656.
 \]
 
-It would therefore suffice to prove the signed estimate
+It suffices to prove the signed estimate
 
 \[
  k_v\!\left(\frac{43}{50}\right)>\frac{521}{2500}=0.2084,
@@ -134,16 +134,21 @@ because
  =0.00077456>0.
 \]
 
-Direct floating-point evaluation of the exact trigonometric profile gives
+The companion script `verify_window_kernel_086.py` now proves an
+**exact-rational enclosure** of this signed kernel value.  It uses only
+`fractions.Fraction`, the standard alternating Taylor bounds for sine and
+cosine on `[0,1]`, the same decimal bounds for `pi` used in the existing Lean
+proof, and an exact rational bracket for `1/sqrt(2)`.  Its resulting interval
+has lower endpoint approximately
 
 \[
- k_v(0.86)\approx0.2084592972855875,
+ 0.2084592688771594>0.2084.
 \]
 
-so the rational target `521/2500` has visible numerical slack.  **This decimal
-calculation is only a discovery diagnostic.**  The signed inequality must be
-proved rigorously (preferably first by Arb/exact interval arithmetic and then
-in Lean) before this branch can support a theorem.
+Thus the scalar inequality is no longer merely a floating-point discovery
+observation.  What remains is to port this exact-rational derivation to Lean,
+where the required alternating-series and `pi` machinery already exists in
+`V20KernelSignedAnalytic.lean`.
 
 Positivity of the upstream profile on `[-1/2,1/2]` also makes the monotonicity
 argument on `0<=g<=g0<1` identical to the one already used in the present
@@ -153,8 +158,7 @@ argument stays in `[0,pi)`.
 ## Projected global constant
 
 If the pinned nine-point certificate is independently accepted/replayed and
-the signed kernel inequality above is discharged, then the block argument
-would give
+the analytic window interface is discharged, then the block argument gives
 
 \[
 D+P\ge A.
@@ -208,15 +212,19 @@ No claim of priority or validity beyond the stated proof boundary is made.
 
 ## Immediate proof obligations
 
-1. Reproduce or independently recertify the pinned nine-point inequality.
-2. Prove the upstream window satisfies the analytic hypotheses used by our
-   Appendices III--IV, rather than importing that interface as a black box.
-3. Prove rigorously
-   `k_v(43/50) > 521/2500` and the required positivity/monotonicity statement.
-4. Generalize the existing Lean adjacent-pair/spectral-threshold modules from
-   the Montgomery--Taylor kernel to an abstract positive window plus the one
-   signed kernel point.
-5. Compose the resulting block theorem with the literal `liminf` endpoint.
+1. **Open:** reproduce or independently recertify the pinned nine-point
+   inequality.
+2. **Open:** prove the upstream window satisfies the analytic hypotheses used
+   by our Appendices III--IV, rather than importing that interface as a black
+   box.
+3. **Exact-rational check complete / Lean port open:**
+   `k_v(43/50) > 521/2500`; positivity/monotonicity must also be packaged in
+   the Lean interface.
+4. **Open:** generalize the existing Lean adjacent-pair/spectral-threshold
+   modules from the Montgomery--Taylor kernel to an abstract positive window
+   plus the one signed kernel point.
+5. **Open:** compose the resulting block theorem with the literal `liminf`
+   endpoint.
 
 Only after these five items are green should the projected decimal be moved
 into the publication manuscript.
