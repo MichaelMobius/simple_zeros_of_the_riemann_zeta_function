@@ -5,6 +5,8 @@ on:
     branches: [research/master-certificate-v1]
     paths:
       - 'lean_harness/research/ResearchNinePointHybrid.lean'
+      - 'lean_harness/research/ResearchWindowKernel086.lean'
+      - 'research/master_certificate_v1/verify_window_kernel_086.py'
       - '.github/workflows/research-nine-point-hybrid.yml'
   workflow_dispatch:
 
@@ -18,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Exact-rational kernel reproduction
+        run: python3 research/master_certificate_v1/verify_window_kernel_086.py
+
       - name: Install elan
         run: |
           curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
@@ -29,17 +34,22 @@ jobs:
           cd /tmp/formal-math
           git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
 
-      - name: Install research module
+      - name: Install research modules
         run: |
           cd /tmp/formal-math/zeta23
           mkdir -p HurtadoZeta23
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchNinePointHybrid.lean \
              HurtadoZeta23/ResearchNinePointHybrid.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernel086.lean \
+             HurtadoZeta23/ResearchWindowKernel086.lean
           cat >> lakefile.toml <<'EOF'
 
           [[lean_lib]]
           name = "HurtadoResearchNinePointHybrid"
-          roots = ["HurtadoZeta23.ResearchNinePointHybrid"]
+          roots = [
+            "HurtadoZeta23.ResearchNinePointHybrid",
+            "HurtadoZeta23.ResearchWindowKernel086"
+          ]
           EOF
 
       - name: Fetch mathlib cache
@@ -47,7 +57,7 @@ jobs:
           cd /tmp/formal-math/zeta23
           lake exe cache get
 
-      - name: Build exact scalar core
+      - name: Build research modules
         run: |
           cd /tmp/formal-math/zeta23
           lake build HurtadoResearchNinePointHybrid
@@ -57,9 +67,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           cat > /tmp/ResearchNinePointHybridAudit.lean <<'EOF'
           import HurtadoZeta23.ResearchNinePointHybrid
+          import HurtadoZeta23.ResearchWindowKernel086
           #check HurtadoZeta23.research9_strong_block_scalar
           #check HurtadoZeta23.research9_projected_bound_exact
+          #check HurtadoZeta23.research9_window_kernel_closed_gt
           #print axioms HurtadoZeta23.research9_strong_block_scalar
           #print axioms HurtadoZeta23.research9_projected_bound_exact
+          #print axioms HurtadoZeta23.research9_window_kernel_closed_gt
           EOF
           lake env lean /tmp/ResearchNinePointHybridAudit.lean
