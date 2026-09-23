@@ -1,0 +1,65 @@
+name: research nine-point hybrid scalar
+
+on:
+  push:
+    branches: [research/master-certificate-v1]
+    paths:
+      - 'lean_harness/research/ResearchNinePointHybrid.lean'
+      - '.github/workflows/research-nine-point-hybrid.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout pinned formal-math/zeta23 base
+        run: |
+          git clone https://github.com/anthropics/formal-math.git /tmp/formal-math
+          cd /tmp/formal-math
+          git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
+
+      - name: Install research module
+        run: |
+          cd /tmp/formal-math/zeta23
+          mkdir -p HurtadoZeta23
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchNinePointHybrid.lean \
+             HurtadoZeta23/ResearchNinePointHybrid.lean
+          cat >> lakefile.toml <<'EOF'
+
+          [[lean_lib]]
+          name = "HurtadoResearchNinePointHybrid"
+          roots = ["HurtadoZeta23.ResearchNinePointHybrid"]
+          EOF
+
+      - name: Fetch mathlib cache
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake exe cache get
+
+      - name: Build exact scalar core
+        run: |
+          cd /tmp/formal-math/zeta23
+          lake build HurtadoResearchNinePointHybrid
+
+      - name: Axiom report
+        run: |
+          cd /tmp/formal-math/zeta23
+          cat > /tmp/ResearchNinePointHybridAudit.lean <<'EOF'
+          import HurtadoZeta23.ResearchNinePointHybrid
+          #check HurtadoZeta23.research9_strong_block_scalar
+          #check HurtadoZeta23.research9_projected_bound_exact
+          #print axioms HurtadoZeta23.research9_strong_block_scalar
+          #print axioms HurtadoZeta23.research9_projected_bound_exact
+          EOF
+          lake env lean /tmp/ResearchNinePointHybridAudit.lean
