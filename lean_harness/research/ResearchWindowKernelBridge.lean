@@ -46,8 +46,7 @@ private lemma research9_integral_cos_mul_cos
     convert hF using 1
     nlinarith [hp]
   rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
-  · dsimp [F]
-    ring_nf
+  · ring_nf
     simp only [Real.sin_neg]
     ring
   · intro s _
