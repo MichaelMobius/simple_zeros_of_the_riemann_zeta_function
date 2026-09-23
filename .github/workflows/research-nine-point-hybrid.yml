@@ -5,7 +5,7 @@ on:
     branches: [research/master-certificate-v1]
     paths:
       - 'lean_harness/research/ResearchNinePointHybrid.lean'
-      - 'lean_harness/research/ResearchWindowKernel086.lean'
+      - 'lean_harness/research/ResearchWindowKernel086v2.lean'
       - 'research/master_certificate_v1/verify_window_kernel_086.py'
       - '.github/workflows/research-nine-point-hybrid.yml'
   workflow_dispatch:
@@ -40,15 +40,15 @@ jobs:
           mkdir -p HurtadoZeta23
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchNinePointHybrid.lean \
              HurtadoZeta23/ResearchNinePointHybrid.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernel086.lean \
-             HurtadoZeta23/ResearchWindowKernel086.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernel086v2.lean \
+             HurtadoZeta23/ResearchWindowKernel086v2.lean
           cat >> lakefile.toml <<'EOF'
 
           [[lean_lib]]
           name = "HurtadoResearchNinePointHybrid"
           roots = [
             "HurtadoZeta23.ResearchNinePointHybrid",
-            "HurtadoZeta23.ResearchWindowKernel086"
+            "HurtadoZeta23.ResearchWindowKernel086v2"
           ]
           EOF
 
@@ -67,12 +67,12 @@ jobs:
           cd /tmp/formal-math/zeta23
           cat > /tmp/ResearchNinePointHybridAudit.lean <<'EOF'
           import HurtadoZeta23.ResearchNinePointHybrid
-          import HurtadoZeta23.ResearchWindowKernel086
+          import HurtadoZeta23.ResearchWindowKernel086v2
           #check HurtadoZeta23.research9_strong_block_scalar
           #check HurtadoZeta23.research9_projected_bound_exact
-          #check HurtadoZeta23.research9_window_kernel_closed_gt
+          #check HurtadoZeta23.research9v2_window_kernel_closed_gt
           #print axioms HurtadoZeta23.research9_strong_block_scalar
           #print axioms HurtadoZeta23.research9_projected_bound_exact
-          #print axioms HurtadoZeta23.research9_window_kernel_closed_gt
+          #print axioms HurtadoZeta23.research9v2_window_kernel_closed_gt
           EOF
           lake env lean /tmp/ResearchNinePointHybridAudit.lean
