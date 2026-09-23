@@ -47,7 +47,6 @@ private lemma research9_integral_cos_mul_cos
     nlinarith [hp]
   rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
   · ring_nf
-    simp only [Real.sin_neg]
     ring
   · intro s _
     exact hderiv s
