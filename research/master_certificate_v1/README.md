@@ -1,23 +1,17 @@
 # Master-certificate experiment v1
 
 This directory records a **research experiment**, not a theorem of the paper.
-It tests whether the exact nine-point certificate of `trmdy/zeta-simple-zeros-673137`
-can be combined with the adjacent-pair defect mechanism already proved in the
-current Hurtado manuscript.
+It combines the pinned nine-point local certificate of
+`trmdy/zeta-simple-zeros-673137` with the adjacent-pair defect and
+spectral-threshold mechanism of the current Hurtado manuscript.
 
-Upstream nine-point data are pinned to
+Pinned upstream commit:
 
 `trmdy/zeta-simple-zeros-673137@1610b97b7895ff34982260f8dcaf04a0f7b82cf7`.
 
-The purpose of this experiment is deliberately narrow: keep the certified
-nine-point local inequality and its admissible window, but replace its generic
-finite-dimensional block assembly by the stronger adjacent-pair/spectral-threshold
-argument of the present project.
+## Pinned local data
 
-## Imported local data
-
-For the upstream admissible window, write `w=k_v^2`.  The pinned nine-point
-certificate has
+For the upstream window, with `w=k_v^2`, the nine-point certificate has
 
 ```text
 q       = 8
@@ -27,204 +21,148 @@ beta    = q p = 2/625
 H_cert  = 3362285207/5000000000
 ```
 
-and exact span capacities equal to `2`.  Thus, after summing the local
-nine-point inequality through an `m`-point block,
+and all eight exact span capacities are `2`.  Summing it through an
+`m`-point block gives
 
 \[
-E+P\ge A:=\epsilon(m-8),
-\qquad
-\sum_r q_r=Q:=\beta(m-8),
-\qquad
-0\le q_r\le\beta.
+E+P\ge A:=\epsilon(m-8),\qquad
+\sum_rq_r=Q:=\beta(m-8),\qquad0\le q_r\le\beta.
 \]
 
-Here `E` is the full pair energy and `P=\sum_r q_r g_r` is the exact block
-pressure.
-
-## Additional information from the Hurtado argument
-
-For a positive-semidefinite unit-diagonal Gram block `K`, let
+The Hurtado adjacent-pair argument supplies
 
 \[
-D=\operatorname{tr}\Psi(K).
+D\ge\sum_r w(g_r),
 \]
 
-The adjacent-pair pinching lemma gives
+and, if
 
 \[
-D\ge\sum_r w(g_r).
-\]
-
-If numbers `g0,t` satisfy
-
-\[
-w(g)+tqg\ge tqg_0
-\qquad(g\ge0,\ 0\le q\le\beta),
+w(g)+tqg\ge tqg_0,
 \]
 
 then
 
 \[
-D+tP\ge t g_0 Q.
+D+tP\ge tg_0Q.
 \]
 
-The spectral-threshold lemma gives, whenever `D<E`,
+Together with the spectral threshold
 
 \[
-D>\frac{m}{m-1}.
+D<E\Longrightarrow D>\frac{m}{m-1},
 \]
 
-Therefore a contradiction to `D+P<A` follows as soon as
+one obtains `D+P>=A` whenever
 
 \[
- g_0Q+\left(1-\frac1t\right)\frac{m}{m-1}-A>0.
+g_0Q+\left(1-\frac1t\right)\frac{m}{m-1}-A>0.
 \]
 
-This is exactly the same mechanism used in the current manuscript for the
-seven-point Montgomery--Taylor certificate; only the local data are changed.
+## Robust rational operating point
 
-## A robust rational operating point
-
-The first useful point found by the experiment is
+We use
 
 \[
- g_0=\frac{43}{50}=0.86,
- \qquad
- t=\frac{31}{2}=15.5,
- \qquad
- m=289.
+g_0=\frac{43}{50},\qquad t=\frac{31}{2},\qquad m=289.
 \]
 
-For these values,
+Then
 
 \[
- A=\frac{4274291}{2500000}=1.7097164,
- \qquad
- Q=\frac{562}{625}=0.8992,
+A=\frac{4274291}{2500000},\qquad Q=\frac{562}{625},
 \]
 
-and the block contradiction margin is the exact positive rational
+and the exact block contradiction margin is
 
 \[
- g_0Q+\left(1-\frac1t\right)\frac{289}{288}-A
- =\frac{405889}{174375000}
- =0.002327678853\ldots>0.
+g_0Q+\left(1-\frac1t\right)\frac{289}{288}-A
+=\frac{405889}{174375000}>0.
 \]
 
 The scalar kernel condition reduces to
 
 \[
- w\!\left(\frac{43}{50}\right)
- > t\beta g_0
- =\frac{1333}{31250}
- =0.042656.
-\]
-
-It suffices to prove the signed estimate
-
-\[
- k_v\!\left(\frac{43}{50}\right)>\frac{521}{2500}=0.2084,
+k_v\!\left(\frac{43}{50}\right)>\frac{521}{2500},
 \]
 
 because
 
 \[
- \left(\frac{521}{2500}\right)^2
- -\frac{1333}{31250}
- =0.00077456>0.
+\left(\frac{521}{2500}\right)^2-
+\frac{1333}{31250}=\frac{4841}{6250000}>0.
 \]
 
-The companion script `verify_window_kernel_086.py` now proves an
-**exact-rational enclosure** of this signed kernel value.  It uses only
-`fractions.Fraction`, the standard alternating Taylor bounds for sine and
-cosine on `[0,1]`, the same decimal bounds for `pi` used in the existing Lean
-proof, and an exact rational bracket for `1/sqrt(2)`.  Its resulting interval
-has lower endpoint approximately
+## Signed-kernel status
 
-\[
- 0.2084592688771594>0.2084.
-\]
+Two independent proof layers are now present.
 
-Thus the scalar inequality is no longer merely a floating-point discovery
-observation.  What remains is to port this exact-rational derivation to Lean,
-where the required alternating-series and `pi` machinery already exists in
-`V20KernelSignedAnalytic.lean`.
+1. `verify_window_kernel_086.py` uses exact Python `Fraction` arithmetic,
+   directed rational bounds for `pi` and `1/sqrt(2)`, and alternating Taylor
+   estimates.  It proves
 
-Positivity of the upstream profile on `[-1/2,1/2]` also makes the monotonicity
-argument on `0<=g<=g0<1` identical to the one already used in the present
-paper: for fixed `|u|<=1/2`, `cos(2 pi g |u|)` decreases with `g` while its
-argument stays in `[0,pi)`.
+   \[
+   k_v(43/50)>0.2084592688771594\ldots>0.2084.
+   \]
+
+2. `lean_harness/research/ResearchWindowKernel086v2.lean` proves in Lean the
+   strict inequality
+
+   ```text
+   521/2500 < research9v2WindowKernelClosed086
+   ```
+
+   for the exact closed-form evaluation of the same trigonometric profile.
+   CI run `35808157599` completed successfully.  The axiom report for this
+   theorem is exactly the standard Lean/Mathlib set
+
+   ```text
+   propext, Classical.choice, Quot.sound
+   ```
+
+The remaining kernel task is therefore no longer numerical.  It is the
+formal **identity bridge** equating `research9v2WindowKernelClosed086` with
+the integral definition of the normalized overlap kernel of the window.
 
 ## Projected global constant
 
-If the pinned nine-point certificate is independently accepted/replayed and
-the analytic window interface is discharged, then the block argument gives
-
-\[
-D+P\ge A.
-\]
-
-Shifted-block averaging then gives
-
-\[
-\mathcal D(M)
-\ge \frac{A}{289}S-\frac{Q}{289}N-o(N),
-\]
-
-so the arbitrary-window rank--trace interface yields
+Once the pinned nine-point inequality and the analytic window interface are
+independently discharged, the hybrid block theorem gives
 
 \[
 \frac SN\ge
 \frac{289H_{\rm cert}-562/625}
-     {289-4274291/2500000}.
+     {289-4274291/2500000}
+=
+\boxed{\frac{967204424823}{1436451418000}}
 \]
 
-The right-hand side is the exact rational
+and hence
 
 \[
-\boxed{
-\frac{967204424823}{1436451418000}
-=0.6733290194872431112041966740\ldots
-}.
+\boxed{0.6733290194872431112041966740\ldots}.
 \]
 
-This is larger than both
+This is larger than the current Hurtado theorem
+`0.6731175265883904...`, the upstream nine-point assembly
+`0.6733127422722459...`, and the Shi two-certificate candidate
+`0.6733169771424713...`.  It is **not yet a certified new zeta-zero bound**.
 
-```text
-current Hurtado theorem      0.6731175265883904...
-upstream 9-point assembly    0.6733127422722459...
-```
+## Current proof ledger
 
-but it is **not yet a certified new bound**.  The point of the experiment is
-that the gain comes from a mathematically transparent hybrid:
+- **Green in Lean:** exact block contradiction algebra.
+- **Green in Lean:** exact final rational constant arithmetic.
+- **Green exact-rational + Lean closed form:** signed kernel at `43/50`.
+- **Open:** prove the closed-form/integral kernel identity.
+- **Open:** package positivity/monotonicity of the upstream window needed by
+  the scalar argument.
+- **Open:** reproduce or independently recertify the full nine-point local
+  inequality.
+- **Open:** prove the upstream window satisfies the analytic hypotheses of
+  Appendices III--IV without importing the upstream arbitrary-window
+  interface as a black box.
+- **Open:** compose the generalized block theorem through the literal
+  `liminf` endpoint.
 
-```text
-upstream 9-point local certificate
-        +
-Hurtado adjacent-pair pinching
-        +
-Hurtado spectral-threshold contradiction
-        =
-stronger block assembly
-```
-
-No claim of priority or validity beyond the stated proof boundary is made.
-
-## Immediate proof obligations
-
-1. **Open:** reproduce or independently recertify the pinned nine-point
-   inequality.
-2. **Open:** prove the upstream window satisfies the analytic hypotheses used
-   by our Appendices III--IV, rather than importing that interface as a black
-   box.
-3. **Exact-rational check complete / Lean port open:**
-   `k_v(43/50) > 521/2500`; positivity/monotonicity must also be packaged in
-   the Lean interface.
-4. **Open:** generalize the existing Lean adjacent-pair/spectral-threshold
-   modules from the Montgomery--Taylor kernel to an abstract positive window
-   plus the one signed kernel point.
-5. **Open:** compose the resulting block theorem with the literal `liminf`
-   endpoint.
-
-Only after these five items are green should the projected decimal be moved
-into the publication manuscript.
+No result from this directory should be moved into `paper/main.tex` until the
+open items above are closed.
