@@ -93,36 +93,73 @@ because
 \frac{1333}{31250}=\frac{4841}{6250000}>0.
 \]
 
-## Signed-kernel status
+## Signed-kernel and integral-bridge status
 
-Two independent proof layers are now present.
+The exact-rational reproduction `verify_window_kernel_086.py` proves
 
-1. `verify_window_kernel_086.py` uses exact Python `Fraction` arithmetic,
-   directed rational bounds for `pi` and `1/sqrt(2)`, and alternating Taylor
-   estimates.  It proves
+\[
+k_v(43/50)\in
+[0.208459268877159404,0.208459354615668058],
+\]
 
-   \[
-   k_v(43/50)>0.2084592688771594\ldots>0.2084.
-   \]
+hence in particular `k_v(43/50)>521/2500`.
 
-2. `lean_harness/research/ResearchWindowKernel086v2.lean` proves in Lean the
-   strict inequality
+`lean_harness/research/ResearchWindowKernel086v2.lean` proves in Lean the
+corresponding strict inequality for the exact closed form.  Its axiom report
+is the standard Lean/Mathlib set
 
-   ```text
-   521/2500 < research9v2WindowKernelClosed086
-   ```
+```text
+propext, Classical.choice, Quot.sound
+```
 
-   for the exact closed-form evaluation of the same trigonometric profile.
-   CI run `35808157599` completed successfully.  The axiom report for this
-   theorem is exactly the standard Lean/Mathlib set
+The integral bridge has also advanced beyond a purely numerical identity.
+`ResearchWindowKernelBridge.lean` now kernel-checks the exact cosine-overlap
+formula
 
-   ```text
-   propext, Classical.choice, Quot.sound
-   ```
+\[
+\int_{-1/2}^{1/2}\cos(as)\cos(bs)\,ds
+=
+\frac{\sin((a-b)/2)}{a-b}
++
+\frac{\sin((a+b)/2)}{a+b},
+\]
 
-The remaining kernel task is therefore no longer numerical.  It is the
-formal **identity bridge** equating `research9v2WindowKernelClosed086` with
-the integral definition of the normalized overlap kernel of the window.
+as well as the one-frequency normalization and the vanishing of every
+nonzero integer Fourier mode.  The next substep is to finish the Lean theorem
+identifying the normalization integral of the actual pinned seven-term window
+with the closed normalization used above, then do the analogous numerator
+identity at `x=43/50`.
+
+## Nine-point certificate replay
+
+The upstream certificate consists of 96 disjoint rigorous shards and reports
+116,272,426 search nodes in total.  Before attempting the entire replay we ran
+an independent pinned pilot on shard `0/96`.  It completed successfully in CI
+run `35943514827` with
+
+```text
+verified        = True
+nodes           = 658969
+pruned          = 329486
+splits          = 329483
+maximum_depth   = 45
+elapsed_seconds = 723.233
+```
+
+and independently rebuilt the exact upstream interval tables with matching
+SHA-256 hashes
+
+```text
+w   = 2be38c2f2a5a4659200341fae9b2a926760e64ad04fa44ae214a77dd958c56e3
+w'' = 580e9682f1171ead19595438ee83c9f4c5af837179060ec49d9faee88032f6d5
+```
+
+To avoid rebuilding those expensive tables 96 times, the full replay is now
+split into six jobs.  Each job builds the rigorous tables once and reuses them
+for sixteen of the original 96 shards.  Workflow
+`research-nine-point-replay-full.yml` therefore covers the complete certificate
+without changing the upstream verifier or the original shard partition.
+A full replay is not recorded as complete until all six jobs return `PASS`.
 
 ## Projected global constant
 
@@ -153,11 +190,15 @@ This is larger than the current Hurtado theorem
 - **Green in Lean:** exact block contradiction algebra.
 - **Green in Lean:** exact final rational constant arithmetic.
 - **Green exact-rational + Lean closed form:** signed kernel at `43/50`.
-- **Open:** prove the closed-form/integral kernel identity.
+- **Green in Lean:** generic cosine-overlap integral bridge and integer-mode
+  normalization identities.
+- **Green replay pilot:** shard `0/96` of the pinned nine-point certificate.
+- **In progress:** full grouped replay of all 96 certificate shards.
+- **In progress:** actual-window normalization identity in Lean.
+- **Open:** actual-window numerator identity at `x=43/50` and composition with
+  the closed signed-kernel theorem.
 - **Open:** package positivity/monotonicity of the upstream window needed by
   the scalar argument.
-- **Open:** reproduce or independently recertify the full nine-point local
-  inequality.
 - **Open:** prove the upstream window satisfies the analytic hypotheses of
   Appendices III--IV without importing the upstream arbitrary-window
   interface as a black box.
