@@ -46,7 +46,12 @@ private lemma research9_integral_cos_mul_cos
     convert hF using 1
     nlinarith [hp]
   rw [intervalIntegral.integral_eq_sub_of_hasDerivAt]
-  · ring_nf
+  · dsimp [F]
+    have h1p : (a - b) * (1 / 2 : ℝ) = (a - b) / 2 := by ring
+    have h2p : (a + b) * (1 / 2 : ℝ) = (a + b) / 2 := by ring
+    have h1m : (a - b) * (-1 / 2 : ℝ) = -((a - b) / 2) := by ring
+    have h2m : (a + b) * (-1 / 2 : ℝ) = -((a + b) / 2) := by ring
+    rw [h1p, h2p, h1m, h2m, Real.sin_neg, Real.sin_neg]
     ring
   · intro s _
     exact hderiv s
