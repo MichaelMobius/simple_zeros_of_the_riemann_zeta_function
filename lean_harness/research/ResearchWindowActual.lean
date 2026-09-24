@@ -84,11 +84,11 @@ theorem research9_window_norm_integral_eq_closed :
         ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
         (-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
         ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
-        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
+        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))) := by
     apply intervalIntegral.integral_congr
     intro s _
     unfold research9Window
-    ring
+    ring_nf
   rw [hshape]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
