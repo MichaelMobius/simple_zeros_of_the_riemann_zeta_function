@@ -60,6 +60,35 @@ private lemma research9_integral_cos_mul_cos
     exact hderiv s
   · exact Continuous.intervalIntegrable (by fun_prop) _ _
 
+/-- The one-frequency normalization integral. -/
+theorem research9_integral_cos
+    (a : ℝ) (ha : a ≠ 0) :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), Real.cos (a * s))
+      = 2 * Real.sin (a / 2) / a := by
+  have h := research9_integral_cos_mul_cos a 0 (by simpa using ha) (by simpa using ha)
+  have h' :
+      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), Real.cos (a * s))
+        = Real.sin (a / 2) / a + Real.sin (a / 2) / a := by
+    simpa using h
+  calc
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), Real.cos (a * s))
+        = Real.sin (a / 2) / a + Real.sin (a / 2) / a := h'
+    _ = 2 * Real.sin (a / 2) / a := by ring
+
+/-- Every nonzero integer Fourier mode has zero mean on the unit interval. -/
+theorem research9_integral_integer_cos
+    (n : ℕ) (hn : 0 < n) :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * n) * s)) = 0 := by
+  have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hn)
+  have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
+  have ha : (2 * Real.pi * (n : ℝ)) ≠ 0 := by
+    exact mul_ne_zero (mul_ne_zero (by norm_num) hpi) hn0
+  rw [research9_integral_cos (2 * Real.pi * (n : ℝ)) ha]
+  have harg : (2 * Real.pi * (n : ℝ)) / 2 = (n : ℝ) * Real.pi := by ring
+  rw [harg]
+  simp
+
 /-- Sanity check at two rational frequencies. -/
 theorem research9_integral_cos_mul_cos_sanity :
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
