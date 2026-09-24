@@ -74,7 +74,22 @@ theorem research9_window_norm_integral_eq_closed :
   have hi5 := research9_integrable_mode 5 (-(1680572 / 1000000000 : ℝ))
   have hi6 := research9_integrable_mode 6 (1141360 / 1000000000 : ℝ)
 
-  unfold research9WindowNormIntegral research9Window
+  unfold research9WindowNormIntegral
+  have hshape :
+      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), research9Window s) =
+      ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos (Real.sqrt 2 * s) +
+        ((3322500 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (1 : ℝ)) * s) +
+        (-(7609135 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (2 : ℝ)) * s) +
+        ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
+        (-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
+        ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
+        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
+    apply intervalIntegral.integral_congr
+    intro s _
+    unfold research9Window
+    ring
+  rw [hshape]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
   rw [intervalIntegral.integral_add hi1
@@ -86,9 +101,11 @@ theorem research9_window_norm_integral_eq_closed :
   rw [intervalIntegral.integral_add hi4 (hi5.add hi6)]
   rw [intervalIntegral.integral_add hi5 hi6]
   simp_rw [intervalIntegral.integral_const_mul]
+  norm_num at h1 h2 h3 h4 h5 h6
   rw [h0, h1, h2, h3, h4, h5, h6]
-  simp only [mul_zero, add_zero, sub_zero]
+  simp only [mul_zero, add_zero]
   rw [research9_sqrt_two_half]
+  unfold research9v2WindowNorm
   rfl
 
 end HurtadoZeta23
