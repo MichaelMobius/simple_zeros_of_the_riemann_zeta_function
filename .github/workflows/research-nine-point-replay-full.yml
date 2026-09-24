@@ -1,0 +1,44 @@
+name: research nine-point full replay
+
+on:
+  push:
+    branches: [research/master-certificate-v1]
+    paths:
+      - "research/master_certificate_v1/replay_upstream_nine_point_group.py"
+      - ".github/workflows/research-nine-point-replay-full.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        group: [0, 1, 2, 3, 4, 5]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout pinned upstream certificate repository
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone https://github.com/trmdy/zeta-simple-zeros-673137.git /tmp/zeta-nine
+          cd /tmp/zeta-nine
+          git checkout 1610b97b7895ff34982260f8dcaf04a0f7b82cf7
+          test "$(git rev-parse HEAD)" = "1610b97b7895ff34982260f8dcaf04a0f7b82cf7"
+
+      - name: Install pinned verifier
+        shell: bash
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -e /tmp/zeta-nine
+
+      - name: Replay sixteen disjoint shards
+        shell: bash
+        run: |
+          python3 research/master_certificate_v1/replay_upstream_nine_point_group.py --group ${{ matrix.group }}
