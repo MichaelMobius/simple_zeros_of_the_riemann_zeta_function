@@ -41,7 +41,7 @@ theorem research9_window_base_cos_lower_bound
       _ = 2 * s ^ 2 := by rw [hsqrt_sq]
       _ ≤ 2 * (1 / 2 : ℝ) ^ 2 := by nlinarith
       _ = 1 / 2 := by norm_num
-  have hcos := Real.one_sub_sq_div_two_le_cos (Real.sqrt 2 * s)
+  have hcos := Real.one_sub_sq_div_two_le_cos (x := Real.sqrt 2 * s)
   nlinarith
 
 /-- A strong exact pointwise lower bound for the actual seven-term window. -/
