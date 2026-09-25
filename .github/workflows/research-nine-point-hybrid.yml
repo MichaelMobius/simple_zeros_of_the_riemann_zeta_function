@@ -9,6 +9,7 @@ on:
       - 'lean_harness/research/ResearchWindowKernelBridge.lean'
       - 'lean_harness/research/ResearchWindowActual.lean'
       - 'lean_harness/research/ResearchWindowPositivity.lean'
+      - 'lean_harness/research/ResearchWeightedPressure289.lean'
       - 'lean_harness/research/ResearchSpectralThreshold289.lean'
       - 'lean_harness/research/ResearchTraceLeSpectralThreshold289.lean'
       - 'lean_harness/research/ResearchGramThreshold289.lean'
@@ -68,6 +69,8 @@ jobs:
              HurtadoZeta23/ResearchWindowActual.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowPositivity.lean \
              HurtadoZeta23/ResearchWindowPositivity.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWeightedPressure289.lean \
+             HurtadoZeta23/ResearchWeightedPressure289.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchSpectralThreshold289.lean \
              HurtadoZeta23/ResearchSpectralThreshold289.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchTraceLeSpectralThreshold289.lean \
@@ -87,6 +90,7 @@ jobs:
             "HurtadoZeta23.ResearchWindowKernelBridge",
             "HurtadoZeta23.ResearchWindowActual",
             "HurtadoZeta23.ResearchWindowPositivity",
+            "HurtadoZeta23.ResearchWeightedPressure289",
             "HurtadoZeta23.ResearchSpectralThreshold289",
             "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
             "HurtadoZeta23.ResearchGramThreshold289",
@@ -113,6 +117,7 @@ jobs:
           import HurtadoZeta23.ResearchWindowKernelBridge
           import HurtadoZeta23.ResearchWindowActual
           import HurtadoZeta23.ResearchWindowPositivity
+          import HurtadoZeta23.ResearchWeightedPressure289
           import HurtadoZeta23.ResearchSpectralThreshold289
           import HurtadoZeta23.ResearchTraceLeSpectralThreshold289
           import HurtadoZeta23.ResearchGramThreshold289
@@ -125,6 +130,7 @@ jobs:
           #check HurtadoZeta23.research9_window_pos
           #check HurtadoZeta23.research9_window_kernel_antitoneOn
           #check HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
+          #check HurtadoZeta23.research9_window_one_gap_pressure
           #check HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #check HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
           #check HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
@@ -138,6 +144,7 @@ jobs:
           #print axioms HurtadoZeta23.research9_window_pos
           #print axioms HurtadoZeta23.research9_window_kernel_antitoneOn
           #print axioms HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
+          #print axioms HurtadoZeta23.research9_window_one_gap_pressure
           #print axioms HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #print axioms HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
           #print axioms HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
