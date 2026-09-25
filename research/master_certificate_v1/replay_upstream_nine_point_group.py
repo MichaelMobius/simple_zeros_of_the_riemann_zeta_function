@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Replay one 16-shard group of the pinned 96-shard nine-point certificate.
+"""Replay pinned shards of the 96-shard nine-point certificate.
 
-The rigorous tables are built once per process and reused for sixteen disjoint
-shards. Six concurrent group jobs therefore cover all 96 shards while avoiding
-96 repetitions of the expensive table construction.
+Two modes are supported:
+
+  --shard j   replay exactly one original shard j/95;
+  --group g   replay the historical 16-shard group g/5.
+
+The one-shard mode is used by CI because some shards take long enough that
+packing sixteen into a 60-minute job can be cancelled before completion.
 """
 
 from __future__ import annotations
@@ -24,7 +28,9 @@ GROUP_COUNT = SHARD_COUNT // GROUP_SIZE
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--group", type=int, required=True, choices=range(GROUP_COUNT))
+    mode = ap.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--shard", type=int, choices=range(SHARD_COUNT))
+    mode.add_argument("--group", type=int, choices=range(GROUP_COUNT))
     args = ap.parse_args()
 
     spec = certificate_spec(grid=4000, use_tangent=True)
@@ -42,12 +48,19 @@ def main() -> None:
     assert h0 == EXPECTED_W
     assert h2 == EXPECTED_W2
 
-    start = args.group * GROUP_SIZE
-    stop = start + GROUP_SIZE
+    if args.shard is not None:
+        shards = [args.shard]
+        label = f"SHARD {args.shard:02d}/95"
+    else:
+        start = args.group * GROUP_SIZE
+        stop = start + GROUP_SIZE
+        shards = list(range(start, stop))
+        label = f"GROUP {args.group}/5 shards={start}..{stop-1}"
+
     total_nodes = total_pruned = total_splits = 0
     max_depth = 0
 
-    for shard in range(start, stop):
+    for shard in shards:
         ts = time.monotonic()
         report = verify_general(
             spec,
@@ -65,17 +78,18 @@ def main() -> None:
         max_depth = max(max_depth, report.maximum_depth)
         print(
             f"SHARD {shard:02d}/95 PASS nodes={report.nodes} "
+            f"pruned={report.pruned} splits={report.splits} "
             f"depth={report.maximum_depth} seconds={time.monotonic()-ts:.3f}",
             flush=True,
         )
 
     print(
-        f"GROUP {args.group}/5 PASS shards={start}..{stop-1} "
-        f"nodes={total_nodes} pruned={total_pruned} splits={total_splits} "
-        f"max_depth={max_depth} elapsed={time.monotonic()-t0:.3f}",
+        f"{label} PASS nodes={total_nodes} pruned={total_pruned} "
+        f"splits={total_splits} max_depth={max_depth} "
+        f"elapsed={time.monotonic()-t0:.3f}",
         flush=True,
     )
-    print("STATUS: FULL-CERTIFICATE GROUP REPLAY PASSED", flush=True)
+    print("STATUS: CERTIFICATE REPLAY PASSED", flush=True)
 
 
 if __name__ == "__main__":
