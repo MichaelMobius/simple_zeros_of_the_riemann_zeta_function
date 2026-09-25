@@ -8,6 +8,13 @@ on:
       - 'lean_harness/research/ResearchWindowKernel086v2.lean'
       - 'lean_harness/research/ResearchWindowKernelBridge.lean'
       - 'lean_harness/research/ResearchWindowActual.lean'
+      - 'lean_harness/research/ResearchWindowPositivity.lean'
+      - 'lean_harness/research/ResearchSpectralThreshold289.lean'
+      - 'lean_harness/research/ResearchTraceLeSpectralThreshold289.lean'
+      - 'lean_harness/research/ResearchGramThreshold289.lean'
+      - 'lean_harness/research/ResearchStrongBlock289.lean'
+      - 'lean_harness/v17_threshold/V17FrobeniusBridge.lean'
+      - 'lean_harness/frozen/SpectralFrobenius.lean'
       - 'research/master_certificate_v1/verify_window_kernel_086.py'
       - '.github/workflows/research-nine-point-hybrid.yml'
   workflow_dispatch:
@@ -36,10 +43,21 @@ jobs:
           cd /tmp/formal-math
           git checkout fbdc36bbf17d20af3fd0447c6d1a8a02773c9844
 
-      - name: Install research modules
+      - name: Install research modules and exact v17 linear-algebra support
         run: |
+          set -euxo pipefail
           cd /tmp/formal-math/zeta23
           mkdir -p HurtadoZeta23
+
+          # Reproduce the exact Hurtado support overlay used by the established
+          # v17 threshold workflows before installing the research-only layer.
+          cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
+          tar -xzf /tmp/hurtado.tar.gz -C /tmp/formal-math/zeta23
+          cp "$GITHUB_WORKSPACE"/lean_harness/frozen/SpectralFrobenius.lean \
+             HurtadoZeta23/SpectralFrobenius.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/v17_threshold/V17FrobeniusBridge.lean \
+             HurtadoZeta23/V17FrobeniusBridge.lean
+
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchNinePointHybrid.lean \
              HurtadoZeta23/ResearchNinePointHybrid.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernel086v2.lean \
@@ -48,6 +66,17 @@ jobs:
              HurtadoZeta23/ResearchWindowKernelBridge.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowActual.lean \
              HurtadoZeta23/ResearchWindowActual.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowPositivity.lean \
+             HurtadoZeta23/ResearchWindowPositivity.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchSpectralThreshold289.lean \
+             HurtadoZeta23/ResearchSpectralThreshold289.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchTraceLeSpectralThreshold289.lean \
+             HurtadoZeta23/ResearchTraceLeSpectralThreshold289.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchGramThreshold289.lean \
+             HurtadoZeta23/ResearchGramThreshold289.lean
+          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchStrongBlock289.lean \
+             HurtadoZeta23/ResearchStrongBlock289.lean
+
           cat >> lakefile.toml <<'EOF'
 
           [[lean_lib]]
@@ -56,7 +85,12 @@ jobs:
             "HurtadoZeta23.ResearchNinePointHybrid",
             "HurtadoZeta23.ResearchWindowKernel086v2",
             "HurtadoZeta23.ResearchWindowKernelBridge",
-            "HurtadoZeta23.ResearchWindowActual"
+            "HurtadoZeta23.ResearchWindowActual",
+            "HurtadoZeta23.ResearchWindowPositivity",
+            "HurtadoZeta23.ResearchSpectralThreshold289",
+            "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
+            "HurtadoZeta23.ResearchGramThreshold289",
+            "HurtadoZeta23.ResearchStrongBlock289"
           ]
           EOF
 
@@ -78,15 +112,34 @@ jobs:
           import HurtadoZeta23.ResearchWindowKernel086v2
           import HurtadoZeta23.ResearchWindowKernelBridge
           import HurtadoZeta23.ResearchWindowActual
+          import HurtadoZeta23.ResearchWindowPositivity
+          import HurtadoZeta23.ResearchSpectralThreshold289
+          import HurtadoZeta23.ResearchTraceLeSpectralThreshold289
+          import HurtadoZeta23.ResearchGramThreshold289
+          import HurtadoZeta23.ResearchStrongBlock289
+
           #check HurtadoZeta23.research9_strong_block_scalar
           #check HurtadoZeta23.research9_projected_bound_exact
           #check HurtadoZeta23.research9v2_window_kernel_closed_gt
-          #check HurtadoZeta23.research9_integral_cos_mul_cos_sanity
-          #check HurtadoZeta23.research9_window_norm_integral_eq_closed
+          #check HurtadoZeta23.research9_window_integral_ratio086_gt
+          #check HurtadoZeta23.research9_window_pos
+          #check HurtadoZeta23.research9_window_kernel_antitoneOn
+          #check HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
+          #check HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
+          #check HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
+          #check HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
+
           #print axioms HurtadoZeta23.research9_strong_block_scalar
           #print axioms HurtadoZeta23.research9_projected_bound_exact
           #print axioms HurtadoZeta23.research9v2_window_kernel_closed_gt
           #print axioms HurtadoZeta23.research9_integral_cos_mul_cos_sanity
           #print axioms HurtadoZeta23.research9_window_norm_integral_eq_closed
+          #print axioms HurtadoZeta23.research9_window_integral_ratio086_gt
+          #print axioms HurtadoZeta23.research9_window_pos
+          #print axioms HurtadoZeta23.research9_window_kernel_antitoneOn
+          #print axioms HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
+          #print axioms HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
+          #print axioms HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
+          #print axioms HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
           EOF
           lake env lean /tmp/ResearchNinePointHybridAudit.lean
