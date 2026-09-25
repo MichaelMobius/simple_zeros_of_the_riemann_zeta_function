@@ -16,7 +16,8 @@ The first step is a reusable exact formula for the overlap of two cosine
 frequencies on `[-1/2,1/2]`.
 -/
 
-private lemma research9_integral_cos_mul_cos
+/-- Exact overlap of two nonresonant cosine frequencies on `[-1/2,1/2]`. -/
+theorem research9_integral_cos_mul_cos
     (a b : ℝ) (hsub : a - b ≠ 0) (hadd : a + b ≠ 0) :
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos (a * s) * Real.cos (b * s))
