@@ -34,8 +34,6 @@ worst-case linear target `t * beta * g₀`. -/
 theorem research9_window_weight_gt_full_target_below_g0
     {g : ℝ} (hg : 0 ≤ g) (hle : g ≤ research9g0) :
     research9t * research9Beta * research9g0 < research9WindowWeightAt g := by
-  have hg0eq : research9g0 = (43 / 50 : ℝ) := by
-    rfl
   have hgIcc : g ∈ Set.Icc (0 : ℝ) (43 / 50 : ℝ) := by
     constructor
     · exact hg
@@ -46,7 +44,10 @@ theorem research9_window_weight_gt_full_target_below_g0
   have hsquare :
       (521 / 2500 : ℝ) ^ 2 < research9WindowKernelAt g ^ 2 := by
     nlinarith
-  have hmargin := research9_kernel_square_margin
+  have hmargin :
+      research9t * research9Beta * research9g0 <
+        (521 / 2500 : ℝ) ^ 2 := by
+    simpa [research9KernelLower] using research9_kernel_square_margin
   unfold research9WindowWeightAt
   exact lt_trans hmargin hsquare
 
@@ -70,7 +71,12 @@ theorem research9_window_one_gap_pressure
         research9t * q * research9g0 ≤
           research9t * research9Beta * research9g0 := by
       have hfac : 0 ≤ research9t * research9g0 := by positivity
-      nlinarith
+      calc
+        research9t * q * research9g0
+            = q * (research9t * research9g0) := by ring
+        _ ≤ research9Beta * (research9t * research9g0) :=
+          mul_le_mul_of_nonneg_right hqβ hfac
+        _ = research9t * research9Beta * research9g0 := by ring
     have hlin : 0 ≤ research9t * q * g := by positivity
     linarith
   · have hge : research9g0 ≤ g := le_of_lt (lt_of_not_ge hle)
