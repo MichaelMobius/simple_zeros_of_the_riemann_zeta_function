@@ -71,7 +71,10 @@ jobs:
               "HurtadoZeta23.ResearchGramThreshold289",
               "HurtadoZeta23.ResearchStrongBlock289",
               "HurtadoZeta23.ResearchHybridInterfaces289",
+              "HurtadoZeta23.ResearchAdjacentBand289",
+              "HurtadoZeta23.ResearchShiftedAssembly289",
               "HurtadoZeta23.ResearchLiminfEndpoint",
+              "HurtadoZeta23.ResearchEndgame289",
           ]
           todo = list(start)
           seen = set()
@@ -142,38 +145,39 @@ jobs:
           import HurtadoZeta23.ResearchGramThreshold289
           import HurtadoZeta23.ResearchStrongBlock289
           import HurtadoZeta23.ResearchHybridInterfaces289
+          import HurtadoZeta23.ResearchAdjacentBand289
+          import HurtadoZeta23.ResearchShiftedAssembly289
           import HurtadoZeta23.ResearchLiminfEndpoint
+          import HurtadoZeta23.ResearchEndgame289
 
-          #check HurtadoZeta23.research9_strong_block_scalar
-          #check HurtadoZeta23.research9_projected_bound_exact
-          #check HurtadoZeta23.research9v2_window_kernel_closed_gt
           #check HurtadoZeta23.research9_window_integral_ratio086_gt
           #check HurtadoZeta23.research9_window_pos
           #check HurtadoZeta23.research9_window_kernel_antitoneOn
-          #check HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
           #check HurtadoZeta23.research9_window_one_gap_pressure
           #check HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #check HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
+          #check HurtadoZeta23.research9_adjacent_matrix_band_le_defect_289
           #check HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
           #check HurtadoZeta23.research9_weighted_block_pressure_fin288
           #check HurtadoZeta23.research9_strong_block_289_from_finite_interfaces
+          #check HurtadoZeta23.research9_shifted_assembly_from_uniform_blocks
+          #check HurtadoZeta23.research9_projectedBound_eq_global_coefficients
           #check HurtadoZeta23.research9_liminf_of_eps_form
+          #check HurtadoZeta23.research9_projected_liminf_from_global_refinement
 
-          #print axioms HurtadoZeta23.research9_strong_block_scalar
-          #print axioms HurtadoZeta23.research9_projected_bound_exact
-          #print axioms HurtadoZeta23.research9v2_window_kernel_closed_gt
-          #print axioms HurtadoZeta23.research9_integral_cos_mul_cos_sanity
-          #print axioms HurtadoZeta23.research9_window_norm_integral_eq_closed
           #print axioms HurtadoZeta23.research9_window_integral_ratio086_gt
           #print axioms HurtadoZeta23.research9_window_pos
           #print axioms HurtadoZeta23.research9_window_kernel_antitoneOn
-          #print axioms HurtadoZeta23.research9_window_kernel_gt_of_mem_Icc_086
           #print axioms HurtadoZeta23.research9_window_one_gap_pressure
           #print axioms HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #print axioms HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
+          #print axioms HurtadoZeta23.research9_adjacent_matrix_band_le_defect_289
           #print axioms HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
           #print axioms HurtadoZeta23.research9_weighted_block_pressure_fin288
           #print axioms HurtadoZeta23.research9_strong_block_289_from_finite_interfaces
+          #print axioms HurtadoZeta23.research9_shifted_assembly_from_uniform_blocks
+          #print axioms HurtadoZeta23.research9_projectedBound_eq_global_coefficients
           #print axioms HurtadoZeta23.research9_liminf_of_eps_form
+          #print axioms HurtadoZeta23.research9_projected_liminf_from_global_refinement
           EOF
           lake env lean /tmp/ResearchNinePointHybridAudit.lean
