@@ -80,16 +80,15 @@ theorem research9_window_norm_integral_eq_closed :
       ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos (Real.sqrt 2 * s) +
         ((3322500 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (1 : ℝ)) * s) +
-        (-(7609135 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (2 : ℝ)) * s) +
+        ((-(7609135 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (2 : ℝ)) * s) +
         ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
-        (-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
+        ((-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
         ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
-        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s)))) := by
+        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
     apply intervalIntegral.integral_congr
     intro s _
     unfold research9Window
-    congr 1
-    ring
+    ring_nf
   rw [hshape]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
@@ -335,15 +334,27 @@ private lemma research9_actual_mode_overlap_succ (k : ℕ) :
       mul_pos hminuspos hpluspos
     nlinarith
 
+  have h' :
+      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+          Real.cos ((2 * Real.pi * ((k : ℝ) + 1)) * s) *
+            Real.cos ((2 * Real.pi * research9ActualX) * s))
+        = (-1 : ℝ) ^ k * Real.sin research9ActualTheta /
+              (2 * Real.pi * ((k : ℝ) + 1 - research9ActualX))
+          + (-((-1 : ℝ) ^ k * Real.sin research9ActualTheta)) /
+              (2 * Real.pi * ((k : ℝ) + 1 + research9ActualX)) := by
+    simpa only [sub_eq_add_neg] using h
   calc
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos ((2 * Real.pi * ((k : ℝ) + 1)) * s) *
           Real.cos ((2 * Real.pi * research9ActualX) * s))
         = (-1 : ℝ) ^ k * Real.sin research9ActualTheta /
               (2 * Real.pi * ((k : ℝ) + 1 - research9ActualX))
+          + (-((-1 : ℝ) ^ k * Real.sin research9ActualTheta)) /
+              (2 * Real.pi * ((k : ℝ) + 1 + research9ActualX)) := h'
+    _ = (-1 : ℝ) ^ k * Real.sin research9ActualTheta /
+              (2 * Real.pi * ((k : ℝ) + 1 - research9ActualX))
           - (-1 : ℝ) ^ k * Real.sin research9ActualTheta /
-              (2 * Real.pi * ((k : ℝ) + 1 + research9ActualX)) := by
-            simpa only [sub_eq_add_neg] using h
+              (2 * Real.pi * ((k : ℝ) + 1 + research9ActualX)) := by ring
     _ = (-1 : ℝ) ^ k * research9ActualPiece (k + 1) := by
       unfold research9ActualPiece
       push_cast
@@ -453,13 +464,13 @@ theorem research9_window_numerator086_eq_closed :
         ((3322500 / 1000000000 : ℝ) *
           (Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        (-(7609135 / 1000000000 : ℝ)) *
+        ((-(7609135 / 1000000000 : ℝ)) *
           (Real.cos ((2 * Real.pi * (2 : ℝ)) * s) *
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
         ((1190194 / 1000000000 : ℝ) *
           (Real.cos ((2 * Real.pi * (3 : ℝ)) * s) *
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        (-(731476 / 1000000000 : ℝ)) *
+        ((-(731476 / 1000000000 : ℝ)) *
           (Real.cos ((2 * Real.pi * (4 : ℝ)) * s) *
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
         ((-(1680572 / 1000000000 : ℝ)) *
@@ -467,12 +478,11 @@ theorem research9_window_numerator086_eq_closed :
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
         (1141360 / 1000000000 : ℝ) *
           (Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))))) := by
+            Real.cos ((2 * Real.pi * research9ActualX) * s)))))) := by
     apply intervalIntegral.integral_congr
     intro s _
     unfold research9Window
-    congr 1
-    ring
+    ring_nf
 
   rw [hshape]
   rw [intervalIntegral.integral_add hi0
