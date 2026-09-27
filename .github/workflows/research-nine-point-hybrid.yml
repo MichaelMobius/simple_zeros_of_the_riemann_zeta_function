@@ -71,6 +71,7 @@ jobs:
               "HurtadoZeta23.ResearchGramThreshold289",
               "HurtadoZeta23.ResearchStrongBlock289",
               "HurtadoZeta23.ResearchHybridInterfaces289",
+              "HurtadoZeta23.ResearchLiminfEndpoint",
           ]
           todo = list(start)
           seen = set()
@@ -141,6 +142,7 @@ jobs:
           import HurtadoZeta23.ResearchGramThreshold289
           import HurtadoZeta23.ResearchStrongBlock289
           import HurtadoZeta23.ResearchHybridInterfaces289
+          import HurtadoZeta23.ResearchLiminfEndpoint
 
           #check HurtadoZeta23.research9_strong_block_scalar
           #check HurtadoZeta23.research9_projected_bound_exact
@@ -155,6 +157,7 @@ jobs:
           #check HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
           #check HurtadoZeta23.research9_weighted_block_pressure_fin288
           #check HurtadoZeta23.research9_strong_block_289_from_finite_interfaces
+          #check HurtadoZeta23.research9_liminf_of_eps_form
 
           #print axioms HurtadoZeta23.research9_strong_block_scalar
           #print axioms HurtadoZeta23.research9_projected_bound_exact
@@ -171,5 +174,6 @@ jobs:
           #print axioms HurtadoZeta23.research9_strong_block_289_of_matrix_interfaces
           #print axioms HurtadoZeta23.research9_weighted_block_pressure_fin288
           #print axioms HurtadoZeta23.research9_strong_block_289_from_finite_interfaces
+          #print axioms HurtadoZeta23.research9_liminf_of_eps_form
           EOF
           lake env lean /tmp/ResearchNinePointHybridAudit.lean
