@@ -43,6 +43,8 @@ jobs:
 
           cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C /tmp/formal-math/zeta23
+          cp "$GITHUB_WORKSPACE"/lean_harness/v17_adj/V17AdjacentPair.lean \
+             HurtadoZeta23/V17AdjacentPair.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/frozen/SpectralFrobenius.lean \
              HurtadoZeta23/SpectralFrobenius.lean
           cp "$GITHUB_WORKSPACE"/lean_harness/v17_threshold/V17FrobeniusBridge.lean \
