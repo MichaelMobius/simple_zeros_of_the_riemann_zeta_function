@@ -4,17 +4,7 @@ on:
   push:
     branches: [research/master-certificate-v1]
     paths:
-      - 'lean_harness/research/ResearchNinePointHybrid.lean'
-      - 'lean_harness/research/ResearchWindowKernel086v2.lean'
-      - 'lean_harness/research/ResearchWindowKernelBridge.lean'
-      - 'lean_harness/research/ResearchWindowActual.lean'
-      - 'lean_harness/research/ResearchWindowPositivity.lean'
-      - 'lean_harness/research/ResearchWeightedPressure289.lean'
-      - 'lean_harness/research/ResearchSpectralThreshold289.lean'
-      - 'lean_harness/research/ResearchTraceLeSpectralThreshold289.lean'
-      - 'lean_harness/research/ResearchGramThreshold289.lean'
-      - 'lean_harness/research/ResearchStrongBlock289.lean'
-      - 'lean_harness/research/ResearchHybridInterfaces289.lean'
+      - 'lean_harness/research/**'
       - 'lean_harness/v17_threshold/V17FrobeniusBridge.lean'
       - 'lean_harness/frozen/SpectralFrobenius.lean'
       - 'research/master_certificate_v1/verify_window_kernel_086.py'
@@ -51,8 +41,6 @@ jobs:
           cd /tmp/formal-math/zeta23
           mkdir -p HurtadoZeta23
 
-          # Reproduce the exact Hurtado support overlay used by the established
-          # v17 threshold workflows before installing the research-only layer.
           cat "$GITHUB_WORKSPACE"/lean_harness/v17_adj/part*.b64 | base64 -d > /tmp/hurtado.tar.gz
           tar -xzf /tmp/hurtado.tar.gz -C /tmp/formal-math/zeta23
           cp "$GITHUB_WORKSPACE"/lean_harness/frozen/SpectralFrobenius.lean \
@@ -60,47 +48,73 @@ jobs:
           cp "$GITHUB_WORKSPACE"/lean_harness/v17_threshold/V17FrobeniusBridge.lean \
              HurtadoZeta23/V17FrobeniusBridge.lean
 
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchNinePointHybrid.lean \
-             HurtadoZeta23/ResearchNinePointHybrid.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernel086v2.lean \
-             HurtadoZeta23/ResearchWindowKernel086v2.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowKernelBridge.lean \
-             HurtadoZeta23/ResearchWindowKernelBridge.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowActual.lean \
-             HurtadoZeta23/ResearchWindowActual.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWindowPositivity.lean \
-             HurtadoZeta23/ResearchWindowPositivity.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchWeightedPressure289.lean \
-             HurtadoZeta23/ResearchWeightedPressure289.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchSpectralThreshold289.lean \
-             HurtadoZeta23/ResearchSpectralThreshold289.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchTraceLeSpectralThreshold289.lean \
-             HurtadoZeta23/ResearchTraceLeSpectralThreshold289.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchGramThreshold289.lean \
-             HurtadoZeta23/ResearchGramThreshold289.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchStrongBlock289.lean \
-             HurtadoZeta23/ResearchStrongBlock289.lean
-          cp "$GITHUB_WORKSPACE"/lean_harness/research/ResearchHybridInterfaces289.lean \
-             HurtadoZeta23/ResearchHybridInterfaces289.lean
+          for f in "$GITHUB_WORKSPACE"/lean_harness/research/*.lean; do
+            cp "$f" "HurtadoZeta23/$(basename "$f")"
+          done
 
-          cat >> lakefile.toml <<'EOF'
+      - name: Register exact Hurtado import closure
+        working-directory: /tmp/formal-math/zeta23
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
 
-          [[lean_lib]]
-          name = "HurtadoResearchNinePointHybrid"
-          roots = [
-            "HurtadoZeta23.ResearchNinePointHybrid",
-            "HurtadoZeta23.ResearchWindowKernel086v2",
-            "HurtadoZeta23.ResearchWindowKernelBridge",
-            "HurtadoZeta23.ResearchWindowActual",
-            "HurtadoZeta23.ResearchWindowPositivity",
-            "HurtadoZeta23.ResearchWeightedPressure289",
-            "HurtadoZeta23.ResearchSpectralThreshold289",
-            "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
-            "HurtadoZeta23.ResearchGramThreshold289",
-            "HurtadoZeta23.ResearchStrongBlock289",
-            "HurtadoZeta23.ResearchHybridInterfaces289"
+          start = [
+              "HurtadoZeta23.ResearchNinePointHybrid",
+              "HurtadoZeta23.ResearchWindowKernel086v2",
+              "HurtadoZeta23.ResearchWindowKernelBridge",
+              "HurtadoZeta23.ResearchWindowActual",
+              "HurtadoZeta23.ResearchWindowPositivity",
+              "HurtadoZeta23.ResearchWeightedPressure289",
+              "HurtadoZeta23.ResearchSpectralThreshold289",
+              "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
+              "HurtadoZeta23.ResearchGramThreshold289",
+              "HurtadoZeta23.ResearchStrongBlock289",
+              "HurtadoZeta23.ResearchHybridInterfaces289",
           ]
-          EOF
+          todo = list(start)
+          seen = set()
+          missing = []
+
+          while todo:
+              mod = todo.pop()
+              if mod in seen:
+                  continue
+              seen.add(mod)
+              path = Path(mod.replace('.', '/') + '.lean')
+              if not path.exists():
+                  missing.append((mod, '<root>'))
+                  continue
+              for line in path.read_text(encoding='utf-8').splitlines():
+                  line = line.strip()
+                  if not line.startswith('import '):
+                      continue
+                  for dep in line[len('import '):].split():
+                      if not dep.startswith('HurtadoZeta23.'):
+                          continue
+                      dpath = Path(dep.replace('.', '/') + '.lean')
+                      if dpath.exists():
+                          todo.append(dep)
+                      else:
+                          missing.append((dep, mod))
+
+          if missing:
+              print('Missing Hurtado imports:')
+              for dep, parent in missing:
+                  print(f'  {parent} -> {dep}')
+              raise SystemExit(1)
+
+          roots = sorted(seen)
+          print(f'Registering {len(roots)} modules in exact import closure')
+          with open('lakefile.toml', 'a', encoding='utf-8') as f:
+              f.write('\n[[lean_lib]]\n')
+              f.write('name = "HurtadoResearchNinePointHybrid"\n')
+              f.write('roots = [\n')
+              for i, mod in enumerate(roots):
+                  comma = ',' if i + 1 < len(roots) else ''
+                  f.write(f'  "{mod}"{comma}\n')
+              f.write(']\n')
+          PY
 
       - name: Fetch mathlib cache
         run: |
