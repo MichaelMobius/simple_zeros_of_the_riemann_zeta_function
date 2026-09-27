@@ -84,11 +84,12 @@ theorem research9_window_norm_integral_eq_closed :
         ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
         (-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
         ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
-        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))) := by
+        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s)))) := by
     apply intervalIntegral.integral_congr
     intro s _
     unfold research9Window
-    ring_nf
+    congr 1
+    ring
   rw [hshape]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
@@ -104,9 +105,10 @@ theorem research9_window_norm_integral_eq_closed :
   norm_num at h1 h2 h3 h4 h5 h6
   rw [h0, h1, h2, h3, h4, h5, h6]
   simp only [mul_zero, add_zero]
-  rw [research9_sqrt_two_half]
+  have hhalf := research9_sqrt_two_half
   unfold research9v2WindowNorm
-  rfl
+  rw [hhalf]
+  ring
 
 /-! ## Actual-window numerator at x = 43/50 -/
 
@@ -125,8 +127,7 @@ private def research9ActualPiece (n : ℕ) : ℝ :=
     (Real.pi * (((n : ℝ) ^ 2) - research9ActualX ^ 2))
 
 /-- A public mirror of the exact closed raw expression used by
-`ResearchWindowKernel086v2`.  The next theorem checks that the mirror is
-literally the same real number as the certified expression. -/
+`ResearchWindowKernel086v2`. -/
 def research9WindowRawClosed086 : ℝ :=
   research9ActualBase
   + (3322500 / 1000000000 : ℝ) * research9ActualPiece 1
@@ -169,37 +170,61 @@ private lemma research9_actual_base_overlap_eq_closed :
   have hfreq : Real.sqrt 2 < 2 * Real.pi * research9ActualX := by
     unfold research9ActualX
     nlinarith [Real.pi_gt_three]
+  have hsub : Real.sqrt 2 - 2 * Real.pi * research9ActualX ≠ 0 := by
+    nlinarith
+  have hadd : Real.sqrt 2 + 2 * Real.pi * research9ActualX ≠ 0 := by
+    unfold research9ActualX
+    have hp : 0 < Real.pi := Real.pi_pos
+    nlinarith
   have h := research9_integral_cos_mul_cos
-    (Real.sqrt 2) (2 * Real.pi * research9ActualX)
-    (by nlinarith) (by positivity)
+    (Real.sqrt 2) (2 * Real.pi * research9ActualX) hsub hadd
+
   have harg1 :
       (Real.sqrt 2 - 2 * Real.pi * research9ActualX) / 2 =
         research9ActualA - research9ActualB := by
-    unfold research9ActualA research9ActualB research9ActualX
-    rw [research9_sqrt_two_half]
-    ring
+    calc
+      (Real.sqrt 2 - 2 * Real.pi * research9ActualX) / 2
+          = Real.sqrt 2 / 2 - Real.pi * research9ActualX := by ring
+      _ = (Real.sqrt 2)⁻¹ - Real.pi * research9ActualX := by
+            rw [research9_sqrt_two_half]
+      _ = research9ActualA - research9ActualB := by
+            unfold research9ActualA research9ActualB research9ActualX
+            ring
   have harg2 :
       (Real.sqrt 2 + 2 * Real.pi * research9ActualX) / 2 =
         research9ActualA + research9ActualB := by
-    unfold research9ActualA research9ActualB research9ActualX
-    rw [research9_sqrt_two_half]
-    ring
+    calc
+      (Real.sqrt 2 + 2 * Real.pi * research9ActualX) / 2
+          = Real.sqrt 2 / 2 + Real.pi * research9ActualX := by ring
+      _ = (Real.sqrt 2)⁻¹ + Real.pi * research9ActualX := by
+            rw [research9_sqrt_two_half]
+      _ = research9ActualA + research9ActualB := by
+            unfold research9ActualA research9ActualB research9ActualX
+            ring
+
   have hden1 :
       Real.sqrt 2 - 2 * Real.pi * research9ActualX =
         2 * (research9ActualA - research9ActualB) := by
-    unfold research9ActualA research9ActualB research9ActualX
-    have hs : Real.sqrt 2 = 2 * (Real.sqrt 2)⁻¹ := by
-      nlinarith [research9_sqrt_two_half]
-    rw [hs]
-    ring
+    calc
+      Real.sqrt 2 - 2 * Real.pi * research9ActualX
+          = 2 * (Real.sqrt 2 / 2 - Real.pi * research9ActualX) := by ring
+      _ = 2 * ((Real.sqrt 2)⁻¹ - Real.pi * research9ActualX) := by
+            rw [research9_sqrt_two_half]
+      _ = 2 * (research9ActualA - research9ActualB) := by
+            unfold research9ActualA research9ActualB research9ActualX
+            ring
   have hden2 :
       Real.sqrt 2 + 2 * Real.pi * research9ActualX =
         2 * (research9ActualA + research9ActualB) := by
-    unfold research9ActualA research9ActualB research9ActualX
-    have hs : Real.sqrt 2 = 2 * (Real.sqrt 2)⁻¹ := by
-      nlinarith [research9_sqrt_two_half]
-    rw [hs]
-    ring
+    calc
+      Real.sqrt 2 + 2 * Real.pi * research9ActualX
+          = 2 * (Real.sqrt 2 / 2 + Real.pi * research9ActualX) := by ring
+      _ = 2 * ((Real.sqrt 2)⁻¹ + Real.pi * research9ActualX) := by
+            rw [research9_sqrt_two_half]
+      _ = 2 * (research9ActualA + research9ActualB) := by
+            unfold research9ActualA research9ActualB research9ActualX
+            ring
+
   rw [harg1, harg2, hden1, hden2] at h
   have hBtheta : research9ActualB = Real.pi - research9ActualTheta := by
     unfold research9ActualB research9ActualTheta
@@ -212,7 +237,6 @@ private lemma research9_actual_base_overlap_eq_closed :
     rw [show research9ActualA - (Real.pi - research9ActualTheta) =
         (research9ActualA + research9ActualTheta) - Real.pi by ring]
     rw [Real.sin_sub_pi, Real.sin_add]
-    ring
   have hsin2 :
       Real.sin (research9ActualA + research9ActualB) =
         -(Real.sin research9ActualA * Real.cos research9ActualTheta -
@@ -221,7 +245,7 @@ private lemma research9_actual_base_overlap_eq_closed :
     rw [show research9ActualA + (Real.pi - research9ActualTheta) =
         (research9ActualA - research9ActualTheta) + Real.pi by ring]
     rw [Real.sin_add_pi, Real.sin_sub]
-    ring
+
   have hminus : research9ActualA - research9ActualB ≠ 0 := by
     nlinarith [research9_actual_B_gt_A]
   have hplus : research9ActualA + research9ActualB ≠ 0 := by
@@ -237,6 +261,7 @@ private lemma research9_actual_base_overlap_eq_closed :
       · exact sub_pos.mpr research9_actual_B_gt_A
       · nlinarith [research9_actual_A_pos, research9_actual_B_gt_A]
     nlinarith
+
   calc
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos (Real.sqrt 2 * s) *
@@ -256,7 +281,6 @@ private lemma research9_actual_mode_overlap_succ (k : ℕ) :
         Real.cos ((2 * Real.pi * ((k : ℝ) + 1)) * s) *
           Real.cos ((2 * Real.pi * research9ActualX) * s))
       = (-1 : ℝ) ^ k * research9ActualPiece (k + 1) := by
-  have hk0 : 0 ≤ (k : ℝ) := by positivity
   have hminuspos : 0 < (k : ℝ) + 1 - research9ActualX := by
     unfold research9ActualX
     nlinarith
@@ -293,12 +317,14 @@ private lemma research9_actual_mode_overlap_succ (k : ℕ) :
   have hden2 :
       2 * Real.pi * ((k : ℝ) + 1) + 2 * Real.pi * research9ActualX =
         2 * Real.pi * ((k : ℝ) + 1 + research9ActualX) := by ring
+
   rw [harg1, harg2, hden1, hden2] at h
   rw [Real.sin_add_nat_mul_pi, Real.sin_nat_mul_pi_sub] at h
   have hpow : (-1 : ℝ) ^ (k + 2) = (-1 : ℝ) ^ k := by
     rw [pow_add]
     norm_num
   rw [hpow] at h
+
   have hminus : (k : ℝ) + 1 - research9ActualX ≠ 0 := ne_of_gt hminuspos
   have hplus : (k : ℝ) + 1 + research9ActualX ≠ 0 := ne_of_gt hpluspos
   have hsqpos :
@@ -308,6 +334,7 @@ private lemma research9_actual_mode_overlap_succ (k : ℕ) :
           (((k : ℝ) + 1) + research9ActualX) :=
       mul_pos hminuspos hpluspos
     nlinarith
+
   calc
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos ((2 * Real.pi * ((k : ℝ) + 1)) * s) *
@@ -316,7 +343,7 @@ private lemma research9_actual_mode_overlap_succ (k : ℕ) :
               (2 * Real.pi * ((k : ℝ) + 1 - research9ActualX))
           - (-1 : ℝ) ^ k * Real.sin research9ActualTheta /
               (2 * Real.pi * ((k : ℝ) + 1 + research9ActualX)) := by
-            simpa only [neg_mul, neg_div] using h
+            simpa only [sub_eq_add_neg] using h
     _ = (-1 : ℝ) ^ k * research9ActualPiece (k + 1) := by
       unfold research9ActualPiece
       push_cast
@@ -336,47 +363,71 @@ def research9WindowNumerator086 : ℝ :=
   ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
     research9Window s * Real.cos ((2 * Real.pi * research9ActualX) * s)
 
+private lemma research9_actual_mode_overlap_one :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = research9ActualPiece 1 := by
+  have h := research9_actual_mode_overlap_succ 0
+  norm_num at h ⊢
+  exact h
+
+private lemma research9_actual_mode_overlap_two :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (2 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = -research9ActualPiece 2 := by
+  have h := research9_actual_mode_overlap_succ 1
+  norm_num at h ⊢
+  exact h
+
+private lemma research9_actual_mode_overlap_three :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (3 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = research9ActualPiece 3 := by
+  have h := research9_actual_mode_overlap_succ 2
+  norm_num at h ⊢
+  exact h
+
+private lemma research9_actual_mode_overlap_four :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (4 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = -research9ActualPiece 4 := by
+  have h := research9_actual_mode_overlap_succ 3
+  norm_num at h ⊢
+  exact h
+
+private lemma research9_actual_mode_overlap_five :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (5 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = research9ActualPiece 5 := by
+  have h := research9_actual_mode_overlap_succ 4
+  norm_num at h ⊢
+  exact h
+
+private lemma research9_actual_mode_overlap_six :
+    (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
+        Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s))
+      = -research9ActualPiece 6 := by
+  have h := research9_actual_mode_overlap_succ 5
+  norm_num at h ⊢
+  exact h
+
 /-- The seven cosine overlaps reproduce the exact raw closed expression used
 by the rational/transcendental certificate. -/
 theorem research9_window_numerator086_eq_closed :
     research9WindowNumerator086 = research9WindowRawClosed086 := by
   have h0 := research9_actual_base_overlap_eq_closed
-  have h1 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = research9ActualPiece 1 := by
-    simpa using (research9_actual_mode_overlap_succ 0)
-  have h2 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (2 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = -research9ActualPiece 2 := by
-    simpa using (research9_actual_mode_overlap_succ 1)
-  have h3 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (3 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = research9ActualPiece 3 := by
-    simpa using (research9_actual_mode_overlap_succ 2)
-  have h4 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (4 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = -research9ActualPiece 4 := by
-    simpa using (research9_actual_mode_overlap_succ 3)
-  have h5 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (5 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = research9ActualPiece 5 := by
-    simpa using (research9_actual_mode_overlap_succ 4)
-  have h6 :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s))
-        = -research9ActualPiece 6 := by
-    simpa using (research9_actual_mode_overlap_succ 5)
+  have h1 := research9_actual_mode_overlap_one
+  have h2 := research9_actual_mode_overlap_two
+  have h3 := research9_actual_mode_overlap_three
+  have h4 := research9_actual_mode_overlap_four
+  have h5 := research9_actual_mode_overlap_five
+  have h6 := research9_actual_mode_overlap_six
 
   have hi0 := research9_integrable_overlap (Real.sqrt 2) 1
   have hi1 := research9_integrable_overlap (2 * Real.pi * (1 : ℝ))
@@ -416,11 +467,13 @@ theorem research9_window_numerator086_eq_closed :
             Real.cos ((2 * Real.pi * research9ActualX) * s)) +
         (1141360 / 1000000000 : ℝ) *
           (Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)))) := by
+            Real.cos ((2 * Real.pi * research9ActualX) * s))))) := by
     apply intervalIntegral.integral_congr
     intro s _
     unfold research9Window
-    ring_nf
+    congr 1
+    ring
+
   rw [hshape]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
