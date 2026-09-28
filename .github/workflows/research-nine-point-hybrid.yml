@@ -72,6 +72,7 @@ jobs:
               "HurtadoZeta23.ResearchWindowActual",
               "HurtadoZeta23.ResearchWindowPositivity",
               "HurtadoZeta23.ResearchWindowFunctionalBound",
+              "HurtadoZeta23.ResearchWindowMomentKernel",
               "HurtadoZeta23.ResearchWeightedPressure289",
               "HurtadoZeta23.ResearchSpectralThreshold289",
               "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
@@ -147,6 +148,7 @@ jobs:
           import HurtadoZeta23.ResearchWindowActual
           import HurtadoZeta23.ResearchWindowPositivity
           import HurtadoZeta23.ResearchWindowFunctionalBound
+          import HurtadoZeta23.ResearchWindowMomentKernel
           import HurtadoZeta23.ResearchWeightedPressure289
           import HurtadoZeta23.ResearchSpectralThreshold289
           import HurtadoZeta23.ResearchTraceLeSpectralThreshold289
@@ -162,6 +164,9 @@ jobs:
           #check HurtadoZeta23.research9_window_pos
           #check HurtadoZeta23.research9_window_kernel_antitoneOn
           #check HurtadoZeta23.research9_window_functional_closed_gt_Hcert
+          #check HurtadoZeta23.research9_abs_cos_kernel_eq
+          #check HurtadoZeta23.research9_integer_cos_kernel_eq
+          #check HurtadoZeta23.research9_integer_cos_orthogonal
           #check HurtadoZeta23.research9_window_one_gap_pressure
           #check HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #check HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
@@ -178,6 +183,9 @@ jobs:
           #print axioms HurtadoZeta23.research9_window_pos
           #print axioms HurtadoZeta23.research9_window_kernel_antitoneOn
           #print axioms HurtadoZeta23.research9_window_functional_closed_gt_Hcert
+          #print axioms HurtadoZeta23.research9_abs_cos_kernel_eq
+          #print axioms HurtadoZeta23.research9_integer_cos_kernel_eq
+          #print axioms HurtadoZeta23.research9_integer_cos_orthogonal
           #print axioms HurtadoZeta23.research9_window_one_gap_pressure
           #print axioms HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #print axioms HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
