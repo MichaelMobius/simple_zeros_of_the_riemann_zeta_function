@@ -27,6 +27,20 @@ def research9Window (s : ℝ) : ℝ :=
     - (1680572 / 1000000000 : ℝ) * Real.cos ((10 * Real.pi) * s)
     + (1141360 / 1000000000 : ℝ) * Real.cos ((12 * Real.pi) * s)
 
+/-- A right-associated form of the same profile, convenient for repeated
+linearity of the interval integral. -/
+private lemma research9_window_expanded (s : ℝ) :
+    research9Window s =
+      Real.cos (Real.sqrt 2 * s) +
+      ((3322500 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (1 : ℝ)) * s) +
+      ((-(7609135 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (2 : ℝ)) * s) +
+      ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
+      ((-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
+      ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
+      (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
+  unfold research9Window
+  ring
+
 /-- The interval integral of the actual profile. -/
 def research9WindowNormIntegral : ℝ :=
   ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), research9Window s
@@ -75,21 +89,7 @@ theorem research9_window_norm_integral_eq_closed :
   have hi6 := research9_integrable_mode 6 (1141360 / 1000000000 : ℝ)
 
   unfold research9WindowNormIntegral
-  have hshape :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ), research9Window s) =
-      ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-        Real.cos (Real.sqrt 2 * s) +
-        ((3322500 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (1 : ℝ)) * s) +
-        ((-(7609135 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (2 : ℝ)) * s) +
-        ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
-        ((-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
-        ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
-        (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
-    apply intervalIntegral.integral_congr
-    intro s _
-    unfold research9Window
-    ring_nf
-  rw [hshape]
+  simp_rw [research9_window_expanded]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
   rw [intervalIntegral.integral_add hi1
@@ -374,6 +374,31 @@ def research9WindowNumerator086 : ℝ :=
   ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
     research9Window s * Real.cos ((2 * Real.pi * research9ActualX) * s)
 
+private lemma research9_window_overlap_expanded (s : ℝ) :
+    research9Window s * Real.cos ((2 * Real.pi * research9ActualX) * s) =
+      (1 : ℝ) * (Real.cos (Real.sqrt 2 * s) *
+        Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      ((3322500 / 1000000000 : ℝ) *
+        (Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      ((-(7609135 / 1000000000 : ℝ)) *
+        (Real.cos ((2 * Real.pi * (2 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      ((1190194 / 1000000000 : ℝ) *
+        (Real.cos ((2 * Real.pi * (3 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      ((-(731476 / 1000000000 : ℝ)) *
+        (Real.cos ((2 * Real.pi * (4 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      ((-(1680572 / 1000000000 : ℝ)) *
+        (Real.cos ((2 * Real.pi * (5 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
+      (1141360 / 1000000000 : ℝ) *
+        (Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
+          Real.cos ((2 * Real.pi * research9ActualX) * s)))))) := by
+  rw [research9_window_expanded]
+  ring
+
 private lemma research9_actual_mode_overlap_one :
     (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
         Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
@@ -455,36 +480,7 @@ theorem research9_window_numerator086_eq_closed :
     (1141360 / 1000000000 : ℝ)
 
   unfold research9WindowNumerator086
-  have hshape :
-      (∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-          research9Window s * Real.cos ((2 * Real.pi * research9ActualX) * s)) =
-      ∫ s in (-1 / 2 : ℝ)..(1 / 2 : ℝ),
-        (1 : ℝ) * (Real.cos (Real.sqrt 2 * s) *
-          Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        ((3322500 / 1000000000 : ℝ) *
-          (Real.cos ((2 * Real.pi * (1 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        ((-(7609135 / 1000000000 : ℝ)) *
-          (Real.cos ((2 * Real.pi * (2 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        ((1190194 / 1000000000 : ℝ) *
-          (Real.cos ((2 * Real.pi * (3 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        ((-(731476 / 1000000000 : ℝ)) *
-          (Real.cos ((2 * Real.pi * (4 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        ((-(1680572 / 1000000000 : ℝ)) *
-          (Real.cos ((2 * Real.pi * (5 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)) +
-        (1141360 / 1000000000 : ℝ) *
-          (Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
-            Real.cos ((2 * Real.pi * research9ActualX) * s)))))) := by
-    apply intervalIntegral.integral_congr
-    intro s _
-    unfold research9Window
-    ring_nf
-
-  rw [hshape]
+  simp_rw [research9_window_overlap_expanded]
   rw [intervalIntegral.integral_add hi0
         (hi1.add (hi2.add (hi3.add (hi4.add (hi5.add hi6)))))]
   rw [intervalIntegral.integral_add hi1
