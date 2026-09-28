@@ -8,6 +8,7 @@ on:
       - 'lean_harness/v17_threshold/V17FrobeniusBridge.lean'
       - 'lean_harness/frozen/SpectralFrobenius.lean'
       - 'research/master_certificate_v1/verify_window_kernel_086.py'
+      - 'research/master_certificate_v1/verify_window_functional.py'
       - '.github/workflows/research-nine-point-hybrid.yml'
   workflow_dispatch:
 
@@ -23,6 +24,9 @@ jobs:
 
       - name: Exact-rational kernel reproduction
         run: python3 research/master_certificate_v1/verify_window_kernel_086.py
+
+      - name: Exact-rational window functional reproduction
+        run: python3 research/master_certificate_v1/verify_window_functional.py
 
       - name: Install elan
         run: |
@@ -67,6 +71,7 @@ jobs:
               "HurtadoZeta23.ResearchWindowKernelBridge",
               "HurtadoZeta23.ResearchWindowActual",
               "HurtadoZeta23.ResearchWindowPositivity",
+              "HurtadoZeta23.ResearchWindowFunctionalBound",
               "HurtadoZeta23.ResearchWeightedPressure289",
               "HurtadoZeta23.ResearchSpectralThreshold289",
               "HurtadoZeta23.ResearchTraceLeSpectralThreshold289",
@@ -141,6 +146,7 @@ jobs:
           import HurtadoZeta23.ResearchWindowKernelBridge
           import HurtadoZeta23.ResearchWindowActual
           import HurtadoZeta23.ResearchWindowPositivity
+          import HurtadoZeta23.ResearchWindowFunctionalBound
           import HurtadoZeta23.ResearchWeightedPressure289
           import HurtadoZeta23.ResearchSpectralThreshold289
           import HurtadoZeta23.ResearchTraceLeSpectralThreshold289
@@ -155,6 +161,7 @@ jobs:
           #check HurtadoZeta23.research9_window_integral_ratio086_gt
           #check HurtadoZeta23.research9_window_pos
           #check HurtadoZeta23.research9_window_kernel_antitoneOn
+          #check HurtadoZeta23.research9_window_functional_closed_gt_Hcert
           #check HurtadoZeta23.research9_window_one_gap_pressure
           #check HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #check HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
@@ -170,6 +177,7 @@ jobs:
           #print axioms HurtadoZeta23.research9_window_integral_ratio086_gt
           #print axioms HurtadoZeta23.research9_window_pos
           #print axioms HurtadoZeta23.research9_window_kernel_antitoneOn
+          #print axioms HurtadoZeta23.research9_window_functional_closed_gt_Hcert
           #print axioms HurtadoZeta23.research9_window_one_gap_pressure
           #print axioms HurtadoZeta23.research9_spectral_threshold_fin289_sum_le
           #print axioms HurtadoZeta23.research9_psd_gram_threshold_289_of_diag
