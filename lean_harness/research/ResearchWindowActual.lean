@@ -37,7 +37,7 @@ private lemma research9_window_expanded (s : ℝ) :
       ((1190194 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (3 : ℝ)) * s) +
       ((-(731476 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (4 : ℝ)) * s) +
       ((-(1680572 / 1000000000 : ℝ)) * Real.cos ((2 * Real.pi * (5 : ℝ)) * s) +
-      (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s))))) := by
+      (1141360 / 1000000000 : ℝ) * Real.cos ((2 * Real.pi * (6 : ℝ)) * s)))))) := by
   unfold research9Window
   ring
 
@@ -61,7 +61,7 @@ private lemma research9_integrable_base :
       volume (-1 / 2) (1 / 2) := by
   exact Continuous.intervalIntegrable (by fun_prop) _ _
 
-private lemma research9_integrable_mode (n : ℕ) (c : ℝ) :
+private lemma research9_integrable_mode (n c : ℝ) :
     IntervalIntegrable
       (fun s : ℝ => c * Real.cos ((2 * Real.pi * n) * s))
       volume (-1 / 2) (1 / 2) := by
@@ -395,7 +395,7 @@ private lemma research9_window_overlap_expanded (s : ℝ) :
           Real.cos ((2 * Real.pi * research9ActualX) * s)) +
       (1141360 / 1000000000 : ℝ) *
         (Real.cos ((2 * Real.pi * (6 : ℝ)) * s) *
-          Real.cos ((2 * Real.pi * research9ActualX) * s)))))) := by
+          Real.cos ((2 * Real.pi * research9ActualX) * s))))))) := by
   rw [research9_window_expanded]
   ring
 
