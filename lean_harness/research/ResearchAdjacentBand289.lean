@@ -205,6 +205,7 @@ theorem research9_adjacent_energy_split
   rw [← Equiv.sum_comp research9EdgeEquiv288]
   rw [Fintype.sum_prod_type]
   simp only [Fin.sum_univ_two]
+  rw [Finset.sum_add_distrib]
   apply congrArg₂ (· + ·)
   · apply Finset.sum_congr rfl
     intro b hb
