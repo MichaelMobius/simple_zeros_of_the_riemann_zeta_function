@@ -79,12 +79,15 @@ theorem research9_even_pair_fiber_defect_ge
   let e := research9EvenPairFiberEquiv b
   let B2 := Matrix.reindex e e B
   let hB2 : B2.PosSemidef := posSemidef_reindex e B hB
+  have hsum :
+      (G (research9EvenIndex0 b) (research9EvenIndex0 b)).re +
+          (G (research9EvenIndex1 b) (research9EvenIndex1 b)).re ≤ 2 := by
+    linarith [hdiag (research9EvenIndex0 b), hdiag (research9EvenIndex1 b)]
   have htrace : RHLinalg.rtrace B2 ≤ 2 := by
     unfold RHLinalg.rtrace Matrix.trace
-    simp [B2, B, e, research9EvenPairFiberEquiv,
+    simpa [B2, B, e, research9EvenPairFiberEquiv,
       research9EvenIndex0, research9EvenIndex1,
-      finitePartitionBlock, Matrix.reindex_apply]
-    linarith [hdiag (research9EvenIndex0 b), hdiag (research9EvenIndex1 b)]
+      finitePartitionBlock, Matrix.reindex_apply] using hsum
   have h01 :
       B2 0 1 = G (research9EvenIndex0 b) (research9EvenIndex1 b) := by
     apply congrArg id
@@ -201,14 +204,13 @@ theorem research9_adjacent_energy_split
   unfold research9AdjacentEnergy289
   rw [← Equiv.sum_comp research9EdgeEquiv288]
   rw [Fintype.sum_prod_type]
+  simp only [Fin.sum_univ_two]
   apply congrArg₂ (· + ·)
   · apply Finset.sum_congr rfl
     intro b hb
-    simp only [Fin.sum_univ_two]
     simp [research9EvenIndex0, research9EvenIndex1]
   · apply Finset.sum_congr rfl
     intro b hb
-    simp only [Fin.sum_univ_two]
     simp [research9EvenIndex0, research9EvenIndex1]
 
 /-- The complete 288-edge adjacent band costs at most one copy of the spectral
