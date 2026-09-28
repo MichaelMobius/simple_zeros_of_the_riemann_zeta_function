@@ -1,5 +1,6 @@
 import HurtadoZeta23.ResearchShiftedAssembly289
 import HurtadoZeta23.ResearchLiminfEndpoint
+import HurtadoZeta23.ResearchWindowFunctionalBound
 import Zeta23.Assembly
 import Mathlib.Tactic
 
