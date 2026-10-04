@@ -76,6 +76,9 @@ theorem research9_abs_cos_kernel_eq
     apply intervalIntegral.integral_congr
     intro x hx
     rw [Set.uIcc_of_le hs1] at hx
+    change
+      |s - x| * Real.cos (ω * x) =
+        (s - x) * Real.cos (ω * x)
     rw [abs_of_nonneg (by linarith [hx.2] : (0 : ℝ) ≤ s - x)]
   have hleft2 :
       (∫ x in (-(1 : ℝ) / 2)..s, (s - x) * Real.cos (ω * x))
@@ -91,6 +94,9 @@ theorem research9_abs_cos_kernel_eq
     apply intervalIntegral.integral_congr
     intro x hx
     rw [Set.uIcc_of_le hs2] at hx
+    change
+      |s - x| * Real.cos (ω * x) =
+        (x - s) * Real.cos (ω * x)
     rw [abs_of_nonpos (by linarith [hx.1] : s - x ≤ 0), neg_sub]
   have hright2 :
       (∫ x in s..(1 / 2), (x - s) * Real.cos (ω * x))
