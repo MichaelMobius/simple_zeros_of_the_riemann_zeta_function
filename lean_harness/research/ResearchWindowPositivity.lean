@@ -31,8 +31,8 @@ theorem research9_window_perturbation_abs_sum :
 theorem research9_window_base_cos_lower_bound
     {s : ℝ} (hs : s ∈ Set.Icc (-1 / 2 : ℝ) (1 / 2 : ℝ)) :
     (3 / 4 : ℝ) ≤ Real.cos (Real.sqrt 2 * s) := by
-  have hs_sq : s ^ 2 ≤ (1 / 2 : ℝ) ^ 2 := by
-    exact sq_le_sq' hs.1 hs.2
+  have hs_sq : s ^ 2 <= (1 / 2 : Real) ^ 2 := by
+    exact sq_le_sq' (by linarith [hs.1]) (by exact hs.2)
   have hsqrt_sq : Real.sqrt 2 ^ 2 = (2 : ℝ) := by
     rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
   have harg_sq : (Real.sqrt 2 * s) ^ 2 ≤ (1 / 2 : ℝ) := by
@@ -84,7 +84,7 @@ theorem research9_window_norm_integral_pos :
   have hAlt_one : (Real.sqrt 2)⁻¹ < 1 := by
     exact inv_lt_one_of_one_lt₀ hsqrt_gt_one
   have hAlt_pi : (Real.sqrt 2)⁻¹ < Real.pi :=
-    lt_trans hAlt_one Real.one_lt_pi
+    lt_trans hAlt_one (by nlinarith [Real.pi_gt_three])
   have hsin : 0 < Real.sin ((Real.sqrt 2)⁻¹) :=
     Real.sin_pos_of_pos_of_lt_pi hApos hAlt_pi
   positivity
@@ -153,7 +153,9 @@ private lemma research9_window_overlap_integrable (g : ℝ) :
     IntervalIntegrable
       (fun s : ℝ => research9Window s * Real.cos ((2 * Real.pi * g) * s))
       volume (-1 / 2) (1 / 2) := by
-  exact Continuous.intervalIntegrable (by fun_prop) _ _
+  exact Continuous.intervalIntegrable (by
+    unfold research9Window
+    fun_prop) _ _
 
 /-- The actual-window numerator is antitone on `[0,1]`. -/
 theorem research9_window_numerator_antitoneOn :

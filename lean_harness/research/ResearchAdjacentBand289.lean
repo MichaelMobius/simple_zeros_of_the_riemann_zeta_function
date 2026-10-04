@@ -213,6 +213,20 @@ theorem research9_adjacent_energy_split
   · apply Finset.sum_congr rfl
     intro b hb
     simp [research9EvenIndex0, research9EvenIndex1]
+    apply congrArg norm
+    congr
+    · have hlt : 2 * b.val + 1 < 289 := by
+        omega
+      have hone : (1 : Nat) % 289 = 1 := by
+        norm_num
+      rw [hone]
+      exact (Nat.mod_eq_of_lt hlt).symm
+    · have hlt : 2 * b.val + 1 + 1 < 289 := by
+        omega
+      have hone : (1 : Nat) % 289 = 1 := by
+        norm_num
+      rw [hone]
+      exact (Nat.mod_eq_of_lt hlt).symm
 
 /-- The complete 288-edge adjacent band costs at most one copy of the spectral
 defect. -/

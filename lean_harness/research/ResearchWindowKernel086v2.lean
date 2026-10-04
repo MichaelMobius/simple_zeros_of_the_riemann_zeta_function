@@ -270,6 +270,35 @@ def research9v2WindowRaw086 : ℝ :=
 /-- Normalization K_v(0) for the same profile. -/
 def research9v2WindowNorm : ℝ := Real.sin r9v2A / r9v2A
 
+
+/-- Public closed form for the normalization, avoiding exposure of the
+private auxiliary constant r9v2A. -/
+theorem research9v2_window_norm_eq :
+    research9v2WindowNorm =
+      2 * Real.sin ((Real.sqrt 2)⁻¹) / Real.sqrt 2 := by
+  unfold research9v2WindowNorm r9v2A
+
+  have hs : Ne (Real.sqrt 2) 0 := by
+    positivity
+
+  have hsq : Real.sqrt 2 * Real.sqrt 2 = (2 : Real) := by
+    nlinarith [
+      Real.sq_sqrt (by norm_num : (0 : Real) ≤ 2)
+    ]
+
+  rw [div_inv_eq_mul]
+  apply (eq_div_iff hs).2
+
+  calc
+    Real.sin ((Real.sqrt 2)⁻¹) * Real.sqrt 2 * Real.sqrt 2 =
+        Real.sin ((Real.sqrt 2)⁻¹) *
+          (Real.sqrt 2 * Real.sqrt 2) := by
+            ring
+    _ = Real.sin ((Real.sqrt 2)⁻¹) * 2 := by
+          rw [hsq]
+    _ = 2 * Real.sin ((Real.sqrt 2)⁻¹) := by
+          ring
+
 /-- Closed-form normalized kernel at x=43/50. -/
 def research9v2WindowKernelClosed086 : ℝ :=
   research9v2WindowRaw086 / research9v2WindowNorm

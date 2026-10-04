@@ -131,7 +131,9 @@ private lemma research9FunctionalA_upper :
         (research9FunctionalA + research9FunctionalAhi) := by
     apply mul_nonneg
     · linarith
-    · nlinarith [research9FunctionalA_pos.le]
+    · have hAhi0 : 0 <= research9FunctionalAhi := by
+        norm_num [research9FunctionalAhi]
+      exact add_nonneg research9FunctionalA_pos.le hAhi0
   norm_num [research9FunctionalAhi] at hprod
   nlinarith [research9FunctionalA_sq]
 
@@ -160,10 +162,15 @@ private lemma research9FunctionalSin_lower :
   have ha0 : 0 ≤ research9FunctionalAlo := by norm_num [research9FunctionalAlo]
   have ha1 : research9FunctionalAlo ≤ 1 := by norm_num [research9FunctionalAlo]
   have ht := research9_sin_lower15 (x := research9FunctionalAlo) ha0 ha1
+  have hA_lt_one : research9FunctionalA < 1 := by
+    exact lt_trans research9FunctionalA_upper (by
+      norm_num [research9FunctionalAhi])
+  have hA_le_pi_div_two : research9FunctionalA <= Real.pi / 2 := by
+    nlinarith [Real.pi_gt_three, hA_lt_one]
   have hmono : Real.sin research9FunctionalAlo ≤ Real.sin research9FunctionalA := by
     apply Real.sin_le_sin_of_le_of_le_pi_div_two
     · nlinarith [Real.pi_pos]
-    · nlinarith [Real.pi_gt_three, research9FunctionalA_upper]
+    · exact hA_le_pi_div_two
     · exact research9FunctionalA_lower.le
   exact ht.trans hmono
 
@@ -172,10 +179,15 @@ private lemma research9FunctionalCos_upper :
   have ha0 : 0 ≤ research9FunctionalAlo := by norm_num [research9FunctionalAlo]
   have ha1 : research9FunctionalAlo ≤ 1 := by norm_num [research9FunctionalAlo]
   have ht := research9_cos_upper16 (x := research9FunctionalAlo) ha0 ha1
+  have hA_lt_one : research9FunctionalA < 1 := by
+    exact lt_trans research9FunctionalA_upper (by
+      norm_num [research9FunctionalAhi])
+  have hA_le_pi : research9FunctionalA <= Real.pi := by
+    nlinarith [Real.pi_gt_three, hA_lt_one]
   have hmono : Real.cos research9FunctionalA ≤ Real.cos research9FunctionalAlo := by
     apply Real.cos_le_cos_of_nonneg_of_le_pi
     · exact ha0
-    · nlinarith [Real.pi_gt_three, research9FunctionalA_upper]
+    · exact hA_le_pi
     · exact research9FunctionalA_lower.le
   exact hmono.trans ht
 

@@ -101,13 +101,11 @@ theorem research9_window_norm_integral_eq_closed :
   rw [intervalIntegral.integral_add hi4 (hi5.add hi6)]
   rw [intervalIntegral.integral_add hi5 hi6]
   simp_rw [intervalIntegral.integral_const_mul]
-  norm_num at h1 h2 h3 h4 h5 h6
+  simp only [Nat.cast_one, Nat.cast_ofNat] at h1 h2 h3 h4 h5 h6
   rw [h0, h1, h2, h3, h4, h5, h6]
   simp only [mul_zero, add_zero]
-  have hhalf := research9_sqrt_two_half
-  unfold research9v2WindowNorm
-  rw [hhalf]
-  ring
+  rw [research9_sqrt_two_half]
+  rw [research9v2_window_norm_eq]
 
 /-! ## Actual-window numerator at x = 43/50 -/
 
