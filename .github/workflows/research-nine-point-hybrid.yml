@@ -71,6 +71,7 @@ jobs:
               "HurtadoZeta23.ResearchWindowKernelBridge",
               "HurtadoZeta23.ResearchWindowActual",
               "HurtadoZeta23.ResearchWindowPositivity",
+              "HurtadoZeta23.ResearchWindowMonotonicity",
               "HurtadoZeta23.ResearchWindowFunctionalBound",
               "HurtadoZeta23.ResearchWindowMomentKernel",
               "HurtadoZeta23.ResearchWeightedPressure289",
@@ -147,6 +148,7 @@ jobs:
           import HurtadoZeta23.ResearchWindowKernelBridge
           import HurtadoZeta23.ResearchWindowActual
           import HurtadoZeta23.ResearchWindowPositivity
+          import HurtadoZeta23.ResearchWindowMonotonicity
           import HurtadoZeta23.ResearchWindowFunctionalBound
           import HurtadoZeta23.ResearchWindowMomentKernel
           import HurtadoZeta23.ResearchWeightedPressure289
@@ -195,6 +197,7 @@ jobs:
           #print axioms HurtadoZeta23.research9_strong_block_289_from_finite_interfaces
           #print axioms HurtadoZeta23.research9_shifted_assembly_from_uniform_blocks
           #print axioms HurtadoZeta23.research9_projectedBound_eq_global_coefficients
+          #print axioms HurtadoZeta23.research9Window_antitoneOn
           #print axioms HurtadoZeta23.research9_liminf_of_eps_form
           #print axioms HurtadoZeta23.research9_projected_liminf_from_global_refinement
           EOF
